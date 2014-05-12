@@ -3,6 +3,7 @@ from lxml import etree
 from lxml.etree import tostring
 from itertools import chain
 from parsexml.text import Text
+from parsexml.event import Event
 import re
 
 class Parser:
@@ -11,6 +12,9 @@ class Parser:
         # Hols all textfile objects
         self.text_objects = []
         self._parse(self.corpora)
+
+    def get_text_objects(self):
+        return self.text_objects
 
     def _parse(self, corpora):
         # Holds all corpora files
@@ -59,8 +63,14 @@ class Parser:
 
         extracted_text = self._extract_text(text)
 
+        text_obj = Text(file, extracted_text)
+
+        # Create Event objects and link them to the Text object
         for event in text.iterdescendants("EVENT"):
-            print event.text
+            event_obj = Event(text_obj, event.text)
+            text_obj.append_event(event_obj)
+
+        return text_obj
 
 
 if __name__ == "__main__":
