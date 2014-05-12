@@ -62,6 +62,20 @@ class Parser:
 
         return text_obj
 
+    def _create_relation_objects(self, root):
+        """Must be called after _create_event_objects"""
+        for relation in root.iterdescendants("TLINK"):
+            lid = relation.get("lid")
+            source_eid = relation.get("eventInstanceID")
+            target_eid = relation.get("relatedToEventInstance")
+            relation_type = relation.get("relType")
+
+        # Find source event
+        source_obj = self._find_event_by_eid(source_eid)
+
+        # Find target event
+        target_obj = self._find_event_by_eid(target_eid)
+
     def _parse_xml_to_objects(self, file):
         tree = etree.parse(file)
         root = tree.getroot()
@@ -74,6 +88,9 @@ class Parser:
 
         # Create Event objects and link them to the Text object
         self._create_event_objects(text, text_obj)
+
+        # Create Relation objects and link them
+        self._create_relation_objects(root)
 
         return text_obj
 
