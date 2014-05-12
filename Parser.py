@@ -56,7 +56,7 @@ class Parser:
         return text
 
     def _create_event_objects(self, text_obj):
-        for event in text.iterdescendants("EVENT"):
+        for event in text_obj.iterdescendants("EVENT"):
             event_obj = Event(text_obj, event.text)
             text_obj.append_event(event_obj)
 
