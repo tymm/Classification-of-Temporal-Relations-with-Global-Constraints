@@ -55,9 +55,9 @@ class Parser:
         text = self._stringify_children(xml_text_obj)
         return text
 
-    def _create_event_objects(self, text_obj):
-        for event in text_obj.iterdescendants("EVENT"):
-            event_obj = Event(text_obj, event.text)
+    def _create_event_objects(self, text, text_obj):
+        for event in text.iterdescendants("EVENT"):
+            event_obj = Event(event.get("eid"), text_obj, event.text)
             text_obj.append_event(event_obj)
 
         return text_obj
@@ -73,7 +73,7 @@ class Parser:
         text_obj = Text(file, extracted_text)
 
         # Create Event objects and link them to the Text object
-        self._create_event_objects(text_obj)
+        self._create_event_objects(text, text_obj)
 
         return text_obj
 
