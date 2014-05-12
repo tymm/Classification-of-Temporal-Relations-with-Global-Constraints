@@ -1,5 +1,9 @@
 import os
 from lxml import etree
+from lxml.etree import tostring
+from itertools import chain
+from parsexml.text import Text
+import re
 
 class Parser:
     def __init__(self, *corpora):
@@ -33,14 +37,30 @@ class Parser:
 
         return files
 
+    def _stringify_children(self, node):
+        # Transfer sub tree into string
+        text_with_tags = tostring(node)
+
+        # Remove tags
+        regex = re.compile(r"<.*?>")
+        text = re.sub(r"<.*?>", "", text_with_tags)
+
+        return text
+
+    def _extract_text(self, xml_text_obj):
+        text = self._stringify_children(xml_text_obj)
+        return text
+
     def _parse_xml_to_objects(self, file):
         tree = etree.parse(file)
         root = tree.getroot()
 
-        for text in root.iterdescendants("TEXT"):
-            for event in text.iterdescendants("EVENT"):
-                print event.text
+        text = root.find("TEXT")
 
+        extracted_text = self._extract_text(text)
+
+        for event in text.iterdescendants("EVENT"):
+            print event.text
 
 
 if __name__ == "__main__":
