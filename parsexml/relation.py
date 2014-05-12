@@ -1,5 +1,6 @@
 class Relation:
-    def __init__(self, text_obj, source, target, relation_type):
+    def __init__(self, lid, text_obj, source, target, relation_type):
+        self.lid = lid
         self.parent_node = text_obj
         self.source_event = source
         self.target_event = target
