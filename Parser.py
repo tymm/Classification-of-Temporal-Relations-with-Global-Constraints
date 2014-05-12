@@ -1,7 +1,7 @@
 import os
 from lxml import etree
 
-class parser:
+class Parser:
     def __init__(self, *corpora):
         self.corpora = corpora
         # Hols all textfile objects
@@ -44,4 +44,4 @@ class parser:
 
 
 if __name__ == "__main__":
-    a = parser("data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
+    a = Parser("data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
