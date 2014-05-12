@@ -1,4 +1,5 @@
 class Event:
-    def __init__(self, text_obj, text):
+    def __init__(self, eid, text_obj, text):
+        self.eid = eid
         self.parent_node = text_obj
         self.text = text
