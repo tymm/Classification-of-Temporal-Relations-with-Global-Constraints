@@ -14,9 +14,9 @@ class Text:
     def append_relation(self, relation):
         self.relations.append(relation)
 
-    def find_event_by_eid(self, eid):
+    def find_event_by_eiid(self, eiid):
         for event in self.events:
-            if event.eid == eid:
+            if event.eiid == eiid:
                 return event
 
         return None
