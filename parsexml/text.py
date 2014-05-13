@@ -1,8 +1,11 @@
 class Text:
-    def __init__(self, file, text):
+    def __init__(self, file):
         self.file = file
         self.text = text
         self.events = []
+
+    def set_text(self, text):
+        self.text = text
 
     def append_event(self, event):
         self.events.append(event)
