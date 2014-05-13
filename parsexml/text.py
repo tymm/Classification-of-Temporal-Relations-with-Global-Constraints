@@ -1,7 +1,7 @@
 class Text:
     def __init__(self, file):
         self.file = file
-        self.text = text
+        self.text = None
         self.events = []
         self.relations = []
 
