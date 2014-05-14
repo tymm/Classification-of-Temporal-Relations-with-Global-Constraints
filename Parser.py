@@ -5,6 +5,7 @@ from itertools import chain
 from parsexml.text import Text
 from parsexml.event import Event
 from parsexml.relation import Relation
+from parsexml.timex import Timex
 from parsexml.relationtype import RelationType
 import re
 
@@ -30,6 +31,9 @@ class Parser:
 
         # Create Event objects and link them to the Text object
         self._create_event_objects(text_node, root_node)
+
+        # Create Timex objects and link them to the Text object
+        self._create_timex_objects(text_node, root_node)
 
         # Create Relation objects and link them
         self._create_relation_objects(root_node)
@@ -64,12 +68,37 @@ class Parser:
             event_obj = Event(eid, eiid, self.text_obj, event.text)
             self.text_obj.append_event(event_obj)
 
+    def _create_timex_objects(self, text_node, root_node):
+        for timex in text_node.iterdescendants("TIMEX3"):
+            tid = timex.get("tid")
+            type = timex.get("type")
+            value = timex.get("value")
+
+            # Create Timex object and append it to Text object
+            timex_obj = Timex(tid, type, value)
+            self.text_obj.append_timex(timex_obj)
+
     def _create_relation_objects(self, root_node):
         """Must be called after _create_event_objects."""
         for relation in root_node.iterdescendants("TLINK"):
+            # Only consider event-event and event-timex relations; Ignoring timex-timex
+            if not relation.get("eventInstanceID"):
+                continue
+
             lid = relation.get("lid")
             source_eiid = relation.get("eventInstanceID")
-            target_eiid = relation.get("relatedToEventInstance")
+
+            event_event = True
+            if relation.get("relatedToEventInstance"):
+                # Event-event relation
+                target_eiid = relation.get("relatedToEventInstance")
+            else:
+                # Event-timex relation
+                target_tid = relation.get("relatedToTime")
+                event_event = False
+
+
+            # Get relation type as a string
             relation_type = relation.get("relType")
 
             # Get relation_type_id
@@ -78,10 +107,16 @@ class Parser:
             # Find source event
             source_event_obj = self.text_obj.find_event_by_eiid(source_eiid)
 
-            # Find target event
-            target_event_obj = self.text_obj.find_event_by_eiid(target_eiid)
+            # Find target event or target timex
+            if event_event:
+                # Event-event
+                target_event_obj = self.text_obj.find_event_by_eiid(target_eiid)
+                relation_obj = Relation(lid, self.text_obj, source_event_obj, target_event_obj, relation_type_id)
+            else:
+                # Event-timex
+                target_timex_obj = self.text_obj.find_timex_by_tid(target_tid)
+                relation_obj = Relation(lid, self.text_obj, source_event_obj, target_timex_obj, relation_type_id, timex=True)
 
-            relation_obj = Relation(lid, self.text_obj, source_event_obj, target_event_obj, relation_type_id)
             self.text_obj.append_relation(relation_obj)
 
 

@@ -24,3 +24,10 @@ class Text:
                 return event
 
         return None
+
+    def find_timex_by_tid(self, tid):
+        for timex in self.timex:
+            if timex.tid == tid:
+                return timex
+
+        return None
