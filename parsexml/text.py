@@ -3,6 +3,7 @@ class Text:
         self.file = file
         self.text = None
         self.events = []
+        self.timex = []
         self.relations = []
 
     def set_text(self, text):
@@ -10,6 +11,9 @@ class Text:
 
     def append_event(self, event):
         self.events.append(event)
+
+    def append_timex(self, timex):
+        self.timex.append(timex)
 
     def append_relation(self, relation):
         self.relations.append(relation)
