@@ -76,16 +76,13 @@ class Parser:
             relation_type_id = RelationType.get_id(relation_type)
 
             # Find source event
-            source_event_obj = self._find_event_by_eiid(source_eiid)
+            source_event_obj = self.text_obj.find_event_by_eiid(source_eiid)
 
             # Find target event
-            target_event_obj = self._find_event_by_eiid(target_eiid)
+            target_event_obj = self.text_obj.find_event_by_eiid(target_eiid)
 
             relation_obj = Relation(lid, self.text_obj, source_event_obj, target_event_obj, relation_type_id)
             self.text_obj.append_relation(relation_obj)
-
-    def _find_event_by_eiid(self, eiid):
-        return self.text_obj.find_event_by_eiid(eiid)
 
 
 if __name__ == "__main__":
