@@ -4,8 +4,15 @@ class RelationType:
     AFTER = 2
     INCLUDES = 3
     ENDS = 4
-    SIMULTANEOUS = 5
-    UNKNOWN = 6
+    ENDED_BY = 5
+    IBEFORE = 6
+    IAFTER = 7
+    SIMULTANEOUS = 8
+    BEGINS = 9
+    BEGUN_BY = 10
+    DURING = 11
+    DURING_INV = 12
+    UNKNOWN = 13
 
     @classmethod
     def get_id(cls, text):
@@ -19,6 +26,20 @@ class RelationType:
             return cls.AFTER
         elif text == "ENDS":
             return cls.ENDS
+        elif text == "ENDED_BY":
+            return cls.ENDED_BY
+        elif text == "IBEFORE":
+            return cls.IBEFORE
+        elif text == "IAFTER":
+            return cls.IAFTER
+        elif text == "BEGINS":
+            return cls.BEGINS
+        elif text == "BEGUN_BY":
+            return cls.BEGUN_BY
+        elif text == "DURING":
+            return cls.DURING
+        elif text == "DURING_INV":
+            return cls.DURING_INV
         elif text == "SIMULTANEOUS":
             return cls.SIMULTANEOUS
         else:
