@@ -18,6 +18,70 @@ class Parser:
     def get_text_object(self):
         return self.text_obj
 
+    def produce_inverse_relations(self):
+        relations = self.text_obj.relations
+        inversed_relations = []
+
+        for relation in relations:
+            # Switching source and target and using inverse of relation
+            if relation.relation_type == RelationType.AFTER:
+                # Switching AFTER to BEFORE
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.BEFORE)
+            elif relation.relation_type == RelationType.BEFORE:
+                # Switching BEFORE to AFTER
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.AFTER)
+            elif relation.relation_type == RelationType.INCLUDES:
+                # Switching INCLUDES to IS_INCLUDED
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.IS_INCLUDED)
+            elif relation.relation_type == RelationType.IS_INCLUDED:
+                # Switching IS_INCLUDED to INCLUDES
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.INCLUDES)
+            elif relation.relation_type == RelationType.ENDS:
+                # Switching ENDS to ENDED_BY
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.ENDED_BY)
+            elif relation.relation_type == RelationType.ENDED_BY:
+                # Switching ENDED_BY to ENDS
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.ENDS)
+            elif relation.relation_type == RelationType.DURING:
+                # Switching DURING to DURING_INV
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.DURING_INV)
+            elif relation.relation_type == RelationType.DURING_INV:
+                # Switching DURING_INV to DURING
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.DURING)
+            elif relation.relation_type == RelationType.IAFTER:
+                # Switching IAFTER to IBEFORE
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.IBEFORE)
+            elif relation.relation_type == RelationType.IBEFORE:
+                # Switching IBEFORE to IAFTER
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.IAFTER)
+            else:
+                continue
+
+            # Adding relation
+            inversed_relations.append(inverse_rel)
+
+        self.text_obj.relations = self.text_obj.relations + inversed_relations
+
+    def _parse(self, filename):
+        """Mapping xml data to python objects."""
+        tree = etree.parse(filename)
+        root_node = tree.getroot()
+
+        text_node = root_node.find("TEXT")
+
+        # Get text and pass it to Text object
+        extracted_text = self._extract_text(text_node)
+        self.text_obj.set_text(extracted_text)
+
+        # Create Event objects and link them to the Text object
+        self._create_event_objects(text_node, root_node)
+
+        # Create Timex objects and link them to the Text object
+        self._create_timex_objects(text_node, root_node)
+
+        # Create Relation objects and link them
+        self._create_relation_objects(root_node)
+
     def _parse(self, filename):
         """Mapping xml data to python objects."""
         tree = etree.parse(filename)
@@ -115,7 +179,7 @@ class Parser:
             else:
                 # Event-timex
                 target_timex_obj = self.text_obj.find_timex_by_tid(target_tid)
-                relation_obj = Relation(lid, self.text_obj, source_event_obj, target_timex_obj, relation_type_id, timex=True)
+                relation_obj = Relation(lid, self.text_obj, source_event_obj, target_timex_obj, relation_type_id)
 
             self.text_obj.append_relation(relation_obj)
 

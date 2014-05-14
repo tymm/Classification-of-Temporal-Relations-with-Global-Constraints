@@ -22,7 +22,6 @@ class Relation:
 
     def _check_timex(self):
         """Check if this relation is an event-event relation or an event-timex relation."""
-        print type(self.target)
         if type(self.source) is Timex or type(self.target) is Timex:
             self.is_timex = True
         else:
