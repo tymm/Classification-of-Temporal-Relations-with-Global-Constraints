@@ -1,4 +1,4 @@
-class Event:
+class Event(object):
     def __init__(self, eid, eiid, text_obj, text):
         self.eid = eid
         self.eiid = eiid
