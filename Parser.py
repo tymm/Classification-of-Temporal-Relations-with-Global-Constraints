@@ -82,26 +82,6 @@ class Parser:
         # Create Relation objects and link them
         self._create_relation_objects(root_node)
 
-    def _parse(self, filename):
-        """Mapping xml data to python objects."""
-        tree = etree.parse(filename)
-        root_node = tree.getroot()
-
-        text_node = root_node.find("TEXT")
-
-        # Get text and pass it to Text object
-        extracted_text = self._extract_text(text_node)
-        self.text_obj.set_text(extracted_text)
-
-        # Create Event objects and link them to the Text object
-        self._create_event_objects(text_node, root_node)
-
-        # Create Timex objects and link them to the Text object
-        self._create_timex_objects(text_node, root_node)
-
-        # Create Relation objects and link them
-        self._create_relation_objects(root_node)
-
     def _stringify_children(self, node):
         # Transfer sub tree into string
         text_with_tags = tostring(node)
