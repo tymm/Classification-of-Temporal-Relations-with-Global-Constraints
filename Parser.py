@@ -7,6 +7,7 @@ from parsexml.event import Event
 from parsexml.relation import Relation
 from parsexml.timex import Timex
 from parsexml.relationtype import RelationType
+from helper.closure import Closure
 import re
 
 class Parser:
@@ -17,6 +18,32 @@ class Parser:
 
     def get_text_object(self):
         return self.text_obj
+
+    def produce_closure_relations(self):
+        # Create temporal closures for BEFORE
+        closure = Closure(self.text_obj, RelationType.BEFORE)
+        closure_relations_before = closure.get_closure_relations()
+        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+
+        # Create temporal closures for AFTER
+        closure = Closure(self.text_obj, RelationType.AFTER)
+        closure_relations_before = closure.get_closure_relations()
+        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+
+        # Create temporal closures for INCLUDES
+        closure = Closure(self.text_obj, RelationType.INCLUDES)
+        closure_relations_before = closure.get_closure_relations()
+        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+
+        # Create temporal closures for IS_INCLUDED
+        closure = Closure(self.text_obj, RelationType.IS_INCLUDED)
+        closure_relations_before = closure.get_closure_relations()
+        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+
+        # Create temporal closures for DURING
+        closure = Closure(self.text_obj, RelationType.DURING)
+        closure_relations_before = closure.get_closure_relations()
+        self.text_obj.relations = self.text_obj.relations + closure_relations_before
 
     def produce_inverse_relations(self):
         relations = self.text_obj.relations
@@ -166,3 +193,5 @@ class Parser:
 
 if __name__ == "__main__":
     a = Parser("data/training/TE3-Silver-data/AFP_ENG_19970401.0006.tml")
+    a.produce_inverse_relations()
+    a.produce_closure_relations()
