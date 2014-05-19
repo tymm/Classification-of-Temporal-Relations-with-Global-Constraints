@@ -19,6 +19,9 @@ class Parser:
     def get_text_object(self):
         return self.text_obj
 
+    def get_relations(self):
+        return self.text_obj.relations
+
     def produce_closure_relations(self):
         # Create temporal closures for BEFORE
         closure = Closure(self.text_obj, RelationType.BEFORE)
