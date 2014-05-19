@@ -11,6 +11,9 @@ class Relation:
 
         self._check_timex()
 
+    def get_result(self):
+        return self.relation_type
+
     def is_event_timex(self):
         if self._is_timex:
             return True
