@@ -153,13 +153,21 @@ class Parser:
 
     def _create_timex_objects(self, text_node, root_node):
         for timex in text_node.iterdescendants("TIMEX3"):
-            tid = timex.get("tid")
-            type = timex.get("type")
-            value = timex.get("value")
+            self._create_timex_object(timex)
 
-            # Create Timex object and append it to Text object
-            timex_obj = Timex(tid, type, value)
-            self.text_obj.append_timex(timex_obj)
+        # Also looking for timex in <DCT></DCT>
+        dct_node = root_node.find("DCT")
+        for timex in dct_node.iterdescendants("TIMEX3"):
+            self._create_timex_object(timex)
+
+    def _create_timex_object(self, timex_node):
+        tid = timex_node.get("tid")
+        type = timex_node.get("type")
+        value = timex_node.get("value")
+
+        # Create Timex object and append it to Text object
+        timex_obj = Timex(tid, type, value)
+        self.text_obj.append_timex(timex_obj)
 
     def _create_relation_objects(self, root_node):
         """Must be called after _create_event_objects."""
