@@ -12,7 +12,7 @@ class Relation:
         self._check_timex()
 
     def is_event_timex(self):
-        if self.timex:
+        if self.is_timex:
             return True
         else:
             return False
