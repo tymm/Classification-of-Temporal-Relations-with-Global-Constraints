@@ -127,16 +127,25 @@ class Parser:
         for event in text_node.iterdescendants("EVENT"):
             eid = event.get("eid")
             eiid = None
+            tense = None
+            aspect = None
+            polarity = None
+            pos = None
 
-            # Get eeid for event
+            # Get further information (eiid, tense, aspect, polarity) for event
             for instance in root_node.iterdescendants("MAKEINSTANCE"):
                 instance_eid = instance.get("eventID")
                 if instance_eid == eid:
                     eiid = instance.get("eiid")
+                    tense = instance.get("tense")
+                    aspect = instance.get("aspect")
+                    polarity = instance.get("polarity")
+                    pos = instance.get("pos")
+                    modality = instance.get("modality")
                     break
 
             # Create Event object and append it to Text object
-            event_obj = Event(eid, eiid, self.text_obj, event.text)
+            event_obj = Event(eid, eiid, self.text_obj, event.text, tense, aspect, polarity, pos, modality)
             self.text_obj.append_event(event_obj)
 
     def _create_timex_objects(self, text_node, root_node):
