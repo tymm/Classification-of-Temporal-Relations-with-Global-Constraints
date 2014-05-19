@@ -7,12 +7,12 @@ class Relation:
         self.source = source_obj
         self.target = target_obj
         self.relation_type = relation_type_id
-        self.is_timex = None
+        self._is_timex = None
 
         self._check_timex()
 
     def is_event_timex(self):
-        if self.is_timex:
+        if self._is_timex:
             return True
         else:
             return False
@@ -23,7 +23,7 @@ class Relation:
     def _check_timex(self):
         """Check if this relation is an event-event relation or an event-timex relation."""
         if type(self.source) is Timex or type(self.target) is Timex:
-            self.is_timex = True
+            self._is_timex = True
         else:
-            self.is_timex = False
+            self._is_timex = False
 
