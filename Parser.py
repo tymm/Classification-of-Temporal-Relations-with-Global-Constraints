@@ -134,6 +134,7 @@ class Parser:
             aspect = None
             polarity = None
             pos = None
+            modality = None
 
             # Get further information (eiid, tense, aspect, polarity) for event
             for instance in root_node.iterdescendants("MAKEINSTANCE"):
