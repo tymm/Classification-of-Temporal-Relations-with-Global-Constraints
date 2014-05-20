@@ -4,6 +4,7 @@ class Relation:
     def __init__(self, lid, text_obj, source_obj, target_obj, relation_type_id):
         self.lid = lid
         self.parent = text_obj
+        self.file = self.parent.file
         self.source = source_obj
         self.target = target_obj
         self.relation_type = relation_type_id
