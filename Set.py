@@ -17,7 +17,7 @@ class Set:
             for relation in text_obj.relations:
                 if relation.is_event_event():
                     f = Feature(relation)
-                    X.append(f.get_tense() + f.get_same_tense())
+                    X.append(f.get_tense() + f.get_same_tense() + f.get_same_aspect())
                     y.append(relation.get_result())
 
         return (X, y)

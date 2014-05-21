@@ -1,5 +1,6 @@
 from feature.tense import Tense
 from feature.same_tense import Same_tense
+from feature.same_aspect import Same_aspect
 from sklearn.preprocessing import OneHotEncoder
 
 class Feature:
@@ -20,6 +21,14 @@ class Feature:
         same_tense = Same_tense(self.relation)
 
         if same_tense.is_same():
+            return [1]
+        else:
+            return [0]
+
+    def get_same_aspect(self):
+        same_aspect = Same_aspect(self.relation)
+
+        if same_aspect.is_same():
             return [1]
         else:
             return [0]
