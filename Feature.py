@@ -2,6 +2,7 @@ from feature.tense import Tense
 from feature.same_tense import Same_tense
 from feature.same_aspect import Same_aspect
 from feature.same_class import Same_class
+from feature.polarity import Polarity
 from sklearn.preprocessing import OneHotEncoder
 
 class Feature:
@@ -16,7 +17,16 @@ class Feature:
         tense = Tense(self.relation)
 
         feature = enc.transform([[tense.source, tense.target]]).toarray()[0]
-        return feature
+        return feature.tolist()
+
+    def get_polarity(self):
+        polarity = Polarity(self.relation)
+
+        enc = OneHotEncoder(n_values=2, categorical_features=[0,1])
+        enc.fit([1, 1])
+
+        feature = enc.transform([[polarity.source, polarity.target]]).toarray()[0]
+        return feature.tolist()
 
     def get_same_tense(self):
         same_tense = Same_tense(self.relation)
