@@ -37,7 +37,7 @@ class Feature:
     def get_same_polarity(self):
         same_polarity = Same_polarity(self.relation)
 
-        if same_aspect.is_same():
+        if same_polarity.is_same():
             return [1]
         else:
             return [0]
