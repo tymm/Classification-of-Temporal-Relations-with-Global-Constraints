@@ -2,6 +2,7 @@ from feature.tense import Tense
 from feature.same_tense import Same_tense
 from feature.same_aspect import Same_aspect
 from feature.same_polarity import Same_polarity
+from feature.same_class import Same_class
 from sklearn.preprocessing import OneHotEncoder
 
 class Feature:
@@ -38,6 +39,14 @@ class Feature:
         same_polarity = Same_polarity(self.relation)
 
         if same_polarity.is_same():
+            return [1]
+        else:
+            return [0]
+
+    def get_same_class(self):
+        same_class = Same_class(self.relation)
+
+        if same_class.is_same():
             return [1]
         else:
             return [0]
