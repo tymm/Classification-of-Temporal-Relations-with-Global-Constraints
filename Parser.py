@@ -5,6 +5,7 @@ from itertools import chain
 from parsexml.text import Text
 from parsexml.event import Event
 from parsexml.relation import Relation
+from parsexml.sentence import Sentence
 from parsexml.timex import Timex
 from parsexml.relationtype import RelationType
 from helper.closure import Closure
@@ -136,18 +137,25 @@ class Parser:
             pos = instance.get("pos")
             modality = instance.get("modality")
 
-            # Get text and class for event
+
+            # Get text, sentence and class for event
             text = None
+            sentence = None
             e_class = None
             for event in text_node.iterdescendants("EVENT"):
                 eid = event.get("eid")
                 if instance_eid == eid:
                     text = event.text
+
+                    # Getting surrounding sentence
+                    s = Sentence(event)
+                    sentence = s.sentence
+
                     e_class = event.get("class")
                     break
 
             # Create Event object and append it to Text object
-            event_obj = Event(eid, eiid, self.text_obj, text, e_class, tense, aspect, polarity, pos, modality)
+            event_obj = Event(eid, eiid, self.text_obj, text, sentence, e_class, tense, aspect, polarity, pos, modality)
             self.text_obj.append_event(event_obj)
 
     def _create_timex_objects(self, text_node, root_node):
@@ -163,9 +171,11 @@ class Parser:
         tid = timex_node.get("tid")
         type = timex_node.get("type")
         value = timex_node.get("value")
+        s = Sentence(timex_node)
+        sentence = s.sentence
 
         # Create Timex object and append it to Text object
-        timex_obj = Timex(tid, type, value)
+        timex_obj = Timex(tid, type, value, sentence)
         self.text_obj.append_timex(timex_obj)
 
     def _create_relation_objects(self, root_node):
