@@ -1,10 +1,12 @@
 import os
 from Parser import Parser
 from Feature import Feature
+from Persistence import Persistence
 
 class Set:
-    def __init__(self, *corpora):
+    def __init__(self, load=True, *corpora):
         self.corpora = corpora
+        self.load = load
         # Hols all textfile objects
         self.text_objects = []
         self._parse()
@@ -36,12 +38,35 @@ class Set:
             if not file.endswith('tml'):
                 continue
 
-            # Mapping xml data to python objects
-            parser = Parser(file)
-            parser.produce_inverse_relations()
-            # parser.produce_closure_relations()
+            persistence = Persistence(file)
 
-            self.text_objects.append(parser.get_text_object())
+            if self.load:
+                # Lets try to load the parsed information from the persistence layer
+                text_obj = persistence.get_text_object()
+
+                if not text_obj:
+                    # There is nothing stored yet, so lets parse from file
+                    text_obj = self._parse_from_file(file)
+                    # Save the parsed text object to the persitence layer
+                    persistence.save(text_obj)
+
+            else:
+                # load=False, so let's parse from file
+                text_obj = self._parse_from_file(file)
+                # And save the parsed text object to the persitence layer
+                persistence.save(text_obj)
+
+            self.text_objects.append(text_obj)
+
+    def _parse_from_file(self, file):
+        # Mapping xml data to python objects
+        parser = Parser(file)
+        parser.produce_inverse_relations()
+        # parser.produce_closure_relations()
+
+        text_obj = parser.get_text_object()
+
+        return text_obj
 
     def _fetch_files(self, directory):
         files = []
