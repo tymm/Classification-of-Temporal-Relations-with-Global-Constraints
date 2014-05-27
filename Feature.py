@@ -3,6 +3,7 @@ from feature.same_tense import Same_tense
 from feature.same_aspect import Same_aspect
 from feature.same_class import Same_class
 from feature.polarity import Polarity
+from feature.textual_order import Textual_order
 from sklearn.preprocessing import OneHotEncoder
 
 class Feature:
@@ -56,6 +57,14 @@ class Feature:
         same_pos = Same_pos(self.relation)
 
         if same_pos.is_same():
+            return [1]
+        else:
+            return [0]
+
+    def get_textual_order(self):
+        textual_order = Textual_order(self.relation)
+
+        if textual_order.a_before_b():
             return [1]
         else:
             return [0]
