@@ -16,12 +16,9 @@ class Event(object):
         self.aspect = aspect
         self.polarity = polarity
         self.pos_xml = pos
-        print self.pos_xml
-        print "---"
         self.modality = modality
 
     def _get_pos(self):
         s = StanfordNLP()
         pos_tag = s.parse(self.sentence, self.position_in_sentence)
-        print pos_tag
         return pos_tag
