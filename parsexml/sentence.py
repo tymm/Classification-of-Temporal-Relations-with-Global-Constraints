@@ -3,6 +3,16 @@ class Sentence:
         self.node = node
         self.sentence = self._get_sentence()
 
+    def get_position(self, node):
+        """Returns the position of node.text in the sentence"""
+        # TODO: This is a super naive version
+        split = self.sentence.split(" ")
+
+        try:
+            return split.index(node.text)
+        except ValueError:
+            return None
+
     def _get_sentence(self):
         left = self._get_left_part(self.node)
         right = self._get_right_part(self.node)
