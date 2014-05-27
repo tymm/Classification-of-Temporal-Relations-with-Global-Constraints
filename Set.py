@@ -19,7 +19,7 @@ class Set:
             for relation in text_obj.relations:
                 if relation.is_event_event():
                     f = Feature(relation)
-                    X.append(f.get_tense() + f.get_polarity() + f.get_same_tense() + f.get_same_aspect() + f.get_same_class())
+                    X.append(f.get_tense() + f.get_polarity() + f.get_same_tense() + f.get_same_aspect() + f.get_same_class() + f.get_same_pos())
                     y.append(relation.get_result())
 
         return (X, y)

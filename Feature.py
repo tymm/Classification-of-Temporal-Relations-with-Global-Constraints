@@ -51,3 +51,12 @@ class Feature:
             return [1]
         else:
             return [0]
+
+    def get_same_pos(self):
+        same_pos = Same_pos(self.relation)
+
+        if same_pos.is_same():
+            return [1]
+        else:
+            return [0]
+
