@@ -1,4 +1,6 @@
 from lxml import etree
+from parsexml.sentence import Sentence
+from parsexml.text_structure import Text_structure
 
 class Text:
     def __init__(self, file):
@@ -7,6 +9,8 @@ class Text:
         self.events = []
         self.timex = []
         self.relations = []
+        # Will be: {Sentence: [Event, Timex, ...], Sentence: [...], ...} after self.build_text_structure() was called
+        self.structure = None
         self.entities_order = []
 
     def set_text(self, text):
@@ -42,20 +46,8 @@ class Text:
 
         return None
 
-    def build_entity_order(self):
-        tree = etree.parse(self.file)
-        root_node = tree.getroot()
-
-        text_node = root_node.find("TEXT")
-
-        for entity_node in text_node:
-            eid = entity_node.get("eid")
-            if eid:
-                # It's an event
-                entity = self.find_event_by_eid(eid)
-            else:
-                # It's a timex
-                tid = entity_node.get("tid")
-                entity = self.find_timex_by_tid(tid)
-
-            self.entities_order.append(entity)
+    def build_text_structure(self):
+        """Must be called after all entities got appended."""
+        structure = Text_structure(self.file, self)
+        self.entities_order = structure.get_entities_ordered()
+        self.structure = structure.get_structure()

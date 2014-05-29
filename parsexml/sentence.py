@@ -3,6 +3,12 @@ class Sentence:
         self.node = node
         self.sentence = self._get_sentence()
 
+    def __eq__(self, other):
+        return self.sentence == other.sentence
+
+    def __hash__(self):
+        return hash(self.sentence)
+
     def get_position(self, node):
         """Returns the position of node.text in the sentence"""
         # TODO: This is a super naive version

@@ -17,7 +17,7 @@ class Parser:
         self.text_obj = Text(self.filename)
         self._parse(self.filename)
         # Build entity order for text_obj
-        self.text_obj.build_entity_order()
+        self.text_obj.build_text_structure()
 
     def get_text_object(self):
         return self.text_obj
