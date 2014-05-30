@@ -1,7 +1,6 @@
 class Sentence:
     def __init__(self, node):
-        self.node = node
-        self.sentence = self._get_sentence()
+        self.sentence = self._get_sentence(node)
 
     def __eq__(self, other):
         return self.sentence == other.sentence
@@ -19,9 +18,9 @@ class Sentence:
         except ValueError:
             return None
 
-    def _get_sentence(self):
-        left = self._get_left_part(self.node)
-        right = self._get_right_part(self.node)
+    def _get_sentence(self, node):
+        left = self._get_left_part(node)
+        right = self._get_right_part(node)
 
         if left and right:
             text = left + right
