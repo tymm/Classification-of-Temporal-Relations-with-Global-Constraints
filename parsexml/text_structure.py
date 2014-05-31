@@ -21,6 +21,33 @@ class Text_structure:
     def get_structure(self):
         return self.structure
 
+    def get_sentence_distance(self, entity_one, entity_two):
+        sentences = self.structure.values()
+
+        position_one = None
+        position_two = None
+
+        for sentence in sentences:
+            if entity_one in sentence or entity_two in sentence:
+                # Start counting
+                if entity_one in sentence and entity_two in sentence:
+                    # Both entities are in the same sentence
+                    return 0
+
+                if entity_one in sentence:
+                    position_one = sentences.index(sentence)
+
+                if entity_two in sentence:
+                    position_two = sentences.index(sentence)
+
+        try:
+            difference = abs(position_one - position_two)
+        except TypeError:
+            # One or both entities are not in any sentence
+            difference = None
+
+        return difference
+
     def _get_entity_by_node(self, entity_node):
         eid = entity_node.get("eid")
 
