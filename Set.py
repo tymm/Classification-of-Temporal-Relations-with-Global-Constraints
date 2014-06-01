@@ -39,6 +39,7 @@ class Set:
                 continue
 
             if self.load:
+                # TODO: Loading and saving a huge dictionary like the one in the Persistance class takes a lot of time
                 persistence = Persistence(file)
 
                 # Lets try to load the parsed information from the persistence layer
