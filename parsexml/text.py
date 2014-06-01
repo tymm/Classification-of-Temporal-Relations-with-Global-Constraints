@@ -9,8 +9,7 @@ class Text:
         self.events = []
         self.timex = []
         self.relations = []
-        # Will be: {Sentence: [Event, Timex, ...], Sentence: [...], ...} after self.build_text_structure() was called
-        self.structure = None
+        self.text_structure = None
         self.entities_order = []
 
     def set_text(self, text):
@@ -50,4 +49,4 @@ class Text:
         """Must be called after all entities got appended."""
         structure = Text_structure(self.file, self)
         self.entities_order = structure.get_entities_ordered()
-        self.structure = structure.get_structure()
+        self.text_structure = structure
