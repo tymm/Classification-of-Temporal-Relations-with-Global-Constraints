@@ -3,15 +3,32 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 
 if __name__ == "__main__":
-    training = Set("data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
-    test = Set("data/test/te3-platinum/")
+    # Creating xml mapping objects from scratch with "False" as first argument
+    load = False
 
+    if load:
+        print "Loading training and test set"
+    else:
+        print "Creating training and test set"
+
+    training = Set(load, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
+    test = Set(load, "data/test/te3-platinum/")
+
+    if load:
+        print "Done loading training and test set"
+    else:
+        print "Done creating training and test set"
+
+    print "Creating features"
     X_train, y_train = training.get_classification_data_event_event()
     X_test, y_test = test.get_classification_data_event_event()
+    print "Done creating features"
 
     # Train a random forest classifier
-    rf = RandomForestClassifier(n_jobs=2, n_estimators=100)
+    print "Train the classifier"
+    rf = RandomForestClassifier(n_jobs=2, n_estimators=50)
     rf.fit(X_train, y_train)
+    print "Done training the classifier"
 
     y_predicted = rf.predict(X_test)
 
