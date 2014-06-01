@@ -19,7 +19,7 @@ class Set:
             for relation in text_obj.relations:
                 if relation.is_event_event():
                     f = Feature(relation)
-                    X.append(f.get_tense() + f.get_polarity() + f.get_same_tense() + f.get_same_aspect() + f.get_same_class() + f.get_same_pos() + f.get_textual_order())
+                    X.append(f.get_tense() + f.get_polarity() + f.get_same_tense() + f.get_same_aspect() + f.get_same_class() + f.get_same_pos() + f.get_textual_order() + f.get_sentence_distance())
                     y.append(relation.get_result())
 
         return (X, y)
@@ -38,9 +38,9 @@ class Set:
             if not file.endswith('tml'):
                 continue
 
-            persistence = Persistence(file)
-
             if self.load:
+                persistence = Persistence(file)
+
                 # Lets try to load the parsed information from the persistence layer
                 text_obj = persistence.get_text_object()
 
@@ -54,7 +54,6 @@ class Set:
                 # load=False, so let's parse from file
                 text_obj = self._parse_from_file(file)
                 # And save the parsed text object to the persitence layer
-                persistence.save(text_obj)
 
             self.text_objects.append(text_obj)
 
