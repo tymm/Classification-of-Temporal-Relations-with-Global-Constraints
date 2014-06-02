@@ -21,6 +21,19 @@ class Text_structure:
     def get_structure(self):
         return self.structure
 
+    def print_structure(self):
+        print "----Structure start----"
+        for sentence, entities in self.structure.items():
+            print "---Sentence start---"
+            print sentence.text
+            for entity in entities:
+                print entity.text
+
+            print "---Sentence end---"
+            print
+        print "----Structure end----"
+        print
+
     def get_sentence_distance(self, entity_one, entity_two):
         sentences = self.structure.values()
 
