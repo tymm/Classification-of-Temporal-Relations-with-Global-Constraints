@@ -3,15 +3,15 @@ class Sentence:
         self.text = self._get_sentence(node)
 
     def __eq__(self, other):
-        return self.sentence == other.sentence
+        return self.text == other.text
 
     def __hash__(self):
-        return hash(self.sentence)
+        return hash(self.text)
 
     def get_position(self, node):
         """Returns the position of node.text in the sentence"""
         # TODO: This is a super naive version
-        split = self.sentence.split(" ")
+        split = self.text.split(" ")
 
         try:
             return split.index(node.text)
