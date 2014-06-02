@@ -1,6 +1,6 @@
 class Sentence:
     def __init__(self, node):
-        self.sentence = self._get_sentence(node)
+        self.text = self._get_sentence(node)
 
     def __eq__(self, other):
         return self.sentence == other.sentence
