@@ -89,9 +89,12 @@ class Text_structure:
     def _build_structure(self):
         for entity_node in self._entity_nodes_ordered:
             sentence = Sentence(entity_node)
+            # Get entity object by lxml object
             entity = self._get_entity_by_node(entity_node)
 
+            # If sentence not yet in self.structure, we know that entity is the first entity of this sentence
             if sentence not in self.structure:
                 self.structure.update({sentence: [entity]})
-
-            self.structure[sentence].append(entity)
+            # Sentence is already known. Let's append this entity to the already known sentence
+            else:
+                self.structure[sentence].append(entity)
