@@ -3,9 +3,9 @@ from parsexml.sentence import Sentence
 from lxml import etree
 
 class Text_structure:
-    def __init__(self, filename, text_obj):
-        self.filename = filename
+    def __init__(self, text_obj):
         self.text_obj = text_obj
+        self.filename = text_obj.filename
         # {Sentence: [Event, Timex, ...]
         self.structure = OrderedDict()
 
