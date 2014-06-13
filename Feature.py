@@ -3,8 +3,11 @@ from feature.same_tense import Same_tense
 from feature.same_aspect import Same_aspect
 from feature.same_class import Same_class
 from feature.polarity import Polarity
+from feature.same_pos import Same_pos
 from feature.textual_order import Textual_order
+from feature.sentence_distance import Sentence_distance
 from sklearn.preprocessing import OneHotEncoder
+
 
 class Feature:
     def __init__(self, relation):
@@ -69,3 +72,8 @@ class Feature:
         else:
             return [0]
 
+    def get_sentence_distance(self):
+        sentence_distance = Sentence_distance(self.relation)
+
+        distance = sentence_distance.get_distance()
+        return [distance]
