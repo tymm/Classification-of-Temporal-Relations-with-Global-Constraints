@@ -7,3 +7,6 @@ class Timex(object):
         self.text = text
         self.sentence = sentence
         self.position_in_sentence = position_in_sentence
+
+    def __str__(self):
+        return u"Timex Object: tid: %s text: %s" % (self.tid, self.text)
