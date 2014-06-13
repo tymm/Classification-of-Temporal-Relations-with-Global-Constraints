@@ -47,6 +47,6 @@ class Text:
 
     def build_text_structure(self):
         """Must be called after all entities got appended."""
-        structure = Text_structure(self.filename, self)
+        structure = Text_structure(self)
         self.entities_order = structure.get_entities_ordered()
         self.text_structure = structure
