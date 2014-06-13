@@ -58,6 +58,9 @@ class Feature(unittest.TestCase):
 
     def test_SentenceDistance(self):
         for feature in self.features:
+            if feature.get_sentence_distance()[0] == None:
+                print feature.relation.source
+                print feature.relation.target
             self.assertNotEqual(feature.get_sentence_distance()[0], None)
 
 
