@@ -1,6 +1,7 @@
 import unittest
 
 from Parser import Parser
+from Feature import Feature as Features
 
 class TextStructure(unittest.TestCase):
     @classmethod
@@ -41,6 +42,23 @@ class TextStructure(unittest.TestCase):
         self.assertEqual(entities_ordered[26].eid, "e27")
         self.assertEqual(entities_ordered[27].eid, "e28")
         self.assertEqual(entities_ordered[28].eid, "e30")
+
+class Feature(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
+        parser_obj = Parser(filename)
+        text_obj = parser_obj.get_text_object()
+
+        cls.features = []
+
+        for relation in text_obj.relations:
+            f = Features(relation)
+            cls.features.append(f)
+
+    def test_SentenceDistance(self):
+        for feature in self.features:
+            self.assertNotEqual(feature.get_sentence_distance()[0], None)
 
 
 if __name__ == '__main__':
