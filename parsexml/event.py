@@ -8,7 +8,8 @@ class Event(object):
         self.text = text
         self.sentence = sentence
         self.position_in_sentence = position_in_sentence
-        self.pos = self._get_pos()
+        # self.pos = self._get_pos()
+        self.pos = "NONE"
 
         # As definied in xml data
         self.e_class = e_class
@@ -17,6 +18,9 @@ class Event(object):
         self.polarity = polarity
         self.pos_xml = pos
         self.modality = modality
+
+    def __str__(self):
+        return u"Event Object: eid: %s eiid: %s text: %s" % (self.eid, self.eiid, self.text)
 
     def _get_pos(self):
         s = StanfordNLP()
