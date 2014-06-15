@@ -2,6 +2,7 @@ import unittest
 
 from Parser import Parser
 from Feature import Feature as Features
+from parsexml.fakesentence import FakeSentence
 
 class TextStructure(unittest.TestCase):
     @classmethod
@@ -44,12 +45,6 @@ class TextStructure(unittest.TestCase):
         self.assertEqual(entities_ordered[28].eid, "e30")
 
     def test_RightOrderOfSentences(self):
-
-        # FakeSentence class to compare text with Sentence objects
-        class FakeSentence:
-            def __init__(self, text):
-                self.text = text
-
         structure = self.text_obj.text_structure.get_structure()
 
         sentences = [sentence for sentence in structure]
@@ -57,6 +52,7 @@ class TextStructure(unittest.TestCase):
         self.assertEqual(sentences[0], FakeSentence("Finally today, we learned that the space agency has finally taken a giant leap forward."))
         self.assertEqual(sentences[1], FakeSentence("Air Force Lieutenant Colonel Eileen Collins will be named commander of the Space Shuttle Columbia for a mission in December."))
         self.assertEqual(sentences[2], FakeSentence("Colonel Collins has been the co-pilot before, but this time she's the boss."))
+        print sentences[3].text
         self.assertEqual(sentences[3], FakeSentence("Here's ABC's Ned Potter."))
         self.assertEqual(sentences[4], FakeSentence("Even two hundred miles up in space, there has been a glass ceiling."))
         self.assertEqual(sentences[5], FakeSentence("It wasn't until twenty years after the first astronauts were chosen that NASA finally included six women, and they were all scientists, not pilots."))
