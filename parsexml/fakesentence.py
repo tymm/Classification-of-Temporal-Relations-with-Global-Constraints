@@ -8,3 +8,6 @@ class FakeSentence(object):
 
     def __hash__(self):
         return hash(self.text)
+
+    def __str__(self):
+        return u"FakeSentence Object: %s" % (self.text)
