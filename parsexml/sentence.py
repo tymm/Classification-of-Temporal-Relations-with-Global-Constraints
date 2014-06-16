@@ -8,6 +8,9 @@ class Sentence(object):
     def __hash__(self):
         return hash(self.text)
 
+    def __str__(self):
+        return u"Sentence Object: %s" % (self.text)
+
     def get_position(self, node):
         """Returns the position of node.text in the sentence"""
         # TODO: This is a super naive version
