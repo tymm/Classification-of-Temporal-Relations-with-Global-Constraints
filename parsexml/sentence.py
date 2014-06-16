@@ -1,4 +1,4 @@
-class Sentence:
+class Sentence(object):
     def __init__(self, node):
         self.text = self._get_sentence(node)
 
