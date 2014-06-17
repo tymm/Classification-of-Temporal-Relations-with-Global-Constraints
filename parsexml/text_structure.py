@@ -89,7 +89,10 @@ class Text_structure:
 
         text_node = root_node.find("TEXT")
 
+        # Problem: Some entities in <TEXT></TEXT> have more than one entity in <MAKEINSTANCE></MAKEINSTANCE>
+        # Solution: Handle this problem elsewhere (for example directly in feature/sentence_distance.py)
         for entity_node in text_node:
+            # Since we are only interested in the structure of the text here, just get one entity even if there are more than one for entity_node
             entity = self._get_entity_by_node(entity_node)
 
             self._entities_ordered.append(entity)
