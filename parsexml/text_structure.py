@@ -148,11 +148,16 @@ class Text_structure:
         text_node = root_node.find("TEXT")
 
         # Get the very beginning of the text
+        text = ""
         if text_node.text:
             text = text_node.text
 
         # Getting the rest
-        entity = text_node[0]
+        try:
+            entity = text_node[0]
+        except IndexError:
+            # There seems to be no events; True for test files
+            return text
 
         while entity is not None:
             text = text + entity.text + entity.tail
