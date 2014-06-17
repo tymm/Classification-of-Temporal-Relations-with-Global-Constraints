@@ -52,7 +52,6 @@ class TextStructure(unittest.TestCase):
         self.assertEqual(sentences[0], FakeSentence("Finally today, we learned that the space agency has finally taken a giant leap forward."))
         self.assertEqual(sentences[1], FakeSentence("Air Force Lieutenant Colonel Eileen Collins will be named commander of the Space Shuttle Columbia for a mission in December."))
         self.assertEqual(sentences[2], FakeSentence("Colonel Collins has been the co-pilot before, but this time she's the boss."))
-        print sentences[3].text
         self.assertEqual(sentences[3], FakeSentence("Here's ABC's Ned Potter."))
         self.assertEqual(sentences[4], FakeSentence("Even two hundred miles up in space, there has been a glass ceiling."))
         self.assertEqual(sentences[5], FakeSentence("It wasn't until twenty years after the first astronauts were chosen that NASA finally included six women, and they were all scientists, not pilots."))
@@ -61,13 +60,13 @@ class TextStructure(unittest.TestCase):
         self.assertEqual(sentences[8], FakeSentence("That was Eileen Collins, after she flew as the first ever co-pilot."))
         self.assertEqual(sentences[9], FakeSentence("Being commander is different."))
         self.assertEqual(sentences[10], FakeSentence("It means supervising the rest of the crew in training and leading them in flight."))
-        self.assertEqual(sentences[11], FakeSentence("It is, in short, the kind of managment job many American women say they've had to fight for."))
+        self.assertEqual(sentences[11], FakeSentence("It is, in short, the kind of management job many American women say they've had to fight for."))
         self.assertEqual(sentences[12], FakeSentence("In space, some say female pilots were held up until now by the lack of piloting opportunities for them in the military."))
         self.assertEqual(sentences[13], FakeSentence("Once Colonel Collins was picked as a NASA astronaut, she followed a normal progression within NASA."))
         self.assertEqual(sentences[14], FakeSentence("Nobody hurried her up."))
         self.assertEqual(sentences[15], FakeSentence("No one held her back."))
         self.assertEqual(sentences[16], FakeSentence("Many NASA watchers say female astronauts have become part of the agency's routine."))
-        self.assertEqual(sentences[17], FakeSentence("But they still have catching up to do hundred and thirty four American have flown in space, only twenty six of them women."))
+        self.assertEqual(sentences[17], FakeSentence("But they still have catching up to do two hundred and thirty four Americans have flown in space, only twenty six of them women."))
         self.assertEqual(sentences[18], FakeSentence("Ned Potter, ABC News."))
 
 class Feature(unittest.TestCase):
