@@ -79,6 +79,14 @@ class Text_structure:
         tree = etree.parse(self.filename)
         root_node = tree.getroot()
 
+        # Also look for document creation time (dct) information
+        dct_node = root_node.find("DCT")
+        dct_timex_node = dct_node[0]
+        dct_timex = self._get_entity_by_node(dct_timex_node)
+
+        self._entities_ordered.append(dct_timex)
+        self._entity_nodes_ordered.append(dct_timex_node)
+
         text_node = root_node.find("TEXT")
 
         for entity_node in text_node:
