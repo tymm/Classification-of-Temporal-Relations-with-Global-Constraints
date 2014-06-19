@@ -26,7 +26,7 @@ class Text:
 
     def find_event_by_eiid(self, eiid):
         for event in self.events:
-            if event.eiid == eiid:
+            if eiid in event.eiid:
                 return event
 
         return None
