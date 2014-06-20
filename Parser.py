@@ -158,9 +158,15 @@ class Parser:
                     e_class = event.get("class")
                     break
 
-            # Create Event object and append it to Text object
-            event_obj = Event(eid, eiid, self.text_obj, text, sentence, pos_in_sentence, e_class, tense, aspect, polarity, pos, modality)
-            self.text_obj.append_event(event_obj)
+            # Create Event object or append new eiid and append it to Text object
+            event_obj = self.text_obj.find_event_by_eid(eid)
+            if event_obj:
+                # There is already an Event object with this eid but a different eiid
+                event_obj.eiid.append(eiid)
+            else:
+                # There is no Event object yet with this eid
+                event_obj = Event(eid, eiid, self.text_obj, text, sentence, pos_in_sentence, e_class, tense, aspect, polarity, pos, modality)
+                self.text_obj.append_event(event_obj)
 
     def _create_timex_objects(self, text_node, root_node):
         for timex in text_node.iterdescendants("TIMEX3"):
