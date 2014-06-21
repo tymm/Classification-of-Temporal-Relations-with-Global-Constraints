@@ -178,6 +178,7 @@ class Parser:
             self._create_timex_object(timex)
 
     def _create_timex_object(self, timex_node):
+        # TODO: I should put this directly into parsexml/timex.py
         tid = timex_node.get("tid")
         type = timex_node.get("type")
         value = timex_node.get("value")
