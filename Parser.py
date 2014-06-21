@@ -175,9 +175,9 @@ class Parser:
         # Also looking for timex in <DCT></DCT>
         dct_node = root_node.find("DCT")
         for timex in dct_node.iterdescendants("TIMEX3"):
-            self._create_timex_object(timex)
+            self._create_timex_object(timex, dct=True)
 
-    def _create_timex_object(self, timex_node):
+    def _create_timex_object(self, timex_node, dct=False):
         # TODO: I should put this directly into parsexml/timex.py
         tid = timex_node.get("tid")
         type = timex_node.get("type")
@@ -187,7 +187,11 @@ class Parser:
         pos_in_sentence = s.get_position(timex_node)
 
         # Create Timex object and append it to Text object
-        timex_obj = Timex(tid, type, value, sentence, pos_in_sentence)
+        if dct:
+            timex_obj = Timex(tid, type, value, sentence, pos_in_sentence, True)
+        else:
+            timex_obj = Timex(tid, type, value, sentence, pos_in_sentence, False)
+
         self.text_obj.append_timex(timex_obj)
 
     def _create_relation_objects(self, root_node):
