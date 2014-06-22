@@ -4,6 +4,7 @@ import math
 class Event_distance:
     """Number of entities between two entities.
     0 if adjacent.
+    -1 if not in same sentence.
     Only measured when both entities are in the same sentence.
     """
 
