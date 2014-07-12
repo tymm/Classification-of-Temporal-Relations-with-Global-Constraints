@@ -47,3 +47,6 @@ class RelationType:
             return cls.NONE
         else:
             return cls.UNKNOWN
+
+    def __iter__(self):
+        return iter([self.BEFORE, self.IS_INCLUDED, self.INCLUDES, self.AFTER, self.ENDS, self.ENDED_BY, self.IBEFORE, self.IAFTER, self.BEGINS, self.BEGUN_BY, self.DURING, self.DURING_INV, self.SIMULTANEOUS, self.NONE, self.UNKNOWN])
