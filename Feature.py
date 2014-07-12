@@ -6,6 +6,7 @@ from feature.polarity import Polarity
 from feature.same_pos import Same_pos
 from feature.textual_order import Textual_order
 from feature.sentence_distance import Sentence_distance
+from feature.event_distance import Event_distance
 from sklearn.preprocessing import OneHotEncoder
 
 
@@ -76,4 +77,10 @@ class Feature:
         sentence_distance = Sentence_distance(self.relation)
 
         distance = sentence_distance.get_distance()
+        return [distance]
+
+    def get_event_distance(self):
+        event_distance = Event_distance(self.relation)
+
+        distance = event_distance.get_distance()
         return [distance]
