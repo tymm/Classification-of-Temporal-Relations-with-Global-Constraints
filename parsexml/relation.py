@@ -12,6 +12,12 @@ class Relation:
 
         self._check_timex()
 
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
+
+    def __hash__(self):
+        return hash(self.filename + str(self.source.__hash__()) + str(self.target.__hash__()))
+
     def get_result(self):
         return self.relation_type
 

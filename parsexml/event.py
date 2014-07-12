@@ -19,6 +19,9 @@ class Event(object):
         self.pos_xml = pos
         self.modality = modality
 
+    def __hash__(self):
+        return hash(self.parent.filename + str(self.eid) + str(self.eiid))
+
     def __str__(self):
         return u"Event Object: eid: %s eiid: %s text: %s" % (self.eid, self.eiid, self.text)
 
