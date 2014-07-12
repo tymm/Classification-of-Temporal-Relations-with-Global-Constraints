@@ -25,7 +25,7 @@ class Parser:
     def get_relations(self):
         return self.text_obj.relations
 
-    def produce_closure_relations(self):
+    def _produce_closure_relations(self):
         # Create temporal closures for BEFORE
         closure = Closure(self.text_obj, RelationType.BEFORE)
         closure_relations_before = closure.get_closure_relations()
@@ -51,7 +51,7 @@ class Parser:
         closure_relations_before = closure.get_closure_relations()
         self.text_obj.relations = self.text_obj.relations + closure_relations_before
 
-    def produce_inverse_relations(self):
+    def _produce_inverse_relations(self):
         relations = self.text_obj.relations
         inversed_relations = []
 
@@ -94,6 +94,20 @@ class Parser:
             inversed_relations.append(inverse_rel)
 
         self.text_obj.relations = self.text_obj.relations + inversed_relations
+
+    def _produce_none_relations(self):
+        relations = self.text_obj.relations
+        none_relations = []
+
+        for relation in relations:
+            pass
+
+        self.text_obj.relations = self.text_obj.relations + none_relations
+
+    def produce_relations(self):
+        self._produce_inverse_relations()
+        #self._produce_closure_relations()
+        self._produce_none_relations()
 
     def _parse(self, filename):
         """Mapping xml data to python objects."""

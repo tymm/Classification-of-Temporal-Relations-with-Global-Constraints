@@ -19,7 +19,9 @@ class Set:
             for relation in text_obj.relations:
                 if relation.is_event_event():
                     f = Feature(relation)
-                    X.append(f.get_tense() + f.get_polarity() + f.get_same_tense() + f.get_same_aspect() + f.get_same_class() + f.get_same_pos() + f.get_textual_order() + f.get_sentence_distance())
+                    #X.append(f.get_tense() + f.get_polarity() + f.get_same_tense() + f.get_same_aspect() + f.get_same_class() + f.get_same_pos() + f.get_textual_order() + f.get_sentence_distance())
+                    X.append(f.get_event_distance())
+                    print f.get_event_distance()
                     y.append(relation.get_result())
 
         return (X, y)
@@ -61,8 +63,7 @@ class Set:
     def _parse_from_file(self, file):
         # Mapping xml data to python objects
         parser = Parser(file)
-        parser.produce_inverse_relations()
-        # parser.produce_closure_relations()
+        parser.produce_relations()
 
         text_obj = parser.get_text_object()
 
