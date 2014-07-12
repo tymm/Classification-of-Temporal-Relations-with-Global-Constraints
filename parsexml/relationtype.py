@@ -13,6 +13,7 @@ class RelationType:
     DURING = 11
     DURING_INV = 12
     UNKNOWN = 13
+    NONE = 14
 
     @classmethod
     def get_id(cls, text):
@@ -42,5 +43,7 @@ class RelationType:
             return cls.DURING_INV
         elif text == "SIMULTANEOUS":
             return cls.SIMULTANEOUS
+        elif text == "NONE":
+            return cls.NONE
         else:
             return cls.UNKNOWN
