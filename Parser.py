@@ -96,18 +96,54 @@ class Parser:
         self.text_obj.relations = self.text_obj.relations + inversed_relations
 
     def _produce_none_relations(self):
+        """Produce a NONE-relation between all pairs of events which don't share a relation."""
+        print "Producing NONE-relations"
         relations = self.text_obj.relations
+        events = self.text_obj.events
         none_relations = []
 
-        for relation in relations:
-            pass
+        for source in events:
+            for target in events:
+                new_relation = Relation("NONE", self.text_obj, source, target, RelationType.NONE)
+                print new_relation
+
+                if new_relation in relations:
+                    continue
+                else:
+                    none_relations.append(new_relation)
 
         self.text_obj.relations = self.text_obj.relations + none_relations
+
+        print "Finished producing NONE-relations"
+
+
+    def _produce_all_relations(self):
+        """Producing all possible relations."""
+        print "Start creating all relations"
+        events = self.text_obj.events
+        relations = self.text_obj.relations
+        all_relations = []
+
+        for source in events:
+            for target in events:
+                for time in RelationType():
+                    new_relation = Relation("all", self.text_obj, source, target, time)
+
+                    if new_relation in relations:
+                        continue
+                    else:
+                        all_relations.append(new_relation)
+
+        print "End creating all relations"
+        return all_relations
 
     def produce_relations(self):
         self._produce_inverse_relations()
         #self._produce_closure_relations()
-        self._produce_none_relations()
+
+        # TODO: Trying out if adding NONE relations between pairs of events with no relationship helps the classifier or not
+        #self._produce_none_relations()
+        self._produce_all_relations()
 
     def _parse(self, filename):
         """Mapping xml data to python objects."""
