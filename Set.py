@@ -1,5 +1,5 @@
 import os
-from Parser import Parser
+from parsexml.text import Text
 from Feature import Feature
 from Persistence import Persistence
 
@@ -62,12 +62,9 @@ class Set:
 
     def _parse_from_file(self, file):
         # Mapping xml data to python objects
-        parser = Parser(file)
-        parser.produce_relations()
+        text = Text(file)
 
-        text_obj = parser.get_text_object()
-
-        return text_obj
+        return text
 
     def _fetch_files(self, directory):
         files = []

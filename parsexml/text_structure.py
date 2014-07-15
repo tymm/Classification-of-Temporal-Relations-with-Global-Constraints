@@ -4,9 +4,10 @@ from parsexml.fakesentence import FakeSentence
 from lxml import etree
 
 class Text_structure:
-    def __init__(self, text_obj):
-        self.text_obj = text_obj
-        self.filename = text_obj.filename
+    def __init__(self, filename, parser_obj):
+        self.filename = filename
+        self.parser_obj = parser_obj
+
         # {Sentence: [Event, Timex, ...]
         self.structure = OrderedDict()
 
@@ -67,11 +68,11 @@ class Text_structure:
 
         if eid:
             # It's an event
-            entity = self.text_obj.find_event_by_eid(eid)
+            entity = self.parser_obj.find_event_by_eid(self.parser_obj.get_events(), eid)
         else:
             # It's a timex
             tid = entity_node.get("tid")
-            entity = self.text_obj.find_timex_by_tid(tid)
+            entity = self.parser_obj.find_timex_by_tid(tid)
 
         return entity
 

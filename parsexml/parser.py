@@ -2,28 +2,41 @@ import os
 from lxml import etree
 from lxml.etree import tostring
 from itertools import chain
-from parsexml.text import Text
 from parsexml.event import Event
 from parsexml.relation import Relation
 from parsexml.sentence import Sentence
 from parsexml.timex import Timex
 from parsexml.relationtype import RelationType
+from parsexml.text_structure import Text_structure
 from helper.closure import Closure
 import re
 
 class Parser:
-    def __init__(self, corpus_file):
-        self.filename = corpus_file
-        self.text_obj = Text(self.filename)
-        self._parse(self.filename)
-        # Build entity order for text_obj
-        self.text_obj.build_text_structure()
+    def __init__(self, filename, text_obj):
+        self.filename = filename
+        self.text_obj = text_obj
+        self.text = None
+        self.events = None
+        self.timex = None
+        self.relations = None
+        self.text_structure = None
 
-    def get_text_object(self):
-        return self.text_obj
+        self._parse()
+
+    def get_text(self):
+        return self.text
+
+    def get_events(self):
+        return self.events
+
+    def get_timex(self):
+        return self.timex
 
     def get_relations(self):
-        return self.text_obj.relations
+        return self.relations
+
+    def get_text_structure(self):
+        return self.text_structure
 
     def _produce_closure_relations(self):
         # Create temporal closures for BEFORE
@@ -93,13 +106,13 @@ class Parser:
             # Adding relation
             inversed_relations.append(inverse_rel)
 
-        self.text_obj.relations = self.text_obj.relations + inversed_relations
+        self.relations = self.relations + inversed_relations
 
     def _produce_none_relations(self):
         """Produce a NONE-relation between all pairs of events which don't share a relation."""
         print "Producing NONE-relations"
-        relations = self.text_obj.relations
-        events = self.text_obj.events
+        relations = self.relations
+        events = self.events
         none_relations = []
 
         for source in events:
@@ -112,7 +125,7 @@ class Parser:
                 else:
                     none_relations.append(new_relation)
 
-        self.text_obj.relations = self.text_obj.relations + none_relations
+        self.relations = self.relations + none_relations
 
         print "Finished producing NONE-relations"
 
@@ -120,8 +133,8 @@ class Parser:
     def _produce_all_relations(self):
         """Producing all possible relations."""
         print "Start creating all relations"
-        events = self.text_obj.events
-        relations = self.text_obj.relations
+        events = self.events
+        relations = self.relations
         all_relations = []
 
         for source in events:
@@ -145,25 +158,27 @@ class Parser:
         #self._produce_none_relations()
         self._produce_all_relations()
 
-    def _parse(self, filename):
+    def _parse(self):
         """Mapping xml data to python objects."""
-        tree = etree.parse(filename)
+        tree = etree.parse(self.filename)
         root_node = tree.getroot()
 
         text_node = root_node.find("TEXT")
 
-        # Get text and pass it to Text object
-        extracted_text = self._extract_text(text_node)
-        self.text_obj.set_text(extracted_text)
+        # Get text
+        self.text = self._extract_text(text_node)
 
-        # Create Event objects and link them to the Text object
-        self._create_event_objects(text_node, root_node)
+        # Get and create Event objects
+        self.events = self._get_and_create_event_objects(text_node, root_node)
 
-        # Create Timex objects and link them to the Text object
-        self._create_timex_objects(text_node, root_node)
+        # Get and create Timex objects
+        self.timex = self._get_and_create_timex_objects(text_node, root_node)
 
         # Create Relation objects and link them
-        self._create_relation_objects(root_node)
+        self.relations = self._get_and_create_relation_objects(root_node)
+
+        # Build text structure. Must be called last.
+        self.text_structure = self._get_and_build_text_structure()
 
     def _stringify_children(self, node):
         # Transfer sub tree into string
@@ -179,7 +194,9 @@ class Parser:
         text = self._stringify_children(node)
         return text
 
-    def _create_event_objects(self, text_node, root_node):
+    def _get_and_create_event_objects(self, text_node, root_node):
+        events = []
+
         for instance in root_node.iterdescendants("MAKEINSTANCE"):
             instance_eid = instance.get("eventID")
             eiid = instance.get("eiid")
@@ -208,24 +225,37 @@ class Parser:
                     e_class = event.get("class")
                     break
 
-            # Create Event object or append new eiid and append it to Text object
-            event_obj = self.text_obj.find_event_by_eid(eid)
+            # Create Event object or append new eiid
+            event_obj = self.find_event_by_eid(events, eid)
             if event_obj:
                 # There is already an Event object with this eid but a different eiid
                 event_obj.eiid.append(eiid)
             else:
                 # There is no Event object yet with this eid
                 event_obj = Event(eid, eiid, self.text_obj, text, sentence, pos_in_sentence, e_class, tense, aspect, polarity, pos, modality)
-                self.text_obj.append_event(event_obj)
+                events.append(event_obj)
 
-    def _create_timex_objects(self, text_node, root_node):
+        return events
+
+    def find_event_by_eid(self, events, eid):
+        for event in events:
+            if event.eid == eid:
+                return event
+
+        return None
+
+    def _get_and_create_timex_objects(self, text_node, root_node):
+        timex_list = []
+
         for timex in text_node.iterdescendants("TIMEX3"):
-            self._create_timex_object(timex)
+            timex_list.append(self._create_timex_object(timex))
 
         # Also looking for timex in <DCT></DCT>
         dct_node = root_node.find("DCT")
         for timex in dct_node.iterdescendants("TIMEX3"):
-            self._create_timex_object(timex, dct=True)
+            timex_list.append(self._create_timex_object(timex, dct=True))
+
+        return timex_list
 
     def _create_timex_object(self, timex_node, dct=False):
         # TODO: I should put this directly into parsexml/timex.py
@@ -236,16 +266,18 @@ class Parser:
         sentence = s.text
         pos_in_sentence = s.get_position(timex_node)
 
-        # Create Timex object and append it to Text object
+        # Create Timex object
         if dct:
             timex_obj = Timex(tid, type, value, sentence, pos_in_sentence, True)
         else:
             timex_obj = Timex(tid, type, value, sentence, pos_in_sentence, False)
 
-        self.text_obj.append_timex(timex_obj)
+        return timex_obj
 
-    def _create_relation_objects(self, root_node):
+    def _get_and_create_relation_objects(self, root_node):
         """Must be called after _create_event_objects."""
+        relations = []
+
         for relation in root_node.iterdescendants("TLINK"):
             # Only consider event-event and event-timex relations; Ignoring timex-timex
             if not relation.get("eventInstanceID"):
@@ -271,22 +303,36 @@ class Parser:
             relation_type_id = RelationType.get_id(relation_type)
 
             # Find source event
-            source_event_obj = self.text_obj.find_event_by_eiid(source_eiid)
+            source_event_obj = self.find_event_by_eiid(self.events, source_eiid)
 
             # Find target event or target timex
             if event_event:
                 # Event-event
-                target_event_obj = self.text_obj.find_event_by_eiid(target_eiid)
+                target_event_obj = self.find_event_by_eiid(self.events, target_eiid)
                 relation_obj = Relation(lid, self.text_obj, source_event_obj, target_event_obj, relation_type_id)
             else:
                 # Event-timex
-                target_timex_obj = self.text_obj.find_timex_by_tid(target_tid)
+                target_timex_obj = self.find_timex_by_tid(target_tid)
                 relation_obj = Relation(lid, self.text_obj, source_event_obj, target_timex_obj, relation_type_id)
 
-            self.text_obj.append_relation(relation_obj)
+            relations.append(relation_obj)
 
+        return relations
 
-if __name__ == "__main__":
-    a = Parser("data/training/TE3-Silver-data/AFP_ENG_19970401.0006.tml")
-    a.produce_inverse_relations()
-    a.produce_closure_relations()
+    def find_event_by_eiid(self, events, eiid):
+        for event in events:
+            if eiid in event.eiid:
+                return event
+
+        return None
+
+    def find_timex_by_tid(self, tid):
+        for timex in self.timex:
+            if timex.tid == tid:
+                return timex
+
+        return None
+
+    def _get_and_build_text_structure(self):
+        """Must be called after all entities got appended."""
+        return Text_structure(self.filename, self)

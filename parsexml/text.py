@@ -1,28 +1,19 @@
 from lxml import etree
 from parsexml.sentence import Sentence
-from parsexml.text_structure import Text_structure
+from parsexml.parser import Parser
 
 class Text:
     def __init__(self, filename):
         self.filename = filename
-        self.text = None
-        self.events = []
-        self.timex = []
-        self.relations = []
-        self.text_structure = None
-        self.entities_order = []
 
-    def set_text(self, text):
-        self.text = text
+        # Parse text
+        parser = Parser(filename, self)
 
-    def append_event(self, event):
-        self.events.append(event)
-
-    def append_timex(self, timex):
-        self.timex.append(timex)
-
-    def append_relation(self, relation):
-        self.relations.append(relation)
+        self.text = parser.get_text()
+        self.events = parser.get_events()
+        self.timex = parser.get_timex()
+        self.relations = parser.get_relations()
+        self.text_structure = parser.get_text_structure()
 
     def find_event_by_eiid(self, eiid):
         for event in self.events:
@@ -44,9 +35,3 @@ class Text:
                 return timex
 
         return None
-
-    def build_text_structure(self):
-        """Must be called after all entities got appended."""
-        structure = Text_structure(self)
-        self.entities_order = structure.get_entities_ordered()
-        self.text_structure = structure
