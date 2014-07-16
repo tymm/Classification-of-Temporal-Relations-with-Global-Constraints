@@ -1,6 +1,5 @@
 import os
 from parsexml.text import Text
-from Feature import Feature
 from Persistence import Persistence
 
 class Set:
@@ -10,21 +9,6 @@ class Set:
         # Hols all textfile objects
         self.text_objects = []
         self._parse()
-
-    def get_classification_data_event_event(self):
-        X = []
-        y = []
-
-        for text_obj in self.text_objects:
-            for relation in text_obj.relations:
-                if relation.is_event_event():
-                    f = Feature(relation)
-                    #X.append(f.get_tense() + f.get_polarity() + f.get_same_tense() + f.get_same_aspect() + f.get_same_class() + f.get_same_pos() + f.get_textual_order() + f.get_sentence_distance())
-                    X.append(f.get_event_distance())
-                    print f.get_event_distance()
-                    y.append(relation.get_result())
-
-        return (X, y)
 
     def _parse(self):
         # Holds all corpora files

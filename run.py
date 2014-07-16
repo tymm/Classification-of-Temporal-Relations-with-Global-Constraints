@@ -1,4 +1,4 @@
-from Set import Set
+from TrainingSet import TrainingSet
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 
@@ -11,8 +11,8 @@ if __name__ == "__main__":
     else:
         print "Creating training and test set"
 
-    training = Set(load, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
-    test = Set(load, "data/test/te3-platinum/")
+    training = TrainingSet(load, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
+    test = TrainingSet(load, "data/test/te3-platinum/")
 
     if load:
         print "Done loading training and test set"
