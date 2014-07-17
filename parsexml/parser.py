@@ -129,34 +129,12 @@ class Parser:
 
         print "Finished producing NONE-relations"
 
-
-    def _produce_all_relations(self):
-        """Producing all possible relations."""
-        print "Start creating all relations"
-        events = self.events
-        relations = self.relations
-        all_relations = []
-
-        for source in events:
-            for target in events:
-                for time in RelationType():
-                    new_relation = Relation("all", self.text_obj, source, target, time)
-
-                    if new_relation in relations:
-                        continue
-                    else:
-                        all_relations.append(new_relation)
-
-        print "End creating all relations"
-        return all_relations
-
     def produce_relations(self):
         self._produce_inverse_relations()
         #self._produce_closure_relations()
 
         # TODO: Trying out if adding NONE relations between pairs of events with no relationship helps the classifier or not
         #self._produce_none_relations()
-        self._produce_all_relations()
 
     def _parse(self):
         """Mapping xml data to python objects."""

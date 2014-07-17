@@ -9,6 +9,7 @@ class Relation:
         self.target = target_obj
         self.relation_type = relation_type_id
         self._is_timex = None
+        self.feature = None
 
         self._check_timex()
 
@@ -20,6 +21,12 @@ class Relation:
 
     def get_result(self):
         return self.relation_type
+
+    def get_feature(self):
+        return self.feature
+
+    def set_feature(self, feature):
+        self.feature = feature
 
     def is_event_timex(self):
         if self._is_timex:

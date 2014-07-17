@@ -14,6 +14,9 @@ class Feature:
     def __init__(self, relation):
         self.relation = relation
 
+    def get_feature(self):
+        return self.get_sentence_distance()
+
     def get_tense(self):
         n_values = Tense.get_length()
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])

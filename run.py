@@ -1,4 +1,5 @@
 from TrainingSet import TrainingSet
+from TestSet import TestSet
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 
@@ -12,7 +13,7 @@ if __name__ == "__main__":
         print "Creating training and test set"
 
     training = TrainingSet(load, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
-    test = TrainingSet(load, "data/test/te3-platinum/")
+    test = TestSet(load, "data/test/te3-platinum/")
 
     if load:
         print "Done loading training and test set"
@@ -21,7 +22,7 @@ if __name__ == "__main__":
 
     print "Creating features"
     X_train, y_train = training.get_classification_data_event_event()
-    X_test, y_test = test.get_classification_data_event_event()
+    #X_test, y_test = test.get_classification_data_event_event()
     print "Done creating features"
 
     # Train a random forest classifier
