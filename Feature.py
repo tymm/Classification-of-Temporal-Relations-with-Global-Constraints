@@ -15,7 +15,7 @@ class Feature:
         self.relation = relation
 
     def get_feature(self):
-        return self.get_sentence_distance()
+        return [1]
 
     def get_tense(self):
         n_values = Tense.get_length()

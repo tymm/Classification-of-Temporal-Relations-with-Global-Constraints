@@ -10,6 +10,7 @@ class Relation:
         self.relation_type = relation_type_id
         self._is_timex = None
         self.feature = None
+        self.confidence_score = None
 
         self._check_timex()
 

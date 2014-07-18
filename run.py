@@ -13,7 +13,7 @@ if __name__ == "__main__":
         print "Creating training and test set"
 
     training = TrainingSet(load, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
-    test = TestSet(load, "data/test/te3-platinum/")
+    test = TestSet(load, "data/test/te3-platinum/AP_20130322.tml")
 
     if load:
         print "Done loading training and test set"
@@ -22,19 +22,15 @@ if __name__ == "__main__":
 
     print "Creating features"
     X_train, y_train = training.get_classification_data_event_event()
-    #X_test, y_test = test.get_classification_data_event_event()
     print "Done creating features"
+    print
 
     # Train a random forest classifier
     print "Train the classifier"
     rf = RandomForestClassifier(n_jobs=2, n_estimators=50)
     rf.fit(X_train, y_train)
     print "Done training the classifier"
-
-    y_predicted = rf.predict(X_test)
-
-    print "Accuracy"
-    print rf.score(X_test, y_test)
     print
-    print "F1-Score"
-    print f1_score(y_test, y_predicted)
+
+    print "Creating confidence scores in test set"
+    test.create_confidence_scores(rf)
