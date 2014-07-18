@@ -50,14 +50,20 @@ class Set:
 
         return text
 
-    def _fetch_files(self, directory):
+    def _fetch_files(self, directory_or_file):
         files = []
 
-        # Append '/' if there is no at the end of directory string
-        if not directory.endswith('/'):
-            directory = directory + '/'
+        if os.path.isfile(directory_or_file):
+            # It's a file
+            return [directory_or_file]
+        else:
+            # It's a directory
 
-        for file in os.listdir(directory):
-            files.append(directory + file)
+            # Append '/' if there is no at the end of directory string
+            if not directory_or_file.endswith('/'):
+                directory_or_file = directory_or_file + '/'
 
-        return files
+            for file in os.listdir(directory_or_file):
+                files.append(directory_or_file + file)
+
+            return files
