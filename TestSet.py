@@ -31,7 +31,6 @@ class TestSet(Set):
             for relation in text_obj.relations:
                 confidence_score = self._get_proba_of_relation(classifier, relation)
                 relation.confidence_score = confidence_score
-                print confidence_score
 
     def _get_proba_of_relation(self, classifier, relation):
         _class = relation.get_result()
@@ -53,9 +52,15 @@ class TestSet(Set):
                     self._ground_truth_events_X.append(relation)
                     self._ground_truth_events_y.append(relation.get_result())
 
-    def _find_best_set_of_relations(self):
-        # Do ILP stuff here
-        pass
+    def find_best_set_of_relations(self):
+        for text_obj in self.text_objects:
+            # Passing all possible relations
+            ilp = Constraints(text_obj.relations)
+            # And getting back the best subset ('best' in tems of the model)
+            best_set = ilp.return_best_subset()
+
+            # Set the best set of relations as the relations of text_obj
+            text_obj.relations = best_set
 
     def get_predicted_data(self):
         pass

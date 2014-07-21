@@ -27,10 +27,16 @@ if __name__ == "__main__":
 
     # Train a random forest classifier
     print "Train the classifier"
-    rf = RandomForestClassifier(n_jobs=2, n_estimators=50)
+    rf = RandomForestClassifier(n_jobs=2, n_estimators=5)
     rf.fit(X_train, y_train)
     print "Done training the classifier"
     print
 
     print "Creating confidence scores in test set"
     test.create_confidence_scores(rf)
+    print "Done creating confidence scores"
+    print
+
+    print "Searching for the best solution"
+    test.find_best_set_of_relations()
+    print "Done searching for the best solution"
