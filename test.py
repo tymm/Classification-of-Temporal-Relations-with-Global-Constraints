@@ -1,6 +1,6 @@
 import unittest
 
-from Parser import Parser
+from parsexml.text import Text
 from Feature import Feature as Features
 from parsexml.fakesentence import FakeSentence
 
@@ -8,8 +8,7 @@ class TextStructure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
-        parser_obj = Parser(filename)
-        cls.text_obj = parser_obj.get_text_object()
+        cls.text_obj = Text(filename)
 
     def test_RightOrderOfEntities(self):
         entities_ordered = self.text_obj.text_structure.get_entities_ordered()
@@ -75,8 +74,7 @@ class Feature(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
-        parser_obj = Parser(filename)
-        text_obj = parser_obj.get_text_object()
+        text_obj = Text(filename)
 
         cls.features = []
 
