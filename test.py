@@ -10,6 +10,22 @@ class TextStructure(unittest.TestCase):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
         cls.text_obj = Text(filename)
 
+    def test_GetAnEntitiesSentenceByEnitity(self):
+        entities_ordered = self.text_obj.text_structure.get_entities_ordered()
+
+        # Get sentence of event e1
+        sentence = self.text_obj.text_structure.get_sentence(entities_ordered[2])
+
+        self.assertEqual(sentence, FakeSentence("Finally today, we learned that the space agency has finally taken a giant leap forward."))
+
+    def test_GetAnEntitiesSentenceByEnitity_2(self):
+        entities_ordered = self.text_obj.text_structure.get_entities_ordered()
+
+        # Get sentence of timex t33
+        sentence = self.text_obj.text_structure.get_sentence(entities_ordered[7])
+
+        self.assertEqual(sentence, FakeSentence("Air Force Lieutenant Colonel Eileen Collins will be named commander of the Space Shuttle Columbia for a mission in December."))
+
     def test_RightOrderOfEntities(self):
         entities_ordered = self.text_obj.text_structure.get_entities_ordered()
 
