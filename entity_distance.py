@@ -1,7 +1,6 @@
-from parsexml.event import Event
 import math
 
-class Event_distance:
+class Entity_distance:
     """Number of entities between two entities.
     0 if adjacent.
     -1 if not in same sentence.
