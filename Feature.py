@@ -82,7 +82,7 @@ class Feature:
         distance = sentence_distance.get_distance()
         return [distance]
 
-    def get_event_distance(self):
+    def get_entity_distance(self):
         entity_distance = Entity_distance(self.relation)
 
         distance = entity_distance.get_distance()
