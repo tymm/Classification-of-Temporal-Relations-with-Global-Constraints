@@ -36,6 +36,16 @@ class Text_structure:
         print "----Structure end----"
         print
 
+    def get_sentence(self, entity):
+        sentences = self.structure.values()
+
+        for sentence in sentences:
+            if entity in sentence:
+                return sentence
+
+        else:
+            return None
+
     def get_sentence_distance(self, entity_one, entity_two):
         sentences = self.structure.values()
 
