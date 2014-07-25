@@ -37,10 +37,8 @@ class Text_structure:
         print
 
     def get_sentence(self, entity):
-        sentences = self.structure.values()
-
-        for sentence in sentences:
-            if entity in sentence:
+        for sentence, entities in self.structure.items():
+            if entity in entities:
                 return sentence
 
         else:
