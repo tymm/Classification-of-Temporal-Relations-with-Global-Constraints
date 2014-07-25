@@ -11,3 +11,6 @@ class Timex(object):
 
     def __str__(self):
         return u"Timex Object: tid: %s text: %s" % (self.tid, self.text)
+
+    def __hash__(self):
+        return hash(self.parent.filename + str(self.tid) + self.text)
