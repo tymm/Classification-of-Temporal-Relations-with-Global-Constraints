@@ -38,9 +38,25 @@ class Temporal_signal:
             # Lets only consider signals when source and target entity are in the same sentence
             return False
 
+    def _get_signal_position_relative_to_entity(self, entity):
+        """Must be called after get_signal(). Returns the distance in words between the signal and an entity"""
+        entity_sentence = self.text_structure.get_sentence(entity)
+
+        position_signal = entity_sentence.get_position(self.signal)
+
+        position_entity = entity_sentence.get_position(entity.text)
+
+        try:
+            return abs(position_signal-position_entity)
+        except TypeError:
+            return None
+
     def get_signal_position_relative_to_entities(self):
         """Must be called after get_signal()."""
-        pass
+        diff_source = self._get_signal_position_relative_to_entity(self.relation.source)
+        diff_target = self._get_signal_position_relative_to_entity(self.relation.target)
+
+        return diff_source, diff_target
 
     def is_at_begging_of_sentence(self):
         """Must be called after get_signal(). Returns 0 if the signal is at the beginning of a sentence and 1 otherwise."""
