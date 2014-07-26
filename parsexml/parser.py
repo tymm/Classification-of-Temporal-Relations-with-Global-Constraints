@@ -198,7 +198,7 @@ class Parser:
                     # Getting surrounding sentence
                     s = Sentence(event)
                     sentence = s.text
-                    pos_in_sentence = s.get_position(event)
+                    pos_in_sentence = s.get_position(event.text)
 
                     e_class = event.get("class")
                     break
@@ -242,7 +242,7 @@ class Parser:
         value = timex_node.get("value")
         s = Sentence(timex_node)
         sentence = s.text
-        pos_in_sentence = s.get_position(timex_node)
+        pos_in_sentence = s.get_position(timex_node.text)
 
         # Create Timex object
         if dct:

@@ -11,13 +11,13 @@ class Sentence(object):
     def __str__(self):
         return u"Sentence Object: %s" % (self.text)
 
-    def get_position(self, node):
-        """Returns the position of node.text in the sentence"""
+    def get_position(self, text):
+        """Returns the position of text in the sentence"""
         # TODO: This is a super naive version
         split = self.text.split(" ")
 
         try:
-            return split.index(node.text)
+            return split.index(text)
         except ValueError:
             return None
 
