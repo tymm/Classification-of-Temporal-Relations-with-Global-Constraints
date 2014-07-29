@@ -5,14 +5,14 @@ class TrainingSet(Set):
     def __init__(self, load=True, *corpora):
         Set.__init__(self, load, *corpora)
 
-    def get_classification_data_event_event(self):
+    def get_classification_data_event_event(self, lemma):
         X = []
         y = []
 
         for text_obj in self.text_objects:
             for relation in text_obj.relations:
                 if relation.is_event_event():
-                    f = Feature(relation)
+                    f = Feature(relation, lemma)
                     feature = f.get_feature()
                     relation.set_feature(feature)
 
