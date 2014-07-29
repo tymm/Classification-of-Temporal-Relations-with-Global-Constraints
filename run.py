@@ -3,6 +3,7 @@ from TestSet import TestSet
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 from feature.lemma import Lemma
+from feature.token import Token
 
 if __name__ == "__main__":
     # Creating xml mapping objects from scratch with "False" as first argument
@@ -18,6 +19,7 @@ if __name__ == "__main__":
 
     # Must be called before training.get_classification_data_event_event()
     lemma = Lemma(training)
+    token = Token(training)
 
     if load:
         print "Done loading training and test set"
@@ -25,7 +27,7 @@ if __name__ == "__main__":
         print "Done creating training and test set"
 
     print "Creating features"
-    X_train, y_train = training.get_classification_data_event_event(lemma)
+    X_train, y_train = training.get_classification_data_event_event(lemma, token)
     print "Done creating features"
     print
 

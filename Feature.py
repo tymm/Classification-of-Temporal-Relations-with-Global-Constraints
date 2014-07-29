@@ -11,21 +11,42 @@ from sklearn.preprocessing import OneHotEncoder
 
 
 class Feature:
-    def __init__(self, relation, lemma):
+    def __init__(self, relation, lemmas, tokens):
         self.relation = relation
-        self.lemma = lemma
+        self.lemmas = lemmas
+        self.tokens = tokens
 
     def get_feature(self):
-        return self.get_lemma()
+        return self.get_token()
+
+    def get_token(self):
+        n_values = self.tokens.get_length()
+        # +1 for the unkown value when the token is not known
+        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1])
+        enc.fit([n_values, n_values])
+
+        source_index = self.tokens.get_index(self.relation.source.text)
+        target_index = self.tokens.get_index(self.relation.target.text)
+
+        if source_index or target_index:
+            print source_index, target_index
+
+        # If the token is unknown, set the index to n_values as the "unknown" value
+        if not source_index:
+            source_index = n_values
+        if not target_index:
+            target_index = n_values
+
+        feature = enc.transform([[source_index, target_index]]).toarray()[0]
 
     def get_lemma(self):
-        n_values = self.lemma.get_length()
+        n_values = self.lemmas.get_length()
         # +1 for the unkown value when the lemma is not known
         enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1])
         enc.fit([n_values, n_values])
 
-        source_index = self.lemma.get_index(self.relation.source.text)
-        target_index = self.lemma.get_index(self.relation.target.text)
+        source_index = self.lemmas.get_index(self.relation.source.text)
+        target_index = self.lemmas.get_index(self.relation.target.text)
 
         if source_index or target_index:
             print source_index, target_index
