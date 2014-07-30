@@ -9,6 +9,7 @@ class StanfordNLP:
     def parse(self, text):
         return json.loads(self.server.parse(text))
 
+"""
 nlp = StanfordNLP()
 result = nlp.parse("Hello world!  It is so beautiful.")
 pprint(result)
@@ -16,3 +17,4 @@ pprint(result)
 from nltk.tree import Tree
 tree = Tree.parse(result['sentences'][0]['parsetree'])
 pprint(tree)
+"""
