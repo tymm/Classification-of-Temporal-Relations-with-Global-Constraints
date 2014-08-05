@@ -8,16 +8,18 @@ from feature.textual_order import Textual_order
 from feature.sentence_distance import Sentence_distance
 from feature.entity_distance import Entity_distance
 from sklearn.preprocessing import OneHotEncoder
-
+from feature.dependency import Dependency
 
 class Feature:
     def __init__(self, relation, lemmas, tokens):
         self.relation = relation
         self.lemmas = lemmas
         self.tokens = tokens
+        self.dependency = Dependency(self.relation)
 
     def get_feature(self):
-        return self.get_token()
+        feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
+        return feature
 
     def get_token(self):
         n_values = self.tokens.get_length()
@@ -130,3 +132,59 @@ class Feature:
 
         distance = entity_distance.get_distance()
         return [distance]
+
+    def get_dependency_type(self):
+        n_values = len(self.dependency.dependency_types)
+
+        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0])
+        enc.fit([n_values])
+
+        value = self.dependency.get_dependency_type()
+        if value is None:
+            value = n_values
+
+        feature = enc.transform([[value]]).toarray()[0]
+        return feature.tolist()
+
+    def get_dependency_order(self):
+        # 0: Governor after Dependent, 1: Governor before Dependent, 2: Governor at same position as Dependent, None: Entities not in same sentence
+        n_values = 4
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
+        enc.fit([n_values-1])
+
+        value = self.dependency.get_dependency_order()
+        if not value:
+            value = 3
+
+        feature = enc.transform([[value]]).toarray()[0]
+        return feature.tolist()
+
+    def get_dependency_is_root(self):
+        # Describes whether either the source or target entity is root or not
+        is_source_root = self.dependency.is_source_root()
+        is_target_root = self.dependency.is_target_root()
+
+        if is_source_root is None:
+            # The two entities are not in the same sentence
+            value_source = 2
+        elif is_source_root == True:
+            value_source = 1
+        elif is_source_root == False:
+            value_source = 0
+
+        if is_target_root is None:
+            # The two entities are not in the same sentence
+            value_target = 2
+        elif is_target_root == True:
+            value_target = 1
+        elif is_target_root == False:
+            value_target = 0
+
+        n_values = 3
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0, 1])
+        enc.fit([n_values-1, n_values-1])
+
+        feature = enc.transform([[value_source, value_target]]).toarray()[0]
+        return feature.tolist()
