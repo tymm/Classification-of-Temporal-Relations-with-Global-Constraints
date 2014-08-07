@@ -7,10 +7,58 @@ class Duration:
         self.durations = ["seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"]
 
     def get_event_duration(self, event):
-        return self._get_most_likely_duration(event)
+        return self._get_most_likely_duration(event.text)
 
     def get_timex_duration(self, timex):
-        pass
+        value = timex.value
+        type = timex.type
+
+        # Matches for stuff like: "2012", "1988", ...
+        if re.match(r"^\d\d\d\d$", value):
+            return self.durations.index("years")
+
+        # Matches for stuff like "PXD" or "P1D"
+        if re.match(r"^P.D$"):
+            return self.durations.index("days")
+
+        # Matches for stuff like "PXM" or "P1M"
+        if re.match(r"^P.M$"):
+            return self.durations.index("months")
+
+        # Matches for stuff like "PXW" or "P1W"
+        if re.match(r"^P.W$"):
+            return self.durations.index("weeks")
+
+        # Matches for stuff like "PXY" or "P1Y"
+        if re.match(r"^P.Y$"):
+            return self.durations.index("years")
+
+        # Refers to "now"
+        if value == "PRESENT_REF":
+            return self.durations.index("sendonds")
+
+        # Matches for stuff like "1999-02-06T06:22"
+        if re.match(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d$", value):
+            return self.durations.index("seconds")
+
+        # Matches for stuff like "2000-03-26TNI" which means Tuesday? Night
+        if re.match(r"^\d\d\d\d-\d\d-\d\dT[A-Z][A-Z]$", value):
+            return self.durations.index("hours")
+
+        # Matches for stuff like "2012-W11"
+        if re.match(r"^\d\d\d\d-W\d*$", value):
+            return self.durations.index("weeks")
+
+        # Matches for stuff like "2012-04-04" or "1998-10-XX"
+        if re.match(r"^\d\d\d\d-\d\d-..$", value):
+            return self.durations.index("days")
+
+        # Matches for stuff like "2012-04"
+        if re.match(r"^\d\d\d\d-\d\d$", value):
+            return self.durations.index("months")
+
+        # TODO: This should not happen since it's easy to find all rules. Check if this is ever the case
+        return None
 
     def get_length(self):
         return len(self.durations)
