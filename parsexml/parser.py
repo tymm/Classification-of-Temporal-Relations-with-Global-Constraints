@@ -240,15 +240,16 @@ class Parser:
         tid = timex_node.get("tid")
         type = timex_node.get("type")
         value = timex_node.get("value")
+        text = timex_node.text
         s = Sentence(timex_node)
         sentence = s.text
         pos_in_sentence = s.get_position(timex_node.text)
 
         # Create Timex object
         if dct:
-            timex_obj = Timex(tid, type, value, sentence, pos_in_sentence, True)
+            timex_obj = Timex(tid, type, value, text, sentence, pos_in_sentence, True)
         else:
-            timex_obj = Timex(tid, type, value, sentence, pos_in_sentence, False)
+            timex_obj = Timex(tid, type, value, text, sentence, pos_in_sentence, False)
 
         return timex_obj
 

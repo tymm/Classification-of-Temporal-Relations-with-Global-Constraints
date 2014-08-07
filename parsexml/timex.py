@@ -1,9 +1,10 @@
 from helper.tagger import StanfordNLP
 
 class Timex(object):
-    def __init__(self, tid, type, text, sentence, position_in_sentence, is_dct):
+    def __init__(self, tid, type, value, text, sentence, position_in_sentence, is_dct):
         self.tid = tid
         self.type = type
+        self.value = value
         self.text = text
         self.sentence = sentence
         self.position_in_sentence = position_in_sentence
