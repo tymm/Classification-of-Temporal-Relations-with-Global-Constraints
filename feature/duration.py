@@ -8,7 +8,7 @@ class Duration:
         self.FILE = "event.lexicon.distributions"
         self.durations = ["seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"]
 
-    def _get_duration(self, entity):
+    def get_duration(self, entity):
         if type(entity) is Event:
             return self._get_event_duration(entity)
         elif type(entity) is Timex:
