@@ -6,6 +6,15 @@ class Duration:
         self.FILE = "event.lexicon.distributions"
         self.durations = ["seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"]
 
+    def get_event_duration(self, event):
+        return self._get_most_likely_duration(event)
+
+    def get_timex_duration(self, timex):
+        pass
+
+    def get_length(self):
+        return len(self.durations)
+
     def _get_most_likely_duration(self, verb, obj=None):
         infinitive = self._get_infinitive(verb)
 
@@ -15,7 +24,7 @@ class Duration:
                 if infinitive.lower() in line and obj.lower() in line:
                     # We found the line we are searching for
                     index = self._get_duration_from_line(line)
-                    return self.durations[index]
+                    return index
 
         else:
             # Searching only for verb
@@ -23,7 +32,7 @@ class Duration:
                 if infinitive.lower() in line and "OBJ" not in line:
                     # We found the line which only has the verb and no object
                     index = self._get_duration_from_line(line)
-                    return self.durations[index]
+                    return index
 
         return None
 
