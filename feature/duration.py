@@ -1,15 +1,23 @@
 import re
 from nltk.stem.wordnet import WordNetLemmatizer
+from parse.event import Event
+from parse.timex import Timex
 
 class Duration:
     def __init__(self):
         self.FILE = "event.lexicon.distributions"
         self.durations = ["seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"]
 
-    def get_event_duration(self, event):
+    def _get_duration(self, entity):
+        if type(entity) is Event:
+            return self._get_event_duration(entity)
+        elif type(entity) is Timex:
+            return self._get_timex_duration(entity)
+
+    def _get_event_duration(self, event):
         return self._get_most_likely_duration(event.text)
 
-    def get_timex_duration(self, timex):
+    def _get_timex_duration(self, timex):
         value = timex.value
         type = timex.type
 
