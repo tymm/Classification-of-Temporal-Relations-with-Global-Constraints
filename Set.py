@@ -10,6 +10,23 @@ class Set:
         self.text_objects = []
         self._parse()
 
+        self._event_event_rels = []
+        self._event_timex_rels = []
+
+        self._extract_relations()
+
+    def _extract_relations(self):
+        for text_obj in self.text_objects:
+            for relation in text_obj.relations:
+                if relation.is_event_event():
+                    self._event_event_rels.append(relation)
+                elif relation.is_event_timex():
+                    self._event_timex_rels.append(relation)
+
+    def _print_process(self, position, length):
+        sys.stdout.write("\r%d%%" % int(position/length))
+        sys.stdout.flush()
+
     def _parse(self):
         # Holds all corpora files
         files = []
