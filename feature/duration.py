@@ -1,7 +1,7 @@
 import re
 from nltk.stem.wordnet import WordNetLemmatizer
-from parse.event import Event
-from parse.timex import Timex
+from parsexml.event import Event
+from parsexml.timex import Timex
 
 class Duration:
     def __init__(self):
