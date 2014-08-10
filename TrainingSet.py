@@ -9,7 +9,9 @@ class TrainingSet(Set):
         X = []
         y = []
 
-        for relation in self._event_event_rels:
+        length = len(self._event_event_rels)
+
+        for i, relation in enumerate(self._event_event_rels):
             f = Feature(relation, lemma, token)
             feature = f.get_feature()
             relation.set_feature(feature)
@@ -17,13 +19,19 @@ class TrainingSet(Set):
             X.append(feature)
             y.append(relation.get_result())
 
+            # Print progress
+            self._print_progress(i, length)
+
+        print
         return (X, y)
 
     def get_classification_data_event_timex(self, lemma, token):
         X = []
         y = []
 
-        for relation in self._event_timex_rels:
+        length = len(self._event_timex_rels)
+
+        for i, relation in enumerate(self._event_timex_rels):
             f = Feature(relation, lemma, token)
             feature = f.get_feature()
             relation.set_feature(feature)
@@ -31,4 +39,8 @@ class TrainingSet(Set):
             X.append(feature)
             y.append(relation.get_result())
 
+            # Print progress
+            self._print_progress(i, length)
+
+        print
         return (X, y)

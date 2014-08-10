@@ -23,13 +23,19 @@ class TestSet(Set):
     def _get_feature_data(self, relations, lemma, token):
         features = []
 
-        for relation in relations:
+        length = len(relations)
+
+        for i, relation in enumerate(relations):
             f = Feature(relation, lemma, token)
             feature = f.get_feature()
             relation.set_feature(feature)
 
             features.append(feature)
 
+            # Print progress
+            self._print_progress(i, length)
+
+        print
         return features
 
     def _extract_classes(self, relations):

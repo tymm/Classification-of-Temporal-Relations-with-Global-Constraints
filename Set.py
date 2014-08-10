@@ -1,6 +1,7 @@
 import os
 from parsexml.text import Text
 from Persistence import Persistence
+import sys
 
 class Set:
     def __init__(self, load=True, *corpora):
@@ -23,8 +24,8 @@ class Set:
                 elif relation.is_event_timex():
                     self._event_timex_rels.append(relation)
 
-    def _print_process(self, position, length):
-        sys.stdout.write("\r%d%%" % int(position/length))
+    def _print_progress(self, position, length):
+        sys.stdout.write("\r%d%%" % int(position*100/length))
         sys.stdout.flush()
 
     def _parse(self):
