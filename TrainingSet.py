@@ -9,15 +9,13 @@ class TrainingSet(Set):
         X = []
         y = []
 
-        for text_obj in self.text_objects:
-            for relation in text_obj.relations:
-                if relation.is_event_event():
-                    f = Feature(relation, lemma, token)
-                    feature = f.get_feature()
-                    relation.set_feature(feature)
+        for relation in self._event_event_rels:
+            f = Feature(relation, lemma, token)
+            feature = f.get_feature()
+            relation.set_feature(feature)
 
-                    X.append(feature)
-                    y.append(relation.get_result())
+            X.append(feature)
+            y.append(relation.get_result())
 
         return (X, y)
 
@@ -25,14 +23,12 @@ class TrainingSet(Set):
         X = []
         y = []
 
-        for text_obj in self.text_objects:
-            for relation in text_obj.relations:
-                if relation.is_event_timex():
-                    f = Feature(relation, lemma, token)
-                    feature = f.get_feature()
-                    relation.set_feature(feature)
+        for relation in self._event_timex_rels:
+            f = Feature(relation, lemma, token)
+            feature = f.get_feature()
+            relation.set_feature(feature)
 
-                    X.append(feature)
-                    y.append(relation.get_result())
+            X.append(feature)
+            y.append(relation.get_result())
 
         return (X, y)
