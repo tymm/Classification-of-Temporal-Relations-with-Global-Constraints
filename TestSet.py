@@ -6,61 +6,60 @@ class TestSet(Set):
     def __init__(self, load=True, *corpora):
         Set.__init__(self, load, *corpora)
 
-        self._ground_truth_events_X = []
-        self._ground_truth_events_y = []
+        self._ground_truth_event_event_rels = []
+
+        self._ground_truth_event_timex_rels = []
+
         self._set_ground_truth_data()
 
-        # Deleting all relations because we don't need them since we create all possible relations anyway
-        self._delete_all_exisiting_relations()
-        # Creating all possible relations
-        self._create_all_relations_and_features()
+    def classify_existing_event_event_relations(self, classifier, lemma, token):
+        features = self._get_feature_data(self._ground_truth_event_event_rels, lemma, token)
+        y_predicted = classifier.predict(features)
+        y_truth = self._extract_classes(self._ground_truth_event_event_rels)
 
-    def _delete_all_exisiting_relations(self):
-        for text_obj in self.text_objects:
-            text_obj.relations = []
+        return self._evaluation(y_predicted, y_truth)
 
-    def _create_all_relations_and_features(self):
-        """Creating all possible relations between all entities in all text objects of this set."""
-        # Creating all possible relations and their features
-        for text_obj in self.text_objects:
-            text_obj.create_all_relations_and_features()
+    def classify_existing_event_timex_relations(self, classifier, lemma, token):
+        features = self._get_feature_data(self._ground_truth_event_timex_rels, lemma, token)
+        y_predicted = classifier.predict(features)
+        y_truth = self._extract_classes(self._ground_truth_event_timex_rels)
 
-    def create_confidence_scores(self, classifier):
-        """Must be called after self._create_all_relations_and_features()."""
-        for text_obj in self.text_objects:
-            for relation in text_obj.relations:
-                confidence_score = self._get_proba_of_relation(classifier, relation)
-                relation.confidence_score = confidence_score
+        return self._evaluation(y_predicted, y_truth)
 
-    def _get_proba_of_relation(self, classifier, relation):
-        _class = relation.get_result()
-        index = numpy.where(classifier.classes_==_class)
+    def _get_feature_data(self, relations, lemma, token):
+        features = []
 
-        all_probas = classifier.predict_proba(relation.get_feature())
-        try:
-            # Return the probability of the class the relation has
-            return all_probas[0][index][0]
-        except IndexError:
-            # There was no sample of this class in the training data
-            # Return 0 as confidence score
-            return 0.0
+        for relation in relations:
+            f = Feature(relation, lemma, token)
+            feature = f.get_feature()
+            relation.set_feature(feature)
+
+            features.append(feature)
+
+        return features
+
+    def _extract_classes(self, relations):
+        y = []
+
+        for relation in relations:
+            y.append(relation.get_result())
+
+        return y
 
     def _set_ground_truth_data(self):
         for text_obj in self.text_objects:
             for relation in text_obj.relations:
                 if relation.is_event_event():
-                    self._ground_truth_events_X.append(relation)
-                    self._ground_truth_events_y.append(relation.get_result())
+                    self._ground_truth_event_event_rels.append(relation)
+                elif relation.is_event_timex():
+                    self._ground_truth_event_timex_rels.append(relation)
 
-    def find_best_set_of_relations(self):
-        for text_obj in self.text_objects:
-            # Passing all possible relations
-            ilp = Constraints(text_obj.relations)
-            # And getting back the best subset ('best' in tems of the model)
-            best_set = ilp.return_best_subset()
+    def _evaluation(self, predicted, truth):
+        true_pos = 0
 
-            # Set the best set of relations as the relations of text_obj
-            text_obj.relations = best_set
+        for i, p in enumerate(predicted):
+            if p == truth[i]:
+                true_pos += 1
 
-    def get_predicted_data(self):
-        pass
+        return true_pos / len(predicted)
+

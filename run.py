@@ -15,7 +15,7 @@ if __name__ == "__main__":
         print "Creating training and test set"
 
     training = TrainingSet(load, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
-    #test = TestSet(load, "data/test/te3-platinum/AP_20130322.tml")
+    test = TestSet(load, "data/test/te3-platinum/AP_20130322.tml")
 
     # Must be called before training.get_classification_data_event_event()
     lemma = Lemma(training)
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     else:
         print "Done creating training and test set"
 
-    print "Creating features"
+    print "Creating features for the event-event classification task"
     X_train, y_train = training.get_classification_data_event_event(lemma, token)
     print "Done creating features"
     print
@@ -38,11 +38,5 @@ if __name__ == "__main__":
     print "Done training the classifier"
     print
 
-    print "Creating confidence scores in test set"
-    test.create_confidence_scores(rf)
-    print "Done creating confidence scores"
-    print
-
-    print "Searching for the best solution"
-    test.find_best_set_of_relations()
-    print "Done searching for the best solution"
+    evaluation = test.classify_existing_relations(rf)
+    print evaluation
