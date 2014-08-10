@@ -20,3 +20,19 @@ class TrainingSet(Set):
                     y.append(relation.get_result())
 
         return (X, y)
+
+    def get_classification_data_event_timex(self, lemma, token):
+        X = []
+        y = []
+
+        for text_obj in self.text_objects:
+            for relation in text_obj.relations:
+                if relation.is_event_timex():
+                    f = Feature(relation, lemma, token)
+                    feature = f.get_feature()
+                    relation.set_feature(feature)
+
+                    X.append(feature)
+                    y.append(relation.get_result())
+
+        return (X, y)
