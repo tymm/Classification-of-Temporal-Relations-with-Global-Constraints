@@ -25,7 +25,7 @@ class Set:
                     self._event_timex_rels.append(relation)
 
     def _print_progress(self, position, length):
-        sys.stdout.write("\r%d%%" % int(position*100/length))
+        sys.stdout.write("\r%d%%" % int(position*100/(length - 1)))
         sys.stdout.flush()
 
     def _parse(self):
