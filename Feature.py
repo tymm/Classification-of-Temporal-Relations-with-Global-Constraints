@@ -14,12 +14,14 @@ from feature.duration import Duration
 class Feature:
     def __init__(self, relation, lemmas, tokens):
         self.relation = relation
+
         self.lemmas = lemmas
         self.tokens = tokens
-        self.dependency = Dependency(self.relation)
+        #self.dependency = Dependency(self.relation)
 
     def get_feature(self):
-        feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
+        #feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
+        feature = self.get_lemma() + self.get_token()
         return feature
 
     def get_duration(self):
@@ -70,9 +72,6 @@ class Feature:
         source_index = self.tokens.get_index(self.relation.source.text)
         target_index = self.tokens.get_index(self.relation.target.text)
 
-        if source_index or target_index:
-            print source_index, target_index
-
         # If the token is unknown, set the index to n_values as the "unknown" value
         if not source_index:
             source_index = n_values
@@ -80,6 +79,7 @@ class Feature:
             target_index = n_values
 
         feature = enc.transform([[source_index, target_index]]).toarray()[0]
+        return feature.tolist()
 
     def get_lemma(self):
         n_values = self.lemmas.get_length()
@@ -89,9 +89,6 @@ class Feature:
 
         source_index = self.lemmas.get_index(self.relation.source.text)
         target_index = self.lemmas.get_index(self.relation.target.text)
-
-        if source_index or target_index:
-            print source_index, target_index
 
         # If the lemma is unknown, set the index to n_values as the "unknown" value
         if not source_index:
