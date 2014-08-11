@@ -24,6 +24,7 @@ class Lemma:
         # Getting all lemmas
         for text_obj in training_set.text_objects:
             for relation in text_obj.relations:
+                # TODO: Does it make sense to not use Timex?
                 if type(relation.source) == Event:
                     lemmas.add(self._get_lemma(relation.source.text))
                 if type(relation.target) == Event:
