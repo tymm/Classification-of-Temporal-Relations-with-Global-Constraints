@@ -1,5 +1,6 @@
 from helper.stanfordnlp.client import StanfordNLP
 from nltk import word_tokenize
+from helper.stanfordnlp.jsonrpc import RPCTransportError
 
 class Dependency:
     def __init__(self, relation):
@@ -9,14 +10,21 @@ class Dependency:
         self.tree = None
 
         # TODO: Thats probably not all
-        self.dependency_types = ["conj_or", "prep_into", "prep_in", "prepc_amid", "partmod", "parataxis", "prepc_after", "prep_on", "prep_at", "prep_during", "ccomp", "xcomp", "nsubj", "det", "dobj", "conj_and", "advmod", "dep", "num", "prep_for", "advcl"]
+        self.dependency_types = ["prepc_in_addition_to", "prepc_upon", "prep_upon", "prep_through", "cop", "auxpass", "prepc_such_as", "iobj", "csubjpass", "prepc_apart_from", "prepc_toward", "prep_that", "prep_besides", "prepc_besides", "prep_behind", "prep_between", "prepc_unlike", "prep_until", "prep_along_with", "prep_out_of", "prep_despite", "prepc_out", "conj", "pcomp", "prepc_about", "prep_in_case_of", "prepc_instead_of", "prep_instead_of", "prep_away_from", "prepc_among", "prep_including", "prepc_into", "prep_within", "npadvmod", "prepc_despite", "prep", "prep_prior_to", "prep_amid", "prepc_against", "prep_without", "prepc_from", "prep_between", "prepc_to", "prep_amidst", "prep_throughout", "prep_from", "nn", "prepc_of", "prep_to", "prep_against", "prep_by", "rcmod", "pobj", "prepc_in", "infmod", "prepc_during", "prepc_without", "prep_pending", "prep_due_to", "prepc_since", "prep_since", "prepc_around", "conj_nor", "prep_under", "prep_following", "nsubjpass", "prep_as", "nsubjpass", "prepc_on", "poss", "prep_over", "prepc_at", "prepc_while", "prepc_with", "csubj", "prepc_as", "acomp", "xsubj", "csubj", "agent", "prep_of", "prep_before", "prepc_by", "prepc_for", "prepc_on", "aux", "tmod", "prep_about", "attr", "prep_off", "prepc_over", "prepc_at", "prep_ahead_of", "prepc_before", "prep_after", "purpcl", "conj_only", "conj_but", "prep_with", "amod", "conj_or", "prep_into", "prep_in", "prepc_amid", "partmod", "parataxis", "prepc_after", "prep_on", "prep_at", "prep_during", "ccomp", "xcomp", "nsubj", "det", "dobj", "conj_and", "advmod", "dep", "num", "prep_for", "advcl"]
 
         # These features only make sense when both entities are in the same sentence
         if self.relation.target.sentence == self.relation.source.sentence:
             self.sentence = self.relation.target.sentence
             nlp = StanfordNLP()
-            self.tree = nlp.parse(unicode(self.sentence))
-            print self.sentence
+
+            b = True
+            while b:
+                b = False
+                try:
+                    self.tree = nlp.parse(unicode(self.sentence))
+                except RPCTransportError:
+                    print "RPCTransportError"
+                    b = True
 
     def get_dependency_type(self):
         if self.tree:
@@ -33,7 +41,11 @@ class Dependency:
 
                 if (a == self.source.text or a == self.target.text) and (b == self.source.text or b == self.target.text):
                     # Return index of dependency relation type
-                    return self.dependency_types.index(type)
+                    try:
+                        return self.dependency_types.index(type)
+                    except ValueError:
+                        print type
+                        return 0
             else:
                 return None
 
@@ -104,22 +116,27 @@ class Dependency:
                     governor_text = entity_text
                     break
 
-            if governor_text == self.source.text:
-                # Source is the governor - let's take a look where it is in the sentence
-                governor_index = sentence_tokens.index(governor_text)
-                is_source_governor = True
+            try:
+                if governor_text == self.source.text:
+                    # Source is the governor - let's take a look where it is in the sentence
+                    governor_index = sentence_tokens.index(governor_text)
+                    is_source_governor = True
 
-            elif governor_text == self.target.text:
-                # Target is the governor - let's take a look where it is in the sentence
-                governor_index = sentence_tokens.index(governor_text)
-                is_target_governor = True
+                elif governor_text == self.target.text:
+                    # Target is the governor - let's take a look where it is in the sentence
+                    governor_index = sentence_tokens.index(governor_text)
+                    is_target_governor = True
 
-            if is_source_governor:
-                # Find the position of target
-                dependent_index = sentence_tokens.index(self.target.text)
-            elif is_target_governor:
-                # Find the position of source
-                dependent_index = sentence_tokens.index(self.source.text)
+                if is_source_governor:
+                    # Find the position of target
+                    dependent_index = sentence_tokens.index(self.target.text)
+                elif is_target_governor:
+                    # Find the position of source
+                    dependent_index = sentence_tokens.index(self.source.text)
+
+            except ValueError:
+                # TODO: This shouldn't happen - It does though
+                return None
 
             if governor_index > dependent_index:
                 return 0

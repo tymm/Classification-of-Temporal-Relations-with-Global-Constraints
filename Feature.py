@@ -9,6 +9,7 @@ from feature.sentence_distance import Sentence_distance
 from feature.entity_distance import Entity_distance
 from sklearn.preprocessing import OneHotEncoder
 from feature.dependency import Dependency
+from feature.duration import Duration
 
 class Feature:
     def __init__(self, relation, lemmas, tokens):
@@ -20,6 +21,45 @@ class Feature:
     def get_feature(self):
         feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
         return feature
+
+    def get_duration(self):
+        duration = Duration()
+
+        # +1 for NONE
+        n_values = duration.get_length() + 1
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc.fit([n_values, n_values])
+
+        # TODO: If entity is noun, use governing verb instead of noun here
+        duration_source = duration.get_duration(self.relation.source)
+        if duration_source is None:
+            duration_source = n_values - 1
+
+        duration_target = duration.get_duration(self.relation.target)
+        if duration_target is None:
+            duration_target = n_values - 1
+
+        feature = enc.transform([[duration_source, duration_target]]).toarray()[0]
+        return feature
+
+    def get_duration_difference(self):
+        duration = Duration()
+
+        # Values: same, less, more, none
+        n_values = 4
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
+        enc.fit([n_values])
+
+        # TODO: If entity is noun, use governing verb instead of noun here
+        duration_source = duration.get_duration(self.relation.source)
+        duration_target = duration.get_duration(self.relation.target)
+
+        if duration_source is None or duration_target is None:
+            feature = enc.transform([[3]]).toarray()[0]
+        elif duration_source == duration_target:
+            pass
 
     def get_token(self):
         n_values = self.tokens.get_length()
