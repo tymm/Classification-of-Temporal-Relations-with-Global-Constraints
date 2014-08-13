@@ -38,6 +38,9 @@ class Parser:
     def get_text_structure(self):
         return self.text_structure
 
+    def get_entities_order(self):
+        return self.text_structure.get_entities_ordered()
+
     def _produce_closure_relations(self):
         # Create temporal closures for BEFORE
         closure = Closure(self.text_obj, RelationType.BEFORE)

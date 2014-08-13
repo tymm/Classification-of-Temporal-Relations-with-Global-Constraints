@@ -17,6 +17,7 @@ class Text:
         self.timex = parser.get_timex()
         self.relations = parser.get_relations()
         self.text_structure = parser.get_text_structure()
+        self.entities_order = parser.get_entities_order()
 
     def find_event_by_eiid(self, eiid):
         for event in self.events:
