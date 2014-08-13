@@ -10,6 +10,8 @@ from feature.entity_distance import Entity_distance
 from sklearn.preprocessing import OneHotEncoder
 from feature.dependency import Dependency
 from feature.duration import Duration
+from feature.event_class import Event_class
+import scipy
 
 class Feature:
     def __init__(self, relation, lemmas, tokens):
@@ -17,10 +19,14 @@ class Feature:
 
         self.lemmas = lemmas
         self.tokens = tokens
-        self.dependency = Dependency(self.relation)
+        #self.dependency = Dependency(self.relation)
 
     def get_feature(self):
-        feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
+        #feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
+
+        # All features where no dependency information is needed
+        # feature = self.get_textual_order() + self.get_sentence_distance() + self.get_entity_distance() + self.get_class() + self.get_polarity() + self.get_same_class() + self.get_same_polarity() + self.get_duration() + self.get_duration_difference()
+        feature = self.get_event_class()
         return feature
 
     def get_duration(self):
@@ -106,6 +112,16 @@ class Feature:
         tense = Tense(self.relation)
 
         feature = enc.transform([[tense.source, tense.target]]).toarray()[0]
+        return feature.tolist()
+
+    def get_event_class(self):
+        event_class = Event_class(self.relation)
+
+        n_values = event_class.get_length()
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc.fit([n_values-1, n_values-1])
+
+        feature = enc.transform([[event_class.get_index_source(), event_class.get_index_target()]]).toarray()[0]
         return feature.tolist()
 
     def get_polarity(self):
