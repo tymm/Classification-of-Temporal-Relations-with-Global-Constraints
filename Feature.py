@@ -36,7 +36,7 @@ class Feature:
         n_values = duration.get_length() + 1
 
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
-        enc.fit([n_values, n_values])
+        enc.fit([n_values-1, n_values-1])
 
         # TODO: If entity is noun, use governing verb instead of noun here
         duration_source = duration.get_duration(self.relation.source)
@@ -57,7 +57,7 @@ class Feature:
         n_values = 4
 
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
-        enc.fit([n_values])
+        enc.fit([n_values-1])
 
         # TODO: If entity is noun, use governing verb instead of noun here
         duration_source = duration.get_duration(self.relation.source)
@@ -185,12 +185,14 @@ class Feature:
         sentence_distance = Sentence_distance(self.relation)
 
         distance = sentence_distance.get_distance()
+        # TODO: Make categoral
         return [distance]
 
     def get_entity_distance(self):
         entity_distance = Entity_distance(self.relation)
 
         distance = entity_distance.get_distance()
+        # TODO: Make categoral
         return [distance]
 
     def get_dependency_type(self):
