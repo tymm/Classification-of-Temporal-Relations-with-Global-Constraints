@@ -25,8 +25,8 @@ class Feature:
         #feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
 
         # All features where no dependency information is needed
-        # feature = self.get_textual_order() + self.get_sentence_distance() + self.get_entity_distance() + self.get_class() + self.get_polarity() + self.get_same_class() + self.get_same_polarity() + self.get_duration() + self.get_duration_difference()
-        feature = self.get_event_class()
+        feature = self.get_textual_order() + self.get_sentence_distance() + self.get_entity_distance() + self.get_event_class() + self.get_polarity() + self.get_same_class() + self.get_same_polarity() + self.get_duration() + self.get_duration_difference()
+        # feature = self.get_event_class()
         return feature
 
     def get_duration(self):
@@ -132,6 +132,14 @@ class Feature:
 
         feature = enc.transform([[polarity.source, polarity.target]]).toarray()[0]
         return feature.tolist()
+
+    def get_same_polarity(self):
+        polarity = Polarity(self.relation)
+
+        if polarity.target == polarity.source:
+            return [0]
+        else:
+            return [1]
 
     def get_same_tense(self):
         same_tense = Same_tense(self.relation)
