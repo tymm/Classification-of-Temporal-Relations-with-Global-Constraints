@@ -17,11 +17,10 @@ class Feature:
 
         self.lemmas = lemmas
         self.tokens = tokens
-        #self.dependency = Dependency(self.relation)
+        self.dependency = Dependency(self.relation)
 
     def get_feature(self):
-        #feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
-        feature = self.get_lemma() + self.get_token()
+        feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
         return feature
 
     def get_duration(self):

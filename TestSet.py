@@ -6,14 +6,14 @@ class TestSet(Set):
     def __init__(self, load=True, *corpora):
         Set.__init__(self, load, *corpora)
 
-    def classify_existing_event_event_relations(self, classifier, lemma, token):
+    def classify_existing_event_event_relations(self, classifier, lemma=None, token=None):
         features = self._get_feature_data(self._event_event_rels, lemma, token)
         y_predicted = classifier.predict(features)
         y_truth = self._extract_classes(self._event_event_rels)
 
         return self._evaluation(y_predicted, y_truth)
 
-    def classify_existing_event_timex_relations(self, classifier, lemma, token):
+    def classify_existing_event_timex_relations(self, classifier, lemma=None, token=None):
         features = self._get_feature_data(self._event_timex_rels, lemma, token)
         y_predicted = classifier.predict(features)
         y_truth = self._extract_classes(self._event_timex_rels)
@@ -53,5 +53,5 @@ class TestSet(Set):
             if p == truth[i]:
                 true_pos += 1
 
-        return true_pos / len(predicted)
+        return true_pos * 100 / len(predicted)
 
