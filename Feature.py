@@ -48,7 +48,7 @@ class Feature:
             duration_target = n_values - 1
 
         feature = enc.transform([[duration_source, duration_target]]).toarray()[0]
-        return feature
+        return feature.tolist()
 
     def get_duration_difference(self):
         duration = Duration()
@@ -65,8 +65,16 @@ class Feature:
 
         if duration_source is None or duration_target is None:
             feature = enc.transform([[3]]).toarray()[0]
+            return feature.tolist()
         elif duration_source == duration_target:
-            pass
+            feature = enc.transform([[2]]).toarray()[0]
+            return feature.tolist()
+        elif duration_source < duration_target:
+            feature = enc.transform([[1]]).toarray()[0]
+            return feature.tolist()
+        elif duration_source > duration_target:
+            feature = enc.transform([[0]]).toarray()[0]
+            return feature.tolist()
 
     def get_token(self):
         n_values = self.tokens.get_length()
