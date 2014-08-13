@@ -14,9 +14,9 @@ class TrainingSet(Set):
         for i, relation in enumerate(self._event_event_rels):
             f = Feature(relation, lemma, token)
             feature = f.get_feature()
-            #relation.set_feature(feature)
+            relation.set_feature(feature)
 
-            #X.append(feature)
+            X.append(feature)
             y.append(relation.get_result())
 
             # Print progress
