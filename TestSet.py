@@ -55,3 +55,6 @@ class TestSet(Set):
 
         return true_pos * 100 / len(predicted)
 
+    def _evaluation(self):
+        for text_obj in self.text_objects:
+            text_obj.generate_output_tml_file()

@@ -4,6 +4,7 @@ from parsexml.parser import Parser
 from parsexml.relationtype import RelationType
 from parsexml.relation import Relation
 from Feature import Feature
+from helper.output import Output
 
 class Text:
     def __init__(self, filename):
@@ -68,3 +69,8 @@ class Text:
                 feature = None
 
         self.relations = self.relations + all_relations
+
+    def generate_output_tml_file(self):
+        output = Output(self.filename)
+        output.create_relations(self.relations)
+        output.write()
