@@ -11,12 +11,18 @@ class TestSet(Set):
         y_predicted = classifier.predict(features)
         y_truth = self._extract_classes(self._event_event_rels)
 
+        # Create evaluation files
+        self._evaluation()
+
         return self._naive_evaluation(y_predicted, y_truth)
 
     def classify_existing_event_timex_relations(self, classifier, lemma=None, token=None):
         features = self._get_feature_data(self._event_timex_rels, lemma, token)
         y_predicted = classifier.predict(features)
         y_truth = self._extract_classes(self._event_timex_rels)
+
+        # Create evaluation files
+        self._evaluation()
 
         return self._naive_evaluation(y_predicted, y_truth)
 
