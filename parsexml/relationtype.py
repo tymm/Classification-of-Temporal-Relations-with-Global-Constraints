@@ -12,7 +12,7 @@ class RelationType:
     BEGUN_BY = 10
     DURING = 11
     DURING_INV = 12
-    UNKNOWN = 13
+    IDENTITY = 13
     NONE = 14
 
     @classmethod
@@ -43,12 +43,10 @@ class RelationType:
             return "DURING"
         elif ID == cls.DURING_INV:
             return "DURING_INV"
-        elif ID == cls.UNKNOWN:
-            return "VAGUE"
+        elif ID == cls.IDENTITY:
+            return "IDENTITY"
         elif ID == cls.NONE:
             return "NONE"
-
-
 
     @classmethod
     def get_id(cls, text):
@@ -80,8 +78,10 @@ class RelationType:
             return cls.SIMULTANEOUS
         elif text == "NONE":
             return cls.NONE
+        elif text == "IDENTITY":
+            return cls.IDENTITY
         else:
-            return cls.UNKNOWN
+            print "Unkown relation type: " + text
 
     def __iter__(self):
         return iter([self.BEFORE, self.IS_INCLUDED, self.INCLUDES, self.AFTER, self.ENDS, self.ENDED_BY, self.IBEFORE, self.IAFTER, self.BEGINS, self.BEGUN_BY, self.DURING, self.DURING_INV, self.SIMULTANEOUS, self.NONE, self.UNKNOWN])
