@@ -22,16 +22,16 @@ class Output:
                 # Don't create NONE links
                 if type(relation.source) == Event and type(relation.target) == Event:
                     # Both entities are Events
-                    tlink = etree.Element("TLINK", eventInstanceID=relation.source.eid, relatedToEventInstance=relation.target.eid)
+                    tlink = etree.Element("TLINK", eventInstanceID=relation.source.eiid[0], relatedToEventInstance=relation.target.eiid[0])
                 elif type(relation.source) == Timex and type(relation.target) == Timex:
                     # Both entities are Timex
                     tlink = etree.Element("TLINK", timeID=relation.source.tid, relatedToTime=relation.target.tid)
                 elif type(relation.source) == Event and type(relation.target) == Timex:
                     # The target entity is a Timex
-                    tlink = etree.Element("TLINK", eventInstanceID=relation.source.eid, relatedToTime=relation.target.tid)
+                    tlink = etree.Element("TLINK", eventInstanceID=relation.source.eiid[0], relatedToTime=relation.target.tid)
                 elif type(relation.source) == Timex and type(relation.target) == Event:
                     # The source entity is a Timex
-                    tlink = etree.Element("TLINK", timeID=relation.source.tid, relatedToEventInstance=relation.target.eid)
+                    tlink = etree.Element("TLINK", timeID=relation.source.tid, relatedToEventInstance=relation.target.eiid[0])
 
                 tlink.attrib["lid"] = relation.lid
                 tlink.attrib["relType"] = RelationType.get_string_by_id(relation.relation_type)
