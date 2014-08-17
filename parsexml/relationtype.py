@@ -44,7 +44,7 @@ class RelationType:
         elif ID == cls.DURING_INV:
             return "DURING_INV"
         elif ID == cls.UNKNOWN:
-            return "UNKNOWN"
+            return "VAGUE"
         elif ID == cls.NONE:
             return "NONE"
 
