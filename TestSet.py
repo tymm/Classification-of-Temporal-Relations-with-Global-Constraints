@@ -21,7 +21,7 @@ class TestSet(Set):
 
         self._produce_predictions(self._event_timex_rels, classifier)
 
-        y_predicted = self._get_predicted_data()
+        y_predicted = self._get_predicted_data(self._event_timex_rels)
         y_truth = self._extract_classes(self._event_timex_rels)
 
         return self._naive_evaluation(y_predicted, y_truth)
