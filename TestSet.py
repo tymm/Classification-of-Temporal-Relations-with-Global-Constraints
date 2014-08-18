@@ -8,23 +8,43 @@ class TestSet(Set):
 
     def classify_existing_event_event_relations(self, classifier, lemma=None, token=None):
         features = self._get_feature_data(self._event_event_rels, lemma, token)
-        y_predicted = classifier.predict(features)
-        y_truth = self._extract_classes(self._event_event_rels)
 
-        # Create evaluation files
-        self._evaluation()
+        self._produce_predictions(self._event_event_rels, classifier)
+
+        y_predicted = self._get_predicted_data(self._event_event_rels)
+        y_truth = self._extract_classes(self._event_event_rels)
 
         return self._naive_evaluation(y_predicted, y_truth)
 
     def classify_existing_event_timex_relations(self, classifier, lemma=None, token=None):
         features = self._get_feature_data(self._event_timex_rels, lemma, token)
-        y_predicted = classifier.predict(features)
+
+        self._produce_predictions(self._event_timex_rels, classifier)
+
+        y_predicted = self._get_predicted_data()
         y_truth = self._extract_classes(self._event_timex_rels)
 
-        # Create evaluation files
-        self._evaluation()
-
         return self._naive_evaluation(y_predicted, y_truth)
+
+    def create_evaluation_files(self):
+        for text_obj in self.text_objects:
+            text_obj.generate_output_tml_file()
+
+    def _produce_predictions(self, relations, classifier):
+        # Warning: It's way faster to do classifier.predict(features) instead of doing it for every relation at a time
+        for relation in relations:
+            predicted_class = classifier.predict(relation.feature)
+
+            # Set the predicted class for the relation
+            relation.predicted_class = predicted_class
+
+    def _get_predicted_data(self, relations):
+        y_predicted = []
+
+        for relation in relations:
+            y_predicted.append(relation.predicted_class)
+
+        return y_predicted
 
     def _get_feature_data(self, relations, lemma, token):
         features = []
@@ -60,7 +80,3 @@ class TestSet(Set):
                 true_pos += 1
 
         return true_pos * 100 / len(predicted)
-
-    def _evaluation(self):
-        for text_obj in self.text_objects:
-            text_obj.generate_output_tml_file()

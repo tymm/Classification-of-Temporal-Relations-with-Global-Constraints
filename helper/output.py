@@ -4,6 +4,7 @@ import os
 from parsexml.event import Event
 from parsexml.timex import Timex
 from parsexml.relationtype import RelationType
+import logging
 
 class Output:
     def __init__(self, filename):
@@ -34,9 +35,13 @@ class Output:
                     tlink = etree.Element("TLINK", timeID=relation.source.tid, relatedToEventInstance=relation.target.eiid[0])
 
                 tlink.attrib["lid"] = relation.lid
-                tlink.attrib["relType"] = RelationType.get_string_by_id(relation.relation_type)
 
-                root.append(tlink)
+                # If there is a prediction for this relation, append it to xml file
+                if relation.predicted_class:
+                    tlink.attrib["relType"] = RelationType.get_string_by_id(relation.predicted_class)
+                    root.append(tlink)
+                else:
+                    logging.warning("Creating output files without having class predictions for relations!")
 
     def write(self):
         self.tree.write(self.output_file, xml_declaration=True, pretty_print=True)

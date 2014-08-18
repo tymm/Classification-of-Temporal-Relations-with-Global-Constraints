@@ -11,6 +11,7 @@ class Relation:
         self._is_timex = None
         self.feature = None
         self.confidence_score = None
+        self.predicted_class = None
 
         self._check_timex()
 
