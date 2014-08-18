@@ -56,8 +56,7 @@ class Output:
 
     def _remove_relations(self):
         """Removing all relations from the output file."""
-        parser = etree.XMLParser(remove_blank_text=True)
-        self.tree = etree.parse(self.output_file, parser=parser)
+        self.tree = etree.parse(self.output_file)
 
         for tlink in self.tree.xpath("//TLINK"):
             tlink.getparent().remove(tlink)
