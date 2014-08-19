@@ -45,6 +45,10 @@ if __name__ == "__main__":
     print
 
     print "Creating features for the test data"
-    test.classify_existing_event_event_relations(rf, lemma, token)
-    test.classify_existing_event_timex_relations(rf, lemma, token)
+    r_ee = test.classify_existing_event_event_relations(rf, lemma, token)
+    print "Event-event : " + str(r_ee) + "%"
+    r_et = test.classify_existing_event_timex_relations(rf, lemma, token)
+    print "Event-timex: " + str(r_et) + "%"
+
+    print "Creating the evaluation data"
     test.create_evaluation_files()
