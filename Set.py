@@ -16,6 +16,8 @@ class Set:
 
         self._extract_relations()
 
+        self.relations = self._event_event_rels + self._event_timex_rels
+
     def _extract_relations(self):
         for text_obj in self.text_objects:
             for relation in text_obj.relations:
