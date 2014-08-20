@@ -1,5 +1,6 @@
 import logging
 from helper.stanfordnlp.client import StanfordNLP
+from helper.stanfordnlp.jsonrpc import RPCTransportError
 import cPickle as pickle
 
 class Nlp_persistence:
