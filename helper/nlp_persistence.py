@@ -40,6 +40,8 @@ class Nlp_persistence:
             tree = self._get_tree(sentence_obj.text)
         except RPCInternalError:
             logging.error("Could not process the following sentence from text %s: %s", sentence_obj.text_obj.filename, sentence_obj.text)
+            # Return without updating data
+            return
 
         print sentence_obj.text
 
