@@ -14,7 +14,7 @@ class Nlp_persistence:
         try:
             # Trying to load data
             data = pickle.load(open(self.FILE, "rb"))
-        except IOError, EOFError:
+        except (IOError, EOFError):
             # No data so far
             data = {}
 
