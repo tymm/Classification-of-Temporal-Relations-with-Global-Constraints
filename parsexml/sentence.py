@@ -1,5 +1,6 @@
 class Sentence(object):
-    def __init__(self, node):
+    def __init__(self, node, text_obj):
+        self.text_obj = text_obj
         self.text = self._get_sentence(node)
 
     def __eq__(self, other):
