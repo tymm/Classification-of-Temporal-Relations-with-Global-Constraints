@@ -9,7 +9,7 @@ import sys
 
 if __name__ == "__main__":
     # Set log level
-    logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
+    logging.basicConfig(filename='logs',level=logging.DEBUG)
 
     # Creating xml mapping objects from scratch with "False" as first argument
     load = False
