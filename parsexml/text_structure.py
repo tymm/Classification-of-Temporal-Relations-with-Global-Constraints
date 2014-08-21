@@ -110,7 +110,7 @@ class Text_structure:
     def _build_structure(self):
         for entity_node in self._entity_nodes_ordered:
             # Problem: Not all sentences have an entity
-            sentence = Sentence(entity_node)
+            sentence = Sentence(entity_node, self.parser_obj.text_obj)
             # Get entity object by lxml object
             entity = self._get_entity_by_node(entity_node)
 
