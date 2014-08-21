@@ -1,6 +1,7 @@
 import logging
 from helper.stanfordnlp.client import StanfordNLP
 from helper.stanfordnlp.jsonrpc import RPCTransportError
+from helper.stanfordnlp.jsonrpc import RPCInternalError
 import cPickle as pickle
 
 class Nlp_persistence:
@@ -10,25 +11,39 @@ class Nlp_persistence:
         self.data = None
 
     def create_persistence(self, relations):
-        data = {}
+        try:
+            # Trying to load data
+            data = pickle.load(open(self.FILE, "rb"))
+        except IOError:
+            # No data so far
+            data = {}
 
         # Create nlp information for all relevant sentences
-        for relation in relations:
-            if not relation.source.sentence in data:
-                self._update_data(relation.source, data)
+        try:
+            for relation in relations:
+                if not relation.source.sentence in data:
+                    self._update_data(relation.source, data)
 
-            if not relation.target.sentence in data:
-                self._update_data(relation.target, data)
+                if not relation.target.sentence in data:
+                    self._update_data(relation.target, data)
+            print "Done!"
+            logging.info("Successfully loaded all nlp information to persistence file.")
+        except:
+            logging.error("Could not finish loading all nlp information to the persistence file. Saving all processed ones.")
 
-        print "Done!"
         # Save data to a file
         pickle.dump(data, open(self.FILE, "wb"))
 
     def _update_data(self, entity, data):
         sentence_obj = entity.sentence
+        try:
+            tree = self._get_tree(sentence_obj.text)
+        except RPCInternalError:
+            logging.error("Could not process the following sentence from text %s: %s", sentence_obj.text_obj.filename, sentence_obj.text)
+
         print sentence_obj.text
 
-        data.update({sentence_obj: self._get_tree(sentence_obj.text)})
+        data.update({sentence_obj: tree})
 
     def load(self):
         data = pickle.load(open(self.FILE, "rb"))
