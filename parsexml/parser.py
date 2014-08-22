@@ -199,7 +199,7 @@ class Parser:
                     text = event.text
 
                     # Getting surrounding sentence
-                    sentence = Sentence(event, self.text_obj)
+                    sentence = Sentence(event, self.text_obj.filename)
                     pos_in_sentence = sentence.get_position(event.text)
 
                     e_class = event.get("class")
@@ -243,7 +243,7 @@ class Parser:
         type = timex_node.get("type")
         value = timex_node.get("value")
         text = timex_node.text
-        sentence = Sentence(timex_node, self.text_obj)
+        sentence = Sentence(timex_node, self.text_obj.filename)
         pos_in_sentence = sentence.get_position(timex_node.text)
 
         # Create Timex object

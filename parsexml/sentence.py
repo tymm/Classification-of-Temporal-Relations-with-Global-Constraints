@@ -1,6 +1,6 @@
 class Sentence(object):
-    def __init__(self, node, text_obj):
-        self.text_obj = text_obj
+    def __init__(self, node, filename):
+        self.filename = filename
         self.text = self._get_sentence(node)
 
     def __eq__(self, other):
@@ -21,6 +21,35 @@ class Sentence(object):
             return split.index(text)
         except ValueError:
             return None
+
+    def get_info_on_governing_verb(self, non_verb, nlp_persistence_obj):
+        """This method returns information about the governing verb of a non-verb."""
+        info = nlp_persistence_obj.get_info_for_sentence(self)
+
+        if info:
+            # Search for non_verb
+            dependencies = info['sentences'][0]['dependencies']
+
+            governing_verb = self._get_governing_verb(non_verb)
+
+        else:
+            return None
+
+    def _get_governing_verb(self, non_verb, dependencies):
+        targets = [x[2] for x in dependencies]
+
+        # Find occurrences of non_verb and get the indicies
+        indicies = []
+        for target in targets:
+            if target == non_verb:
+                indicies.append(targets.index(target))
+
+        # Get the corresponding sources
+
+
+
+    def get_root(self, nlp_persistence_obj):
+        pass
 
     def _get_sentence(self, node):
         left = self._get_left_part(node)
