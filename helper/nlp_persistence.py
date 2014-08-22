@@ -57,13 +57,14 @@ class Nlp_persistence:
             return None
 
     def get_info_for_sentence(self, sentence):
-        # TODO: Create fallback which tries to contact CoreNLP server if there is no entry in it in self.data
         if self.data:
             try:
                 return self.data[sentence]
             except KeyError:
                 logging.error("Nlp_persistence: This sentence is not a key")
-                return None
+                logging.info("Nlp_persistence fallback to CoreNLP server")
+                # Fallback: Try to get tree from CoreNLP server
+                return self._get_tree(sentence.text)
         else:
             logging.error("You have to use Nlp_persistence.load() before you can get the information of a sentence")
             return None
