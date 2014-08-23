@@ -132,9 +132,23 @@ class Sentences(unittest.TestCase):
     def test_CheckIfGoverningVerbIsCorrect(self):
         # Easy case - direct dependency to taken
         info_a = self.sentence.get_info_on_governing_verb("agency", self.nlp_layer)
+        # TODO: Add case which is harder: No direct dependency connection between non-verb and governing verb like with "space"
 
-        # info_{a,b}[0] contains the verb itself
+        # info_a[0] contains the verb itself
         self.assertEqual(info_a[0], "taken")
+
+    def test_CheckIfGoverningVerbMethodReturnsRightAux(self):
+        info_a = self.sentence.get_info_on_governing_verb("agency", self.nlp_layer)
+
+        # info_a[1] contains the aux
+        self.assertEqual(info_a[1], "has")
+
+    def test_CheckIfGoverningVerbMethodReturnsRightPOS(self):
+        info_a = self.sentence.get_info_on_governing_verb("agency", self.nlp_layer)
+
+        # info_a[2] contains the POS for the main verb and info_a[3] contains the POS for the aux
+        self.assertEqual(info_a[2], "VBN")
+        self.assertEqual(info_a[3], "VBZ")
 
     def test_CheckIfIsVerbMethodDetectsVerbs(self):
         info = self.nlp_layer.get_info_for_sentence(self.sentence)

@@ -23,30 +23,66 @@ class Sentence(object):
             return None
 
     def get_info_on_governing_verb(self, non_verb, nlp_persistence_obj):
-        """This method returns information about the governing verb of a non-verb."""
+        """This method returns information about the governing verb of a non-verb.
+
+        It returns an array with the following format: [verb, aux, POS of verb, POS of aux]
+        """
         info = nlp_persistence_obj.get_info_for_sentence(self)
 
         if info:
             # Search for non_verb
-            dependencies = info['sentences'][0]['dependencies']
-            print dependencies
+            governing_verb = self._get_governing_verb(non_verb, info)
 
-            governing_verb = self._get_governing_verb(non_verb, dependencies, info)
+            info_on_governing_verb = [governing_verb, None, None, None]
 
-            info_on_words = info['sentences'][0]['words']
+            # Set POS of main verb
+            pos_verb = self._get_pos_of_verb(governing_verb, info)
+            info_on_governing_verb[2] = pos_verb
 
-            info_on_governing_verb = (governing_verb, None)
-            for word in info_on_words:
-                if word[0] == governing_verb:
-                    # Format: (text, POS)
-                    info_on_governing_verb = (governing_verb, None)
+            # Searching for an Aux for the governing verb
+            aux = self._get_aux_of_verb(governing_verb, info)
+            info_on_governing_verb[1] = aux
+
+            # If there is an aux, get it's POS
+            if aux:
+                pos_aux = self._get_pos_of_verb(aux, info)
+                info_on_governing_verb[3] = pos_aux
 
             return info_on_governing_verb
 
         else:
             return None
 
-    def _get_governing_verb(self, non_verb, dependencies, info):
+    def _get_aux_of_verb(self, verb, info):
+        dependencies = info['sentences'][0]['dependencies']
+
+        sources = [x[1] for x in dependencies]
+
+        # Find index of verb in targets
+        index = None
+        for i, source in enumerate(sources):
+            if source == verb and dependencies[i][0] == "aux":
+                index = i
+
+        # Get aux
+        if index is None:
+            # Not every verb has an aux
+            return None
+        else:
+            aux = dependencies[index][2]
+
+            return aux
+
+    def _get_pos_of_verb(self, verb, info):
+        info_on_words = info['sentences'][0]['words']
+
+        for word in info_on_words:
+            if word[0] == verb:
+                return word[1]['PartOfSpeech']
+
+    def _get_governing_verb(self, non_verb, info):
+        dependencies = info['sentences'][0]['dependencies']
+
         targets = [x[2] for x in dependencies]
 
         # Find occurrences of non_verb and get the indicies
@@ -62,7 +98,6 @@ class Sentence(object):
             source = sources[index]
             if self._is_verb(source, info):
                 # Found the governing verb
-                print source
                 return source
 
         # This should not happen in a proper sentence
