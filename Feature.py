@@ -14,19 +14,20 @@ from feature.event_class import Event_class
 import scipy
 
 class Feature:
-    def __init__(self, relation, lemmas, tokens):
+    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj):
         self.relation = relation
 
         self.lemmas = lemmas
         self.tokens = tokens
-        #self.dependency = Dependency(self.relation)
+        self.dependency = Dependency(self.relation, nlp_persistence_obj)
 
     def get_feature(self):
         #feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
 
         # All features where no dependency information is needed
-        feature = self.get_textual_order() + self.get_sentence_distance() + self.get_entity_distance() + self.get_event_class() + self.get_polarity() + self.get_same_class() + self.get_same_polarity() + self.get_duration() + self.get_duration_difference()
-        # feature = self.get_event_class()
+        #feature = self.get_textual_order() + self.get_sentence_distance() + self.get_entity_distance() + self.get_event_class() + self.get_polarity() + self.get_same_class() + self.get_same_polarity() + self.get_duration() + self.get_duration_difference()
+        #feature = self.get_event_class() + self.get_polarity()
+        feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
         return feature
 
     def get_duration(self):

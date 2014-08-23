@@ -6,6 +6,7 @@ from feature.lemma import Lemma
 from feature.token import Token
 import logging
 import sys
+from helper.nlp_persistence import Nlp_persistence
 
 if __name__ == "__main__":
     # Set log level
@@ -25,6 +26,10 @@ if __name__ == "__main__":
     # Must be called before training.get_classification_data_event_event()
     lemma = Lemma(training)
     token = Token(training)
+    nlp_persistence = Nlp_persistence()
+    print "Loading NLP data from file."
+    nlp_persistence.load()
+    print "Done loading NLP data from file."
 
     if load:
         print "Done loading training and test set"
@@ -33,7 +38,7 @@ if __name__ == "__main__":
     print
 
     print "Creating features for the training data"
-    X_train, y_train = training.get_classification_data_event_event(lemma, token)
+    X_train, y_train = training.get_classification_data_event_event(lemma, token, nlp_persistence)
     print "Done creating features"
     print
 
@@ -45,9 +50,9 @@ if __name__ == "__main__":
     print
 
     print "Creating features for the test data"
-    r_ee = test.classify_existing_event_event_relations(rf, lemma, token)
+    r_ee = test.classify_existing_event_event_relations(rf, lemma, token, nlp_persistence)
     print "Event-event : " + str(r_ee) + "%"
-    r_et = test.classify_existing_event_timex_relations(rf, lemma, token)
+    r_et = test.classify_existing_event_timex_relations(rf, lemma, token, nlp_persistence)
     print "Event-timex: " + str(r_et) + "%"
 
     print "Creating the evaluation data"

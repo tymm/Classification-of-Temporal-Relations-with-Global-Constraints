@@ -1,9 +1,10 @@
 from helper.stanfordnlp.client import StanfordNLP
 from nltk import word_tokenize
 from helper.stanfordnlp.jsonrpc import RPCTransportError
+import logging
 
 class Dependency:
-    def __init__(self, relation):
+    def __init__(self, relation, nlp_persistence_obj):
         self.relation = relation
         self.source = relation.source
         self.target = relation.target
@@ -15,16 +16,7 @@ class Dependency:
         # These features only make sense when both entities are in the same sentence
         if self.relation.target.sentence == self.relation.source.sentence:
             self.sentence = self.relation.target.sentence
-            nlp = StanfordNLP()
-
-            b = True
-            while b:
-                b = False
-                try:
-                    self.tree = nlp.parse(unicode(self.sentence))
-                except RPCTransportError:
-                    print "RPCTransportError"
-                    b = True
+            self.tree = nlp_persistence_obj.get_info_for_sentence(self.sentence)
 
     def get_dependency_type(self):
         if self.tree:
@@ -44,7 +36,7 @@ class Dependency:
                     try:
                         return self.dependency_types.index(type)
                     except ValueError:
-                        print type
+                        logging.error("Dependency feature: Do not know %s", type)
                         return 0
             else:
                 return None
@@ -98,7 +90,7 @@ class Dependency:
             except IndexError:
                 return None
 
-            sentence_tokens = word_tokenize(self.sentence)
+            sentence_tokens = word_tokenize(self.sentence.text)
 
             # Find governor/root
             governor_text = None
