@@ -61,7 +61,7 @@ class Nlp_persistence:
             try:
                 return self.data[sentence]
             except KeyError:
-                logging.error("Nlp_persistence: This sentence is not a key")
+                logging.error("Nlp_persistence: This sentence is not a key/Is not available in the Nlp persistence layer.")
                 logging.info("Nlp_persistence fallback to CoreNLP server")
                 # Fallback: Try to get tree from CoreNLP server
                 return self._get_tree(sentence.text)
