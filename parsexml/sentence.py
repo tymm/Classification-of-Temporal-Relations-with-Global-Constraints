@@ -29,13 +29,24 @@ class Sentence(object):
         if info:
             # Search for non_verb
             dependencies = info['sentences'][0]['dependencies']
+            print dependencies
 
-            governing_verb = self._get_governing_verb(non_verb)
+            governing_verb = self._get_governing_verb(non_verb, dependencies, info)
+
+            info_on_words = info['sentences'][0]['words']
+
+            info_on_governing_verb = (governing_verb, None)
+            for word in info_on_words:
+                if word[0] == governing_verb:
+                    # Format: (text, POS)
+                    info_on_governing_verb = (governing_verb, None)
+
+            return info_on_governing_verb
 
         else:
             return None
 
-    def _get_governing_verb(self, non_verb, dependencies):
+    def _get_governing_verb(self, non_verb, dependencies, info):
         targets = [x[2] for x in dependencies]
 
         # Find occurrences of non_verb and get the indicies
@@ -45,8 +56,28 @@ class Sentence(object):
                 indicies.append(targets.index(target))
 
         # Get the corresponding sources
+        sources = [x[1] for x in dependencies]
 
+        for index in indicies:
+            source = sources[index]
+            if self._is_verb(source, info):
+                # Found the governing verb
+                print source
+                return source
 
+        # This should not happen in a proper sentence
+        return None
+
+    def _is_verb(self, text, info):
+        """Checks if text has the POS tag of a verb."""
+        words = info['sentences'][0]['words']
+
+        for word in words:
+            if word[0] == text:
+                if word[1]['PartOfSpeech'] in ['VBG', 'VBD', 'VB', 'VBN', 'VBP', 'VBZ']:
+                    return True
+
+        return False
 
     def get_root(self, nlp_persistence_obj):
         pass

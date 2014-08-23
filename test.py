@@ -3,6 +3,9 @@ import unittest
 from parsexml.text import Text
 from Feature import Feature as Features
 from parsexml.fakesentence import FakeSentence
+from parsexml.sentence import Sentence
+from lxml import etree
+from helper.nlp_persistence import Nlp_persistence
 
 class TextStructure(unittest.TestCase):
     @classmethod
@@ -95,7 +98,7 @@ class Feature(unittest.TestCase):
         cls.features = []
 
         for relation in text_obj.relations:
-            f = Features(relation)
+            f = Features(relation, None, None)
             cls.features.append(f)
 
     def test_SentenceDistance(self):
@@ -105,6 +108,45 @@ class Feature(unittest.TestCase):
                 print feature.relation.target
             self.assertNotEqual(feature.get_sentence_distance()[0], None)
 
+class Sentences(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
+
+        # Get a node a Sentence object can parse from
+        tree = etree.parse(filename)
+        root_node = tree.getroot()
+
+        # Arguments for Sentence
+        event_node = root_node.xpath("//EVENT")[0]
+
+        # Sentence contains the following text:
+        # "Finally today, we learned that the space agency has finally taken a giant leap forward."
+        # The event we have is "learned"
+        cls.sentence = Sentence(event_node, filename)
+
+        # Set up the CoreNLP persistence layer
+        cls.nlp_layer = Nlp_persistence()
+        cls.nlp_layer.load()
+
+    def test_CheckIfGoverningVerbIsCorrect(self):
+        # Easy case - direct dependency to taken
+        info_a = self.sentence.get_info_on_governing_verb("agency", self.nlp_layer)
+
+        # info_{a,b}[0] contains the verb itself
+        self.assertEqual(info_a[0], "taken")
+
+    def test_CheckIfIsVerbMethodDetectsVerbs(self):
+        info = self.nlp_layer.get_info_for_sentence(self.sentence)
+
+        r = self.sentence._is_verb("learned", info)
+        self.assertEqual(r, True)
+
+        r = self.sentence._is_verb("taken", info)
+        self.assertEqual(r, True)
+
+        r = self.sentence._is_verb("Finally", info)
+        self.assertEqual(r, False)
 
 if __name__ == '__main__':
     unittest.main()
