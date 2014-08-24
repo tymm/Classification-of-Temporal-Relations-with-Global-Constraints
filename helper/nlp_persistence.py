@@ -59,7 +59,6 @@ class Nlp_persistence:
     def get_info_for_sentence(self, sentence):
         if self.data:
             try:
-                logging.info("Successfully got sentence from cache.")
                 return self.data[sentence]
             except KeyError:
                 logging.error("Nlp_persistence: This sentence is not a key/Is not available in the Nlp persistence layer.")
