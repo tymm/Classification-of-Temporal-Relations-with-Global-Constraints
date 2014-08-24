@@ -37,7 +37,7 @@ class Nlp_persistence:
     def _update_data(self, entity, data):
         sentence_obj = entity.sentence
         try:
-            tree = self._get_tree(sentence_obj.text)
+            tree = self._get_tree(sentence_obj)
         except RPCInternalError:
             logging.error("Could not process the following sentence from text %s: %s", sentence_obj.filename, sentence_obj.text)
             # Return without updating data
@@ -64,7 +64,7 @@ class Nlp_persistence:
                 logging.error("Nlp_persistence: This sentence is not a key/Is not available in the Nlp persistence layer.")
                 logging.info("Nlp_persistence fallback to CoreNLP server")
                 # Fallback: Try to get tree from CoreNLP server
-                tree = self._get_tree(sentence.text)
+                tree = self._get_tree(sentence)
 
                 # Drive by caching
                 self.data.update({sentence: tree})
