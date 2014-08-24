@@ -59,15 +59,26 @@ class Nlp_persistence:
     def get_info_for_sentence(self, sentence):
         if self.data:
             try:
+                logging.info("Successfully got sentence from cache.")
                 return self.data[sentence]
             except KeyError:
                 logging.error("Nlp_persistence: This sentence is not a key/Is not available in the Nlp persistence layer.")
                 logging.info("Nlp_persistence fallback to CoreNLP server")
                 # Fallback: Try to get tree from CoreNLP server
-                return self._get_tree(sentence.text)
+                tree = self._get_tree(sentence.text)
+
+                # Drive by caching
+                self.data.update({sentence: tree})
+                self._write()
+
+                return tree
         else:
             logging.error("You have to use Nlp_persistence.load() before you can get the information of a sentence")
             return None
+
+    def _write(self):
+        # Save data to a file
+        pickle.dump(self.data, open(self.FILE, "wb"))
 
     def _get_tree(self, text):
         nlp = StanfordNLP()
