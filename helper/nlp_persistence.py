@@ -79,16 +79,16 @@ class Nlp_persistence:
         # Save data to a file
         pickle.dump(self.data, open(self.FILE, "wb"))
 
-    def _get_tree(self, text):
+    def _get_tree(self, sentence):
         nlp = StanfordNLP()
 
         b = True
         while b:
             b = False
             try:
-                tree = nlp.parse(unicode(text))
+                tree = nlp.parse(unicode(sentence.text))
             except RPCTransportError:
-                logging.info("RPCTransportError in Nlp_persistence")
+                logging.error("RPCTransportError in Nlp_persistence for the following sentence in %s: %s", sentence.filename, sentence.text)
                 b = True
 
         return tree
