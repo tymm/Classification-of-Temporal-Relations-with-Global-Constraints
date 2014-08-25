@@ -1,4 +1,5 @@
 import nltk.data
+import re
 
 class Sentence(object):
     def __init__(self, node, filename):
@@ -140,7 +141,16 @@ class Sentence(object):
         if sentences:
             parts = self.sent_detector.tokenize(sentences)
 
-            return parts[-1]
+            if sentences.endswith('.\n\n"') or sentences.endswith('.\n"'):
+                # Case: Bla bla.\n\n"<Entity>
+                # nltk sentence tokenizer thinks Bla bla.\n\n" is one sentence
+                return '"'
+            elif len(parts) == 1 and ".\n" in parts[0]:
+                # Case: Bla bla.\n<Entity> blab bla.
+                # But not case: Text beginning --> Bla bla <entity> bla bla.
+                return ""
+            else:
+                return parts[-1]
         else:
             return ""
 
@@ -148,7 +158,16 @@ class Sentence(object):
         if sentences:
             parts = self.sent_detector.tokenize(sentences)
 
-            return parts[0]
+            # Using sentences instead of parts[0] because self.sent_detector removes \n
+            if len(parts) == 1 and (sentences.endswith('.\n\n"') or sentences.endswith('.\n"')):
+                # Case: <entity> bla bla.\n\n"
+                # The nltk sentence tokenizer thinks that the " belongs to the sentence which is not the case
+                left_sentence = sentences
+                left_sentence = re.sub('\n+"', '', left_sentence, re.MULTILINE)
+
+                return left_sentence
+            else:
+                return parts[0]
         else:
             return ""
 
