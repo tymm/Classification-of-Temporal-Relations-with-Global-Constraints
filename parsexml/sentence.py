@@ -1,6 +1,9 @@
+import nltk.data
+
 class Sentence(object):
     def __init__(self, node, filename):
         self.filename = filename
+        self.sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
         self.text = self._get_sentence(node)
 
     def __eq__(self, other):
@@ -135,7 +138,7 @@ class Sentence(object):
 
     def _get_most_right_sentence(self, sentences):
         if sentences:
-            parts = sentences.split(".")
+            parts = self.sent_detector.tokenize(sentences)
 
             return parts[-1]
         else:
@@ -143,7 +146,7 @@ class Sentence(object):
 
     def _get_most_left_sentence(self, sentences):
         if sentences:
-            parts = sentences.split(".")
+            parts = self.sent_detector.tokenize(sentences)
 
             return parts[0]
         else:
@@ -163,7 +166,7 @@ class Sentence(object):
 
         if prev_node is not None:
             beginning = prev_node.text + prev_node.tail
-            if "." in beginning:
+            if ".\n" in beginning:
                 return beginning
             else:
                 return self._get_left_part(prev_node) + beginning
@@ -185,7 +188,7 @@ class Sentence(object):
             else:
                 end = node.text
 
-            if "." in end:
+            if ".\n" in end:
                 return end
             else:
                 return end + self._get_right_part(node.getnext())

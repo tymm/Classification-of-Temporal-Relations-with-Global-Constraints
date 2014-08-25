@@ -89,16 +89,35 @@ class TextStructure(unittest.TestCase):
         self.assertEqual(sentences[18], FakeSentence("But they still have catching up to do two hundred and thirty four Americans have flown in space, only twenty six of them women."))
         self.assertEqual(sentences[19], FakeSentence("Ned Potter, ABC News."))
 
+class SentenceExtraction(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        filename = "data/training/TBAQ-cleaned/TimeBank/wsj_1003.tml"
+        cls.text_obj = Text(filename)
+
+        cls.sentences = [s for s in cls.text_obj.text_structure.get_structure()]
+
+    def test_CheckForRightSentenceBorders(self):
+        self.assertEqual(self.sentences[1], FakeSentence("Bethlehem Steel Corp., hammered by higher costs and lower shipments to key automotive and service-center customers, posted a 54% drop in third-quarter profit."))
+        self.assertEqual(self.sentences[2], FakeSentence("Separately, two more of the nation's top steelmakers -- Armco Inc. and National Intergroup Inc. -- reported lower operating earnings in their steel businesses, marking what is generally believed to be the end of a two-year boom in the industry."))
+        self.assertEqual(self.sentences[3], FakeSentence("Wall Street analysts expect the disappointing trend to continue into the fourth quarter and through at least the first two quarters of 1990, when the industry will increasingly see the effect of price erosion in major product lines, such as rolled sheet used for cars, appliances and construction."))
+        self.assertEqual(self.sentences[4], FakeSentence("\"It doesn't bode well for coming quarters,\" said John Jacobson, who follows the steel industry for AUS Consultants."))
+        self.assertEqual(self.sentences[5], FakeSentence("In fact, he thinks several steelmakers will report actual losses through the third quarter of 1990."))
+        self.assertEqual(self.sentences[6], FakeSentence("Bethlehem, the nation's second largest steelmaker, earned $46.9 million, or 54 cents a share."))
+
 class Feature(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
         text_obj = Text(filename)
 
+        nlp_persistence_obj = Nlp_persistence()
+        nlp_persistence_obj.load()
+
         cls.features = []
 
         for relation in text_obj.relations:
-            f = Features(relation, None, None)
+            f = Features(relation, None, None, nlp_persistence_obj)
             cls.features.append(f)
 
     def test_SentenceDistance(self):
