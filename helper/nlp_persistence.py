@@ -43,6 +43,7 @@ class Nlp_persistence:
             # Return without updating data
             return
 
+        print "--- " + sentence_obj.filename
         print sentence_obj.text
 
         data.update({sentence_obj: tree})
