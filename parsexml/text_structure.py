@@ -2,10 +2,12 @@ from collections import OrderedDict
 from parsexml.sentence import Sentence
 from parsexml.fakesentence import FakeSentence
 from lxml import etree
+import nltk.data
 
 class Text_structure:
     def __init__(self, filename, parser_obj):
         self.filename = filename
+        self.sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
         self.parser_obj = parser_obj
 
         # {Sentence: [Event, Timex, ...]
@@ -133,7 +135,7 @@ class Text_structure:
         all_text = self._get_all_text()
 
         # Split into single sentences
-        sentences = all_text.split(".")
+        sentences = self.sent_detector.tokenize(all_text)
 
         # Create FakeSentence objects for being able to compare with Sentence objects
         fake_sentences = []
