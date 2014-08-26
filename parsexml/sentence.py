@@ -135,7 +135,12 @@ class Sentence(object):
         elif right_sentence:
             text = right_sentence
 
-        return self._strip(text) + "."
+        text = self._strip(text)
+
+        if text.endswith('"'):
+            return text
+        else:
+            return self._strip(text) + "."
 
     def _get_most_right_sentence(self, sentences):
         if sentences:

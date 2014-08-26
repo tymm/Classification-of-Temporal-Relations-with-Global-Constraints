@@ -1,7 +1,12 @@
 class FakeSentence(object):
     """For being able to compare text with Sentence objects."""
     def __init__(self, text):
-        self.text = self._strip(text) + "."
+        text = self._strip(text)
+
+        if text.endswith('"'):
+            self.text = text
+        else:
+            self.text = text + "."
 
     def __eq__(self, other):
         return self.text == other.text
