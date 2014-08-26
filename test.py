@@ -94,12 +94,15 @@ class SentenceExtraction(unittest.TestCase):
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/wsj_1003.tml"
         filename_second = "data/training/TE3-Silver-data/AFP_ENG_19970425.0504.tml"
+        filename_third = "data/training/TE3-Silver-data/AFP_ENG_20061224.0147.tml"
 
         cls.text_obj = Text(filename)
         cls.text_obj_second = Text(filename_second)
+        cls.text_obj_third = Text(filename_third)
 
         cls.sentences = [s for s in cls.text_obj.text_structure.get_structure()]
         cls.sentences_second = [s for s in cls.text_obj_second.text_structure.get_structure()]
+        cls.sentences_third = [s for s in cls.text_obj_third.text_structure.get_structure()]
 
     def test_CheckForRightSentenceBorders(self):
         self.assertEqual(self.sentences[1], FakeSentence("Bethlehem Steel Corp., hammered by higher costs and lower shipments to key automotive and service-center customers, posted a 54% drop in third-quarter profit."))
@@ -112,6 +115,7 @@ class SentenceExtraction(unittest.TestCase):
         self.assertEqual(self.sentences_second[3], FakeSentence("\"Today, everyone knows that Angolan troops are attacking Zaire for no reason and without declaring war,\" the statement said."))
         self.assertEqual(self.sentences_second[4], FakeSentence("Angolan troops were also in the area of Tshipaka, in Western Kasai province, a city some 650 kilometres (400 miles) southeast of the capital Kinshasa which Kabila's forces said Wednesday they had captured."))
         self.assertEqual(self.sentences_second[5], FakeSentence("According to the presidency statement the Kinshasa authorities will raise the Angolan incursions with the United Nations, and ask UN envoy Alioune Blondin Beye to visit the zones currently occupied by Angolan forces."))
+        self.assertEqual(self.sentences_third[16], FakeSentence("The United Arab Emirates is to transfer 30 million dollars to the Palestinian Authority \"to help reduce the suffering of the Palestinian people,\" the official WAM news agency said."))
 
 class Feature(unittest.TestCase):
     @classmethod
