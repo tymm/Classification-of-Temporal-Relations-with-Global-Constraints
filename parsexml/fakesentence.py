@@ -2,11 +2,7 @@ class FakeSentence(object):
     """For being able to compare text with Sentence objects."""
     def __init__(self, text):
         text = self._strip(text)
-
-        if text.endswith('"'):
-            self.text = text
-        else:
-            self.text = text + "."
+        self.text = text
 
     def __eq__(self, other):
         return self.text == other.text
@@ -19,7 +15,6 @@ class FakeSentence(object):
 
     def _strip(self, text):
         text = text.strip()
-        text = text.strip('.')
         text = text.strip('\n')
 
         return text

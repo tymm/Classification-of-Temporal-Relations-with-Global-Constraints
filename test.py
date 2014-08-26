@@ -68,7 +68,7 @@ class TextStructure(unittest.TestCase):
 
         sentences = [sentence for sentence in structure]
 
-        self.assertEqual(sentences[0], FakeSentence("19980304."))
+        self.assertEqual(sentences[0], FakeSentence("19980304"))
         self.assertEqual(sentences[1], FakeSentence("Finally today, we learned that the space agency has finally taken a giant leap forward."))
         self.assertEqual(sentences[2], FakeSentence("Air Force Lieutenant Colonel Eileen Collins will be named commander of the Space Shuttle Columbia for a mission in December."))
         self.assertEqual(sentences[3], FakeSentence("Colonel Collins has been the co-pilot before, but this time she's the boss."))

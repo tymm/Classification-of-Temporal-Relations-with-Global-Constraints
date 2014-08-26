@@ -136,11 +136,7 @@ class Sentence(object):
             text = right_sentence
 
         text = self._strip(text)
-
-        if text.endswith('"'):
-            return text
-        else:
-            return self._strip(text) + "."
+        return text
 
     def _get_most_right_sentence(self, sentences):
         if sentences:
@@ -178,7 +174,6 @@ class Sentence(object):
 
     def _strip(self, text):
         text = text.strip()
-        text = text.strip('.')
         text = text.strip('\n')
 
         return text
