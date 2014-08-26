@@ -16,6 +16,7 @@ class Nlp_persistence:
             data = pickle.load(open(self.FILE, "rb"))
         except (IOError, EOFError):
             # No data so far
+            logging.info("Could not find %s. Create new data.", self.FILE)
             data = {}
 
         # Create nlp information for all relevant sentences
