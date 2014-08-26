@@ -185,7 +185,7 @@ class Sentence(object):
 
         if prev_node is not None:
             beginning = prev_node.text + prev_node.tail
-            if ".\n" in beginning:
+            if ".\n" in beginning or '."\n' in beginning:
                 return beginning
             else:
                 return self._get_left_part(prev_node) + beginning
@@ -207,7 +207,7 @@ class Sentence(object):
             else:
                 end = node.text
 
-            if ".\n" in end:
+            if ".\n" in end or '."\n' in end:
                 return end
             else:
                 return end + self._get_right_part(node.getnext())
