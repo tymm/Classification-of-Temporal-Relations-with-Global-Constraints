@@ -7,7 +7,7 @@ class Nlp_persistence:
     def __init__(self):
         self.FILE = "nlp_infos.p"
         self.data = None
-        self.nlp = sockwrap.SockWrap("medparse", corenlp_libdir="helper/stanfordnlp/stanford-corenlp-full-2014-06-16")
+        self.nlp = sockwrap.SockWrap("fullparse", corenlp_libdir="helper/stanfordnlp/stanford-corenlp-full-2014-06-16")
 
     def create_persistence(self, relations):
         try:
