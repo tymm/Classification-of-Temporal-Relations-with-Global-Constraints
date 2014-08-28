@@ -7,4 +7,5 @@ numpy==1.8.2
 scikit-learn==0.15.1
 scipy==0.14.0
 simplejson==3.6.3
+stanford-corenlp-pywrapper==0.1.0
 wsgiref==0.1.2

@@ -1,14 +1,13 @@
 import logging
-from helper.stanfordnlp.client import StanfordNLP
-from helper.stanfordnlp.jsonrpc import RPCTransportError
-from helper.stanfordnlp.jsonrpc import RPCInternalError
 import cPickle as pickle
+from stanford_corenlp_pywrapper import sockwrap
 
 class Nlp_persistence:
     """Persistence layer for having fast access to information produced by the StanfordCoreNLP tool."""
     def __init__(self):
         self.FILE = "nlp_infos.p"
         self.data = None
+        self.nlp = sockwrap.SockWrap("medparse", corenlp_libdir="helper/stanfordnlp/stanford-corenlp-full-2014-06-16")
 
     def create_persistence(self, relations):
         try:
@@ -16,6 +15,7 @@ class Nlp_persistence:
             data = pickle.load(open(self.FILE, "rb"))
         except (IOError, EOFError):
             # No data so far
+            print "Could not open cache. Create new."
             logging.info("Could not find %s. Create new data.", self.FILE)
             data = {}
 
@@ -24,9 +24,13 @@ class Nlp_persistence:
             for relation in relations:
                 if not relation.source.sentence in data:
                     self._update_data(relation.source, data)
+                else:
+                    print "Sentence is already in data"
 
                 if not relation.target.sentence in data:
                     self._update_data(relation.target, data)
+                else:
+                    print "Sentence is already in data"
             print "Done!"
             logging.info("Successfully loaded all nlp information to persistence file.")
         except:
@@ -85,15 +89,5 @@ class Nlp_persistence:
         pickle.dump(self.data, open(self.FILE, "wb"))
 
     def _get_tree(self, sentence):
-        nlp = StanfordNLP()
-
-        b = True
-        while b:
-            b = False
-            try:
-                tree = nlp.parse(unicode(sentence.text))
-            except RPCTransportError:
-                logging.error("RPCTransportError in Nlp_persistence for the following sentence in %s: %s", sentence.filename, sentence.text)
-                b = True
-
+        tree = self.nlp.parse_doc(unicode(sentence.text))
         return tree

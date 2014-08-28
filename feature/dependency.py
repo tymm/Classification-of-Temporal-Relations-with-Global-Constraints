@@ -1,6 +1,4 @@
-from helper.stanfordnlp.client import StanfordNLP
 from nltk import word_tokenize
-from helper.stanfordnlp.jsonrpc import RPCTransportError
 import logging
 
 class Dependency:

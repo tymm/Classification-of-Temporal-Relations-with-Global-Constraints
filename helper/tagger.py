@@ -1,5 +1,4 @@
 from simplejson import loads
-from helper.stanfordnlp import jsonrpc
 
 class StanfordNLP:
     def __init__(self):
