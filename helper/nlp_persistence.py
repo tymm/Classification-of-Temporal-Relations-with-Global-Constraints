@@ -8,6 +8,7 @@ class Nlp_persistence:
         self.FILE = "nlp_infos.p"
         self.data = None
         self.corenlp_dir = "helper/stanfordnlp/corenlp-python/stanford-corenlp-full-2013-11-12/"
+        self.corenlp = StanfordCoreNLP(self.corenlp_dir)
 
     def create_persistence(self, relations):
         try:
@@ -89,5 +90,5 @@ class Nlp_persistence:
         pickle.dump(self.data, open(self.FILE, "wb"))
 
     def _get_tree(self, sentence):
-        tree = loads(self.server.parse(sentence.text))
+        tree = self.corenlp.raw_parse(sentence.text)
         return tree
