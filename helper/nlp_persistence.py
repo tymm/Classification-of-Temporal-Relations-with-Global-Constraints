@@ -1,13 +1,13 @@
 import logging
 import cPickle as pickle
-from stanford_corenlp_pywrapper import sockwrap
+from corenlp import StanfordCoreNLP
 
 class Nlp_persistence:
     """Persistence layer for having fast access to information produced by the StanfordCoreNLP tool."""
     def __init__(self):
         self.FILE = "nlp_infos.p"
         self.data = None
-        self.nlp = sockwrap.SockWrap("fullparse", corenlp_libdir="helper/stanfordnlp/stanford-corenlp-full-2014-06-16")
+        self.corenlp_dir = "helper/stanfordnlp/corenlp-python/stanford-corenlp-full-2013-11-12/"
 
     def create_persistence(self, relations):
         try:
@@ -89,5 +89,5 @@ class Nlp_persistence:
         pickle.dump(self.data, open(self.FILE, "wb"))
 
     def _get_tree(self, sentence):
-        tree = self.nlp.parse_doc(unicode(sentence.text))
+        tree = loads(self.server.parse(sentence.text))
         return tree
