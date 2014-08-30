@@ -46,13 +46,13 @@ class TestSet(Set):
 
         return y_predicted
 
-    def _get_feature_data(self, relations, lemma, token):
+    def _get_feature_data(self, relations, lemma, token, nlp_persistence_obj):
         features = []
 
         length = len(relations)
 
         for i, relation in enumerate(relations):
-            f = Feature(relation, lemma, token)
+            f = Feature(relation, lemma, token, nlp_persistence_obj)
             feature = f.get_feature()
             relation.set_feature(feature)
 
