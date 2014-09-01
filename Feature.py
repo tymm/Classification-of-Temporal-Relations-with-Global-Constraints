@@ -136,13 +136,14 @@ class Feature:
     def get_polarity(self):
         polarity = Polarity(self.relation)
 
-        enc = OneHotEncoder(n_values=2, categorical_features=[0,1])
-        enc.fit([1, 1])
+        enc = OneHotEncoder(n_values=3, categorical_features=[0,1])
+        enc.fit([2, 2])
 
         feature = enc.transform([[polarity.source, polarity.target]]).toarray()[0]
         return feature.tolist()
 
     def get_same_polarity(self):
+        """This is an event-event only feature."""
         polarity = Polarity(self.relation)
 
         if polarity.target == polarity.source:
