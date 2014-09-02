@@ -132,13 +132,10 @@ class Feature(unittest.TestCase):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
         text_obj = Text(filename)
 
-        nlp_persistence_obj = Nlp_persistence()
-        nlp_persistence_obj.load()
-
         cls.features = []
 
         for relation in text_obj.relations:
-            f = Features(relation, None, None, nlp_persistence_obj)
+            f = Features(relation, None, None, None, [])
             cls.features.append(f)
 
     def test_SentenceDistance(self):
