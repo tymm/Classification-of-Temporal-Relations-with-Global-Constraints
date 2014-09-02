@@ -6,8 +6,8 @@ class TestSet(Set):
     def __init__(self, load=True, *corpora):
         Set.__init__(self, load, *corpora)
 
-    def classify_existing_event_event_relations(self, classifier, lemma=None, token=None, nlp_persistence_obj=None):
-        features = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj)
+    def classify_existing_event_event_relations(self, classifier, features, lemma=None, token=None, nlp_persistence_obj=None):
+        features = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj, features)
 
         self._produce_predictions(self._event_event_rels, classifier)
 
@@ -16,8 +16,8 @@ class TestSet(Set):
 
         return self._naive_evaluation(y_predicted, y_truth)
 
-    def classify_existing_event_timex_relations(self, classifier, lemma=None, token=None, nlp_persistence_obj=None):
-        features = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj)
+    def classify_existing_event_timex_relations(self, classifier, features, lemma=None, token=None, nlp_persistence_obj=None):
+        features = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj, features)
 
         self._produce_predictions(self._event_timex_rels, classifier)
 
@@ -46,23 +46,23 @@ class TestSet(Set):
 
         return y_predicted
 
-    def _get_feature_data(self, relations, lemma, token, nlp_persistence_obj):
-        features = []
+    def _get_feature_data(self, relations, lemma, token, nlp_persistence_obj, features):
+        X = []
 
         length = len(relations)
 
         for i, relation in enumerate(relations):
-            f = Feature(relation, lemma, token, nlp_persistence_obj)
+            f = Feature(relation, lemma, token, nlp_persistence_obj, features)
             feature = f.get_feature()
             relation.set_feature(feature)
 
-            features.append(feature)
+            X.append(feature)
 
             # Print progress
             self._print_progress(i, length)
 
         print
-        return features
+        return X
 
     def _extract_classes(self, relations):
         y = []

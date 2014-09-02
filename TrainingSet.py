@@ -5,14 +5,14 @@ class TrainingSet(Set):
     def __init__(self, load=True, *corpora):
         Set.__init__(self, load, *corpora)
 
-    def get_classification_data_event_event(self, lemma=None, token=None, nlp_persistence_obj=None):
+    def get_classification_data_event_event(self, features, lemma=None, token=None, nlp_persistence_obj=None):
         X = []
         y = []
 
         length = len(self._event_event_rels)
 
         for i, relation in enumerate(self._event_event_rels):
-            f = Feature(relation, lemma, token, nlp_persistence_obj)
+            f = Feature(relation, lemma, token, nlp_persistence_obj, features)
             feature = f.get_feature()
             relation.set_feature(feature)
 
@@ -25,14 +25,14 @@ class TrainingSet(Set):
         print
         return (X, y)
 
-    def get_classification_data_event_timex(self, lemma=None, token=None, nlp_persistence_obj=None):
+    def get_classification_data_event_timex(self, features, lemma=None, token=None, nlp_persistence_obj=None):
         X = []
         y = []
 
         length = len(self._event_timex_rels)
 
         for i, relation in enumerate(self._event_timex_rels):
-            f = Feature(relation, lemma, token, nlp_persistence_obj)
+            f = Feature(relation, lemma, token, nlp_persistence_obj, features)
             feature = f.get_feature()
             relation.set_feature(feature)
 

@@ -14,20 +14,40 @@ from feature.event_class import Event_class
 import scipy
 
 class Feature:
-    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj):
+    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, features):
         self.relation = relation
+        self.features = features
 
-        self.lemmas = lemmas
-        self.tokens = tokens
-        self.dependency = Dependency(self.relation, nlp_persistence_obj)
+        if "lemma" in self.features:
+            self.lemmas = self.lemmas
+        if "token" in self.features:
+            self.tokens = tokens
+        if "dependency" in self.features:
+            self.dependency = Dependency(self.relation, nlp_persistence_obj)
 
     def get_feature(self):
-        #feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
+        feature = []
+        if "lemma" in self.features:
+            feature += self.get_lemma()
 
-        # All features where no dependency information is needed
-        #feature = self.get_textual_order() + self.get_sentence_distance() + self.get_entity_distance() + self.get_event_class() + self.get_polarity() + self.get_same_class() + self.get_same_polarity() + self.get_duration() + self.get_duration_difference()
-        #feature = self.get_event_class() + self.get_polarity()
-        feature = self.get_dependency_type() + self.get_dependency_order() + self.get_dependency_is_root()
+        if "token" in self.features:
+            feature += self.get_token()
+
+        if "tense" in self.features:
+            feature += self.get_tense()
+
+        if "same_tense" in self.features:
+            feature += self.get_same_tense()
+
+        if "dependency_type" in self.features:
+            feature += self.get_dependency_type()
+
+        if "dependency_order" in self.features:
+            feature += self.get_dependency_order()
+
+        if "dependency_is_root" in self.features:
+            feature += self.get_dependency_is_root()
+
         return feature
 
     def get_duration(self):
