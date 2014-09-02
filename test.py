@@ -6,6 +6,7 @@ from parsexml.fakesentence import FakeSentence
 from parsexml.sentence import Sentence
 from lxml import etree
 from helper.nlp_persistence import Nlp_persistence
+from feature.tense import Tense
 
 class TextStructure(unittest.TestCase):
     @classmethod
@@ -130,11 +131,15 @@ class Feature(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
-        text_obj = Text(filename)
+        self.text_obj = Text(filename)
 
         cls.features = []
 
-        for relation in text_obj.relations:
+        # Set up the CoreNLP persistence layer
+        cls.nlp_layer = Nlp_persistence()
+        cls.nlp_layer.load()
+
+        for relation in self.text_obj.relations:
             f = Features(relation, None, None, None, [])
             cls.features.append(f)
 
@@ -144,6 +149,35 @@ class Feature(unittest.TestCase):
                 print feature.relation.source
                 print feature.relation.target
             self.assertNotEqual(feature.get_sentence_distance()[0], None)
+
+    def test_TenseWhenEventIsNotAVerb(self):
+        # Find relation with event e52, which has no tense, as target
+        rel_e52 = None
+        for relation in self.text_obj.relations:
+            if type(relation.target) == Event:
+                if relation.target.eid == "e52":
+                    rel_e52 = relation
+                    break
+
+        tense = Tense(relation, self.nlp_layer).target
+
+        # Governing verb is "was picked" which is past
+        self.assertEqual(tense, Tense.PAST)
+
+    def test_TenseWhenEventIsNotAVerb_2(self):
+        # Find relation with event e41, which has no tense, as target
+        rel_e41 = None
+        for relation in self.text_obj.relations:
+            if type(relation.target) == Event:
+                if relation.target.eid == "e41":
+                    rel_e41 = relation
+                    break
+
+        tense = Tense(relation, self.nlp_layer).target
+
+        # Sentence: "[...], but this time she's the boss."
+        # Governing verb is "is" which is present
+        self.assertEqual(tense, Tense.PRESENT)
 
 class Sentences(unittest.TestCase):
     @classmethod
