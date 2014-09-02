@@ -1,3 +1,5 @@
+from parsexml.event import Event
+
 class Tense(object):
     PRESENT = 0
     PAST = 1
@@ -17,16 +19,20 @@ class Tense(object):
         return 7
 
     def _get_source(self):
-        source= self.relation.source
-        str_source = source.tense
+        source = self.relation.source
 
-        return self._determine_tense(str_source)
+        if type(source) == Event:
+            return self._determine_tense(source.tense)
+        else:
+            return Tense.NONE
 
     def _get_target(self):
-        target= self.relation.target
-        str_target = target.tense
+        target = self.relation.target
 
-        return self._determine_tense(str_target)
+        if type(target) == Event:
+            return self._determine_tense(target.tense)
+        else:
+            return Tense.NONE
 
     def _determine_tense(self, text):
         if text == "PRESENT":
