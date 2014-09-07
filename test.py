@@ -132,7 +132,7 @@ class Feature(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
-        self.text_obj = Text(filename)
+        cls.text_obj = Text(filename)
 
         cls.features = []
 
@@ -297,6 +297,29 @@ class Tense_chooser(unittest.TestCase):
 
         tense = Tense_chooser("will have been taught")
         self.assertEqual(Tense.FUTURE, tense)
+
+class Tense(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
+
+        cls.text_obj = Text(filename)
+        cls.entities = cls.text_obj.entities_order
+
+        cls.nlp_layer = Nlp_persistence()
+        cls.nlp_layer.load()
+
+        cls.tense = Tense(None, cls.nlp_layer)
+
+    def test_ReturnTenseOfNounByLookingAtGoverningVerb(self):
+        noun_event = self.entities[5]
+        governing_verb_event = self.entities[4]
+
+        governing_verb = self.tense._get_governing_verb(noun_event)
+
+        potential_governing_verb_event = self.tense._try_to_find_governing_verb_as_event(governing_verb, noun_event)
+
+        self.assertEqual(governing_verb_event, potential_governing_verb_event)
 
 if __name__ == '__main__':
     unittest.main()
