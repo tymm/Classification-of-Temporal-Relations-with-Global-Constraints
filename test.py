@@ -7,6 +7,7 @@ from parsexml.sentence import Sentence
 from lxml import etree
 from helper.nlp_persistence import Nlp_persistence
 from feature.tense import Tense
+from helper.tense_chooser import Tense_chooser
 
 class TextStructure(unittest.TestCase):
     @classmethod
@@ -232,6 +233,70 @@ class Sentences(unittest.TestCase):
 
         r = self.sentence._is_verb("Finally", info)
         self.assertEqual(r, False)
+
+class Tense_chooser(unittest.TestCase):
+    def test_IsPresentTenseRecognized(self):
+        tense = Tense_chooser("teaches")
+        self.assertEqual(Tense.PRESENT, tense)
+
+        tense = Tense_chooser("is teaching")
+        self.assertEqual(Tense.PRESENT, tense)
+
+        tense = Tense_chooser("has taught")
+        self.assertEqual(Tense.PRESENT, tense)
+
+        tense = Tense_chooser("has been teaching")
+        self.assertEqual(Tense.PRESENT, tense)
+
+        tense = Tense_chooser("is taught")
+        self.assertEqual(Tense.PRESENT, tense)
+
+        tense = Tense_chooser("is being taught")
+        self.assertEqual(Tense.PRESENT, tense)
+
+        tense = Tense_chooser("has been taught")
+        self.assertEqual(Tense.PRESENT, tense)
+
+    def test_IsPastTenseRecognized(self):
+        tense = Tense_chooser("taught")
+        self.assertEqual(Tense.PAST, tense)
+
+        tense = Tense_chooser("was teaching")
+        self.assertEqual(Tense.PAST, tense)
+
+        tense = Tense_chooser("had taught")
+        self.assertEqual(Tense.PAST, tense)
+
+        tense = Tense_chooser("had been teaching")
+        self.assertEqual(Tense.PAST, tense)
+
+        tense = Tense_chooser("was taught")
+        self.assertEqual(Tense.PAST, tense)
+
+        tense = Tense_chooser("was being taught")
+        self.assertEqual(Tense.PAST, tense)
+
+        tense = Tense_chooser("had been taught")
+        self.assertEqual(Tense.PAST, tense)
+
+    def test_IsFutureTenseRecognized(self):
+        tense = Tense_chooser("will teach")
+        self.assertEqual(Tense.FUTURE, tense)
+
+        tense = Tense_chooser("will be teaching")
+        self.assertEqual(Tense.FUTURE, tense)
+
+        tense = Tense_chooser("will have taught")
+        self.assertEqual(Tense.FUTURE, tense)
+
+        tense = Tense_chooser("will have been teaching")
+        self.assertEqual(Tense.FUTURE, tense)
+
+        tense = Tense_chooser("will be taught")
+        self.assertEqual(Tense.FUTURE, tense)
+
+        tense = Tense_chooser("will have been taught")
+        self.assertEqual(Tense.FUTURE, tense)
 
 if __name__ == '__main__':
     unittest.main()
