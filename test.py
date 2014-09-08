@@ -8,12 +8,20 @@ from lxml import etree
 from helper.nlp_persistence import Nlp_persistence
 from feature.tense import Tense
 from helper.tense_chooser import Tense_chooser
+from Set import Set
 
 class TextStructure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
         cls.text_obj = Text(filename)
+
+        cls.all_data = Set(False, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/", "data/test/te3-platinum/")
+
+    def test_AreThereNoNonesInEntitiesOrder(self):
+        for text_obj in self.all_data.text_objects:
+            for entity in text_obj.entities_order:
+                self.assertNotEqual(entity, None)
 
     def test_GetAnEntitiesSentenceByEnitity(self):
         entities_ordered = self.text_obj.text_structure.get_entities_ordered()
