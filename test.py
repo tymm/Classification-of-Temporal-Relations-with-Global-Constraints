@@ -10,6 +10,21 @@ from feature.tense import Tense
 from helper.tense_chooser import Tense_chooser
 from Set import Set
 
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class NLP_cache(object):
+    """Use this singleton so that not every test case has to reload the nlp cache."""
+    __metaclass__ = Singleton
+
+    # Set up the CoreNLP persistence layer
+    nlp_layer = Nlp_persistence()
+    nlp_layer.load()
+
 class TextStructure(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -144,9 +159,6 @@ class Feature(unittest.TestCase):
 
         cls.features = []
 
-        # Set up the CoreNLP persistence layer
-        cls.nlp_layer = Nlp_persistence()
-        cls.nlp_layer.load()
 
         for relation in self.text_obj.relations:
             f = Features(relation, None, None, None, [])
@@ -206,8 +218,8 @@ class Sentences(unittest.TestCase):
         cls.sentence = Sentence(event_node, filename)
 
         # Set up the CoreNLP persistence layer
-        cls.nlp_layer = Nlp_persistence()
-        cls.nlp_layer.load()
+        singleton = NLP_cache()
+        cls.nlp_layer = singleton.nlp_layer
 
     def test_CheckIfGoverningVerbIsCorrect(self):
         # Easy case - direct dependency to taken
@@ -314,8 +326,9 @@ class Tense(unittest.TestCase):
         cls.text_obj = Text(filename)
         cls.entities = cls.text_obj.entities_order
 
-        cls.nlp_layer = Nlp_persistence()
-        cls.nlp_layer.load()
+        # Set up the CoreNLP persistence layer
+        singleton = NLP_cache()
+        cls.nlp_layer = singleton.nlp_layer
 
         cls.tense = Tense(None, cls.nlp_layer)
 
