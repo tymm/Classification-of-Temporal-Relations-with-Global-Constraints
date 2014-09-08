@@ -106,8 +106,10 @@ class Text_structure:
             # Since we are only interested in the structure of the text here, just get one entity even if there are more than one for entity_node
             entity = self._get_entity_by_node(entity_node)
 
-            self._entities_ordered.append(entity)
-            self._entity_nodes_ordered.append(entity_node)
+            # Some entities in <TEXT></TEXT> have no <MAKEINSTANCE></MAKEINSTANCE> entry
+            if entity is not None:
+                self._entities_ordered.append(entity)
+                self._entity_nodes_ordered.append(entity_node)
 
     def _build_structure(self):
         for entity_node in self._entity_nodes_ordered:
