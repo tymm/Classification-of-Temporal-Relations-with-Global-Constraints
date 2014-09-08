@@ -105,7 +105,7 @@ class Tense(object):
             close_event_index = entities.index(close_event)
 
             diff_smallest = indexes[0]
-            index_smallest = None
+            index_smallest = 0
             for index in indexes:
                 diff = abs(index - close_event_index)
                 if diff_smallest >= diff:
