@@ -9,6 +9,7 @@ class Tense(object):
     PRESPART = 4
     PASTPART = 5
     NONE = 6
+    TIMEX = 7
 
     def __init__(self, relation, nlp_persistence_obj):
         self.relation = relation
@@ -26,7 +27,7 @@ class Tense(object):
         if type(source) == Event:
             return self._determine_tense(source)
         else:
-            return Tense.NONE
+            return Tense.TIMEX
 
     def _get_target(self):
         target = self.relation.target
@@ -34,7 +35,7 @@ class Tense(object):
         if type(target) == Event:
             return self._determine_tense(target)
         else:
-            return Tense.NONE
+            return Tense.TIMEX
 
     def _determine_tense(self, event):
         text = event.tense
