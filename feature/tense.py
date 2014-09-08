@@ -103,16 +103,16 @@ class Tense(object):
         if len(indexes) != 0:
             close_event_index = entities.index(close_event)
 
-            diff_smallest = indexes[0]
-            smallest = 0
+            diff_smallest = abs(indexes[0] - close_event_index)
+            smallest = indexes[0]
+
             for index in indexes:
                 diff = abs(index - close_event_index)
-                if diff_smallest >= diff:
+                if diff_smallest > diff:
                     diff_smallest = diff
                     smallest = index
 
-            return entities[indexes[smallest]]
-
+            return entities[smallest]
         else:
             return None
 
