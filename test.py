@@ -9,6 +9,7 @@ from helper.nlp_persistence import Nlp_persistence
 from feature.tense import Tense
 from helper.tense_chooser import Tense_chooser
 from Set import Set
+from parsexml.event import Event
 
 class Singleton(type):
     _instances = {}
@@ -159,8 +160,7 @@ class Feature(unittest.TestCase):
 
         cls.features = []
 
-
-        for relation in self.text_obj.relations:
+        for relation in cls.text_obj.relations:
             f = Features(relation, None, None, None, [])
             cls.features.append(f)
 
@@ -170,35 +170,6 @@ class Feature(unittest.TestCase):
                 print feature.relation.source
                 print feature.relation.target
             self.assertNotEqual(feature.get_sentence_distance()[0], None)
-
-    def test_TenseWhenEventIsNotAVerb(self):
-        # Find relation with event e52, which has no tense, as target
-        rel_e52 = None
-        for relation in self.text_obj.relations:
-            if type(relation.target) == Event:
-                if relation.target.eid == "e52":
-                    rel_e52 = relation
-                    break
-
-        tense = Tense(relation, self.nlp_layer).target
-
-        # Governing verb is "was picked" which is past
-        self.assertEqual(tense, Tense.PAST)
-
-    def test_TenseWhenEventIsNotAVerb_2(self):
-        # Find relation with event e41, which has no tense, as target
-        rel_e41 = None
-        for relation in self.text_obj.relations:
-            if type(relation.target) == Event:
-                if relation.target.eid == "e41":
-                    rel_e41 = relation
-                    break
-
-        tense = Tense(relation, self.nlp_layer).target
-
-        # Sentence: "[...], but this time she's the boss."
-        # Governing verb is "is" which is present
-        self.assertEqual(tense, Tense.PRESENT)
 
 class Sentences(unittest.TestCase):
     @classmethod
@@ -318,19 +289,22 @@ class Tense_chooser(unittest.TestCase):
         tense = Tense_chooser("will have been taught")
         self.assertEqual(Tense.FUTURE, tense)
 
-class Tense(unittest.TestCase):
+class TenseFeature(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
+        filename_second = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
 
         cls.text_obj = Text(filename)
+        cls.text_obj_second = Text(filename_second)
+
         cls.entities = cls.text_obj.entities_order
 
         # Set up the CoreNLP persistence layer
         singleton = NLP_cache()
         cls.nlp_layer = singleton.nlp_layer
 
-        cls.tense = Tense(None, cls.nlp_layer)
+        cls.tense = Tense(cls.text_obj.relations[0], cls.nlp_layer)
 
     def test_ReturnTenseOfNounByLookingAtGoverningVerb(self):
         noun_event = self.entities[5]
@@ -341,6 +315,20 @@ class Tense(unittest.TestCase):
         potential_governing_verb_event = self.tense._try_to_find_governing_verb_as_event(governing_verb, noun_event)
 
         self.assertEqual(governing_verb_event, potential_governing_verb_event)
+
+    def test_TenseWhenEventIsNotAVerb(self):
+        # Find relation with event e52 with text "astronaut", which has no tense, as target
+        rel_e52 = None
+        for relation in self.text_obj_second.relations:
+            if type(relation.target) == Event:
+                if relation.target.eid == "e52":
+                    rel_e52 = relation
+                    break
+
+        tense = Tense(relation, self.nlp_layer).target
+
+        # Governing verb is "was picked" which is past
+        self.assertEqual(tense, Tense.PAST)
 
 if __name__ == '__main__':
     unittest.main()
