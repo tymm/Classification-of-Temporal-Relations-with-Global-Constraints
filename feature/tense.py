@@ -90,29 +90,28 @@ class Tense(object):
         # Search for governing verb in entities
         indexes = []
         for entity in entities:
-            if entity is None:
-                print entities
-                print text_obj.filename
             if aux:
                 if entity.text == aux + " " + verb or entity.text == verb:
-                    indexes.append(entities.index(entity))
+                    if type(entity) == Event:
+                        indexes.append(entities.index(entity))
             else:
                 if entity.text == verb:
-                    indexes.append(entities.index(entity))
+                    if type(entity) == Event:
+                        indexes.append(entities.index(entity))
 
         # Choose the entity which is the closest to the event
         if len(indexes) != 0:
             close_event_index = entities.index(close_event)
 
             diff_smallest = indexes[0]
-            index_smallest = 0
+            smallest = 0
             for index in indexes:
                 diff = abs(index - close_event_index)
                 if diff_smallest >= diff:
                     diff_smallest = diff
-                    index_smallest = index
+                    smallest = index
 
-            return entities[index_smallest]
+            return entities[indexes[smallest]]
 
         else:
             return None
