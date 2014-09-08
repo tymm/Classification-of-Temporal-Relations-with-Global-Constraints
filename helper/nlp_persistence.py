@@ -55,15 +55,17 @@ class Nlp_persistence:
         data.update({sentence_obj: tree})
 
     def load(self):
-        try:
-            data = pickle.load(open(self.FILE, "rb"))
-        except IOError:
-            logging.warning("No cached nlp data.")
+        if self.data is None:
+            try:
+                data = pickle.load(open(self.FILE, "rb"))
+            except IOError:
+                logging.warning("No cached nlp data.")
 
-            self.data = {}
-            return self.data
+                self.data = {}
+                return self.data
+            finally:
+                self.data = data
 
-        self.data = data
         return self.data
 
     def get_info_for_sentence(self, sentence):
