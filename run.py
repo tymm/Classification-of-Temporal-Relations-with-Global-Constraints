@@ -34,7 +34,7 @@ if __name__ == "__main__":
         lemma = Lemma(training)
     if "token" in features:
         token = Token(training)
-    if "dependency_types" in features or "dependency_is_root" in features or "dependency_order" in features:
+    if "dependency_types" in features or "dependency_is_root" in features or "dependency_order" in features or "tense" in features:
         nlp_persistence = Nlp_persistence()
         print "Loading NLP data from file."
         nlp_persistence.load()
