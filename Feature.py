@@ -1,4 +1,5 @@
 from feature.tense import Tense
+from feature.aspect import Aspect
 from feature.same_tense import Same_tense
 from feature.same_aspect import Same_aspect
 from feature.same_class import Same_class
@@ -17,6 +18,7 @@ class Feature:
     def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, features):
         self.relation = relation
         self.features = features
+        self.nlp_persistence_obj = nlp_persistence_obj
 
         if "lemma" in self.features:
             self.lemmas = self.lemmas
@@ -38,6 +40,9 @@ class Feature:
 
         if "same_tense" in self.features:
             feature += self.get_same_tense()
+
+        if "aspect" in self.features:
+            feature += self.get_aspect()
 
         if "dependency_type" in self.features:
             feature += self.get_dependency_type()
@@ -138,9 +143,19 @@ class Feature:
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
         enc.fit([n_values-1, n_values-1])
 
-        tense = Tense(self.relation)
+        tense = Tense(self.relation, self.nlp_persistence_obj)
 
         feature = enc.transform([[tense.source, tense.target]]).toarray()[0]
+        return feature.tolist()
+
+    def get_aspect(self):
+        n_values = Aspect.get_length()
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc.fit([n_values-1, n_values-1])
+
+        aspect = Aspect(self.relation, self.nlp_persistence_obj)
+
+        feature = enc.transform([[aspect.source, aspect.target]]).toarray()[0]
         return feature.tolist()
 
     def get_event_class(self):
