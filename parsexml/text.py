@@ -5,6 +5,7 @@ from parsexml.relationtype import RelationType
 from parsexml.relation import Relation
 from Feature import Feature
 from helper.output import Output
+from parsexml.event import Event
 
 class Text:
     def __init__(self, filename):
@@ -74,3 +75,62 @@ class Text:
         output = Output(self.filename)
         output.create_relations(self.relations)
         output.write()
+
+    def try_to_find_governing_verb_as_event(self, governing_verb, close_event):
+        text_obj = close_event.parent
+        entities = close_event.parent.entities_order
+
+        verb = None
+        aux = None
+        if len(governing_verb.split()) == 1:
+            # no aux
+            verb = governing_verb
+        else:
+            # aux and verb
+            aux = governing_verb.split()[0]
+            verb = governing_verb.split()[1]
+
+        # Search for governing verb in entities
+        indexes = []
+        for entity in entities:
+            if aux:
+                if entity.text == aux + " " + verb or entity.text == verb:
+                    if type(entity) == Event:
+                        indexes.append(entities.index(entity))
+            else:
+                if entity.text == verb:
+                    if type(entity) == Event:
+                        indexes.append(entities.index(entity))
+
+        # Choose the entity which is the closest to the event
+        if len(indexes) != 0:
+            close_event_index = entities.index(close_event)
+
+            diff_smallest = abs(indexes[0] - close_event_index)
+            smallest = indexes[0]
+
+            for index in indexes:
+                diff = abs(index - close_event_index)
+                if diff_smallest > diff:
+                    diff_smallest = diff
+                    smallest = index
+
+            return entities[smallest]
+        else:
+            return None
+
+
+class PosTagNotFound(Exception):
+    def __init__(self, sentence, word):
+        self.sentence = sentence
+        self.word = word
+
+    def __str__(self):
+        return repr("Could not find POS tag for '" + self.word + "' in sentence: '" + self.sentence.text + "' in file " + self.sentence.filename)
+
+class AuxNotFound(Exception):
+    def __init__(self, aux):
+        self.aux = aux
+
+    def __str__(self):
+        return repr("Could not find verb for aux \"" + self.aux + "\" in dependency relation")

@@ -94,3 +94,61 @@ class Nlp_persistence:
     def _get_tree(self, sentence):
         tree = self.corenlp.raw_parse(sentence.text)
         return tree
+
+    def get_pos_tag_for_word(self, sentence, word):
+        """Returns the POS tag for a word in a sentence. If the word is not in the sentence raise WordNotInSentence error."""
+        info_sentence = self.get_info_for_sentence(sentence)
+        words = info_sentence['sentences'][0]['words']
+
+        for w in words:
+            if w[0] == word:
+                return w[1]["PartOfSpeech"]
+        else:
+            raise PosTagNotFound(sentence, word)
+
+    def is_main_verb(self, sentence, word):
+        """Returns true if word is a main verb of sentence and not an aux."""
+        info_sentence = self.get_info_for_sentence(sentence)
+        dependencies = info_sentence['sentences'][0]['dependencies']
+
+        for dependency in dependencies:
+            if dependency[0] == "aux" and dependency[2] == word:
+                return False
+        else:
+            return True
+
+    def get_all_aux_for_verb(self, sentence, verb):
+        """Returns all distinct aux for verb as strings in order of the sentence."""
+        info_sentence = self.get_info_for_sentence(sentence)
+        dependencies = info_sentence['sentences'][0]['dependencies']
+
+        aux = []
+        for dependency in dependencies:
+            if dependency[0] == "aux" and dependency[1] == verb:
+                aux.append(dependency[2])
+
+        return aux
+
+    def get_verb_for_aux(self, sentence, aux):
+        """Returns the governing verb for the aux as string."""
+        info_sentence = self.get_info_for_sentence(sentence)
+        dependencies = info_sentence['sentences'][0]['dependencies']
+
+        for dependency in dependencies:
+            if dependency[0] == "aux" and dependency[2] == aux:
+                return dependency[1]
+        else:
+            raise AuxNotFound(aux)
+
+    def get_governing_verb(self, event):
+        sentence = event.sentence
+
+        # info = [verb, aux, pos verb, pos aux]
+        info = sentence.get_info_on_governing_verb(event.text, self)
+
+        if info is None:
+            return None
+        #elif info[1]:
+        #  return info[1] + " " + info[0]
+        else:
+           return info[0]
