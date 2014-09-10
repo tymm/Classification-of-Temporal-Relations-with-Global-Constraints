@@ -41,7 +41,6 @@ class Tense_chooser:
         elif self.is_Future(tags):
             return self.FUTURE
         else:
-            print tags
             return self.NONE
 
 
