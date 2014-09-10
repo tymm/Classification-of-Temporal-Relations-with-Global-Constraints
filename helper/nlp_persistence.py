@@ -58,7 +58,7 @@ class Nlp_persistence:
         if self.data is None:
             try:
                 data = pickle.load(open(self.FILE, "rb"))
-            except IOError:
+            except (IOError, EOFError):
                 logging.warning("No cached nlp data.")
 
                 data = {}
@@ -124,7 +124,7 @@ class Nlp_persistence:
 
         aux = []
         for dependency in dependencies:
-            if dependency[0] == "aux" and dependency[1] == verb:
+            if (dependency[0] == "aux" or dependency[0] == "auxpass") and dependency[1] == verb:
                 aux.append(dependency[2])
 
         return aux
