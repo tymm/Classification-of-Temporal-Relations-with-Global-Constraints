@@ -17,7 +17,7 @@ class Tense_chooser:
         """The argument event must be an event in the same sentence as the verb text we want to get the tense for."""
         sentence = event.sentence
 
-        tags = self.nlp_persistence_obj.find_all_verb_tags(sentence, verb)
+        tags = self.nlp_persistence_obj.find_all_verb_pos_tags(sentence, verb)
 
         if self.is_Present(tags):
             return self.PRESENT
@@ -32,7 +32,7 @@ class Tense_chooser:
         """This is basically the same as get_tense() and it's only purpose is for testing."""
         fake_sentence = FakeSentence(sentence)
 
-        tags = self.nlp_persistence_obj.find_all_verb_tags(fake_sentence, verb)
+        tags = self.nlp_persistence_obj.find_all_verb_pos_tags(fake_sentence, verb)
 
         if self.is_Present(tags):
             return self.PRESENT
