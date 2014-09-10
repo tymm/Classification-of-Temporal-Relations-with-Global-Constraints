@@ -140,6 +140,24 @@ class Nlp_persistence:
         else:
             raise AuxNotFound(aux)
 
+    def find_all_verb_pos_tags(self, sentence, event_text):
+        """Returns all pos tags for all verbs based on the dependencies relation of the sentence."""
+
+        if self.is_main_verb(sentence, event_text):
+            # event_text is not an aux
+            main_verb = event_text
+        else:
+            # event_text is aux (this should normally not happen due to the data)
+            main_verb = self.get_verb_for_aux(sentence, event_text)
+
+        auxes = self.get_all_aux_for_verb(sentence, main_verb)
+
+        verb_pos = self.get_pos_tag_for_word(sentence, main_verb)
+
+        aux_pos = map(lambda aux: self.get_pos_tag_for_word(sentence, aux), auxes)
+
+        return aux_pos + [verb_pos]
+
     def get_governing_verb(self, event):
         sentence = event.sentence
 
