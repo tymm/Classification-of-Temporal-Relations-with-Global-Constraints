@@ -61,12 +61,12 @@ class Nlp_persistence:
             except IOError:
                 logging.warning("No cached nlp data.")
 
-                self.data = {}
-                return self.data
+                data = {}
             finally:
                 self.data = data
-
-        return self.data
+        else:
+            # Data is already there - there is nothing to do
+            pass
 
     def get_info_for_sentence(self, sentence):
         if type(self.data) is dict:
@@ -155,6 +155,7 @@ class Nlp_persistence:
         verb_pos = self.get_pos_tag_for_word(sentence, main_verb)
 
         aux_pos = map(lambda aux: self.get_pos_tag_for_word(sentence, aux), auxes)
+        print aux_pos
 
         return aux_pos + [verb_pos]
 
