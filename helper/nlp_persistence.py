@@ -155,7 +155,6 @@ class Nlp_persistence:
         verb_pos = self.get_pos_tag_for_word(sentence, main_verb)
 
         aux_pos = map(lambda aux: self.get_pos_tag_for_word(sentence, aux), auxes)
-        print aux_pos
 
         return aux_pos + [verb_pos]
 
