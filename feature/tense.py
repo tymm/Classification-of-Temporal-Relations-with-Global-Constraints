@@ -56,76 +56,22 @@ class Tense(object):
             if event.pos_xml == "NOUN" or event.pos_xml == "ADJECTIVE" or event.pos_xml == "PREPOSITION" or event.pos_xml == "PREP":
                 # The event is noun, adjective or preposition
                 # Let's return the tense of the governing verb
-                governing_verb = self._get_governing_verb(event)
+                governing_verb = self.nlp_persistence_obj.get_governing_verb(event)
 
                 if governing_verb is not None:
                     # Check if the governing verb has an entry with a tense (prefered method because we don't have to guess the tense then)
-                    governing_verb_as_event = self._try_to_find_governing_verb_as_event(governing_verb, event)
+                    text_obj = self.relation.parent
+                    governing_verb_as_event = text_obj.try_to_find_governing_verb_as_event(governing_verb, event)
 
                     if governing_verb_as_event and governing_verb_as_event.tense != Tense.NONE:
                         # We found the governing verb as an event
                         return self._determine_tense(governing_verb_as_event)
                     else:
                         # Let's guess the tense
-                        # return Tense_chooser.get_tense(governing_verb)
-                        return Tense.NONE
+                        tense_chooser = Tense_chooser(self.nlp_persistence_obj)
+                        return tense_chooser.get_tense(event, governing_verb)
                 else:
                     return Tense.NONE
             else:
-                return Tense.NONE
-
-    def _try_to_find_governing_verb_as_event(self, governing_verb, close_event):
-        text_obj = close_event.parent
-        entities = close_event.parent.entities_order
-
-        verb = None
-        aux = None
-        if len(governing_verb.split()) == 1:
-            # no aux
-            verb = governing_verb
-        else:
-            # aux and verb
-            aux = governing_verb.split()[0]
-            verb = governing_verb.split()[1]
-
-        # Search for governing verb in entities
-        indexes = []
-        for entity in entities:
-            if aux:
-                if entity.text == aux + " " + verb or entity.text == verb:
-                    if type(entity) == Event:
-                        indexes.append(entities.index(entity))
-            else:
-                if entity.text == verb:
-                    if type(entity) == Event:
-                        indexes.append(entities.index(entity))
-
-        # Choose the entity which is the closest to the event
-        if len(indexes) != 0:
-            close_event_index = entities.index(close_event)
-
-            diff_smallest = abs(indexes[0] - close_event_index)
-            smallest = indexes[0]
-
-            for index in indexes:
-                diff = abs(index - close_event_index)
-                if diff_smallest > diff:
-                    diff_smallest = diff
-                    smallest = index
-
-            return entities[smallest]
-        else:
-            return None
-
-    def _get_governing_verb(self, event):
-        sentence = event.sentence
-
-        # info = [verb, aux, pos verb, pos aux]
-        info = sentence.get_info_on_governing_verb(event.text, self.nlp_persistence_obj)
-
-        if info is None:
-            return None
-        elif info[1]:
-           return info[1] + " " + info[0]
-        else:
-           return info[0]
+                tense_chooser = Tense_chooser(self.nlp_persistence_obj)
+                return tense_chooser.get_tense(event, event.text)
