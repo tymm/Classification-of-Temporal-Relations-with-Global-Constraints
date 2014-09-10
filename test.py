@@ -225,68 +225,94 @@ class Sentences(unittest.TestCase):
         r = self.sentence._is_verb("Finally", info)
         self.assertEqual(r, False)
 
-class Tense_chooser(unittest.TestCase):
+class TenseChoosing(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Set up the CoreNLP persistence layer
+        singleton = NLP_cache()
+        cls.nlp_layer = singleton.nlp_layer
+
     def test_IsPresentTenseRecognized(self):
-        tense = Tense_chooser("teaches")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He teaches math in school.", "teaches")
         self.assertEqual(Tense.PRESENT, tense)
 
-        tense = Tense_chooser("is teaching")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He is teaching math in school.", "teaching")
         self.assertEqual(Tense.PRESENT, tense)
 
-        tense = Tense_chooser("has taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He has taught math in school.", "taught")
         self.assertEqual(Tense.PRESENT, tense)
 
-        tense = Tense_chooser("has been teaching")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He has been teaching math in school.", "teaching")
         self.assertEqual(Tense.PRESENT, tense)
 
-        tense = Tense_chooser("is taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He is taught math by his favorite teacher.", "taught")
         self.assertEqual(Tense.PRESENT, tense)
 
-        tense = Tense_chooser("is being taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He is being taught math by his favorite teacher.", "taught")
         self.assertEqual(Tense.PRESENT, tense)
 
-        tense = Tense_chooser("has been taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He has been taught math by his favorite teacher.", "taught")
         self.assertEqual(Tense.PRESENT, tense)
 
     def test_IsPastTenseRecognized(self):
-        tense = Tense_chooser("taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He taught math in school.", "taught")
         self.assertEqual(Tense.PAST, tense)
 
-        tense = Tense_chooser("was teaching")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He was teaching math in school.", "teaching")
         self.assertEqual(Tense.PAST, tense)
 
-        tense = Tense_chooser("had taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He had taught math in school.", "taught")
         self.assertEqual(Tense.PAST, tense)
 
-        tense = Tense_chooser("had been teaching")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He had been teaching math in school.", "teaching")
         self.assertEqual(Tense.PAST, tense)
 
-        tense = Tense_chooser("was taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He was taught math by his favorite teacher.", "taught")
         self.assertEqual(Tense.PAST, tense)
 
-        tense = Tense_chooser("was being taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He was being taught math by his favorite teacher in school.", "taught")
         self.assertEqual(Tense.PAST, tense)
 
-        tense = Tense_chooser("had been taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He had been taught math by his favorite teacher in school.", "taught")
         self.assertEqual(Tense.PAST, tense)
 
     def test_IsFutureTenseRecognized(self):
-        tense = Tense_chooser("will teach")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He will teach math in school.", "teach")
         self.assertEqual(Tense.FUTURE, tense)
 
-        tense = Tense_chooser("will be teaching")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He will be teaching math in school.", "teaching")
         self.assertEqual(Tense.FUTURE, tense)
 
-        tense = Tense_chooser("will have taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He will have taught math in school.", "taught")
         self.assertEqual(Tense.FUTURE, tense)
 
-        tense = Tense_chooser("will have been teaching")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He will have been teaching math in school.", "teaching")
         self.assertEqual(Tense.FUTURE, tense)
 
-        tense = Tense_chooser("will be taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He will be taught by Mr. Peterson in school.", "taught")
         self.assertEqual(Tense.FUTURE, tense)
 
-        tense = Tense_chooser("will have been taught")
+        tense_chooser = Tense_chooser(self.nlp_layer)
+        tense = tense_chooser.get_tense_only_for_tests("He will have been taught by Mr. Peterson in school.", "taught")
         self.assertEqual(Tense.FUTURE, tense)
 
 class TenseFeature(unittest.TestCase):
