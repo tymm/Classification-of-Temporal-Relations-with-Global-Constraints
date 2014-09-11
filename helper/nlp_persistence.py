@@ -10,6 +10,13 @@ class Nlp_persistence:
         self.corenlp_dir = "helper/stanfordnlp/corenlp-python/stanford-corenlp-full-2013-11-12/"
         self.corenlp = StanfordCoreNLP(self.corenlp_dir)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        # When exiting, update pickle file with new sentences
+        self._write()
+
     def create_persistence(self, relations):
         try:
             # Trying to load data
@@ -80,7 +87,6 @@ class Nlp_persistence:
 
                 # Drive by caching
                 self.data.update({sentence: tree})
-                self._write()
 
                 return tree
         else:
