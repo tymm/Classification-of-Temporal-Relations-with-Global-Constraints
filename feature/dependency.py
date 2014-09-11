@@ -16,124 +16,93 @@ class Dependency:
             self.sentence = self.relation.target.sentence
             self.tree = nlp_persistence_obj.get_info_for_sentence(self.sentence)
 
-    def get_dependency_type(self):
-        if self.tree:
-            # Both entities are in the same sentence
+            # Get collapsed dependency relations
             try:
-                dependencies = self.tree['sentences'][0]['dependencies']
+                self.collapsed_dependencies = self.tree['sentences'][0]['dependencies']
             except IndexError:
                 return None
 
-            for dependency in dependencies:
-                a = dependency[1]
-                b = dependency[2]
-                type = dependency[0]
 
-                if (a == self.source.text or a == self.target.text) and (b == self.source.text or b == self.target.text):
-                    # Return index of dependency relation type
-                    try:
-                        return self.dependency_types.index(type)
-                    except ValueError:
-                        logging.error("Dependency feature: Do not know %s", type)
-                        return 0
-            else:
-                return None
+    def get_dependency_type(self):
+        for dependency in self.collapsed_dependencies:
+            a = dependency[1]
+            b = dependency[2]
+            type = dependency[0]
 
+            if (a == self.source.text or a == self.target.text) and (b == self.source.text or b == self.target.text):
+                # Return index of dependency relation type
+                try:
+                    return self.dependency_types.index(type)
+                except ValueError:
+                    logging.error("Dependency feature: Do not know %s", type)
+                    return 0
         else:
             return None
 
     def is_source_root(self):
-        if self.tree:
-            try:
-                dependencies = self.tree['sentences'][0]['dependencies']
-            except IndexError:
-                return None
+        for dependency in self.collapsed_dependencies:
+            b = dependency[2]
+            type = dependency[0]
 
-            for dependency in dependencies:
-                b = dependency[2]
-                type = dependency[0]
-
-                if type == "root" and b == self.source.text:
-                    return True
-            else:
-                return False
-
+            if type == "root" and b == self.source.text:
+                return True
         else:
-            return None
-
+            return False
 
     def is_target_root(self):
-        if self.tree:
-            try:
-                dependencies = self.tree['sentences'][0]['dependencies']
-            except IndexError:
-                return None
+        for dependency in self.collapsed_dependencies:
+            b = dependency[2]
+            type = dependency[0]
 
-            for dependency in dependencies:
-                b = dependency[2]
-                type = dependency[0]
-
-                if type == "root" and b == self.target.text:
-                    return True
-            else:
-                return False
-
+            if type == "root" and b == self.target.text:
+                return True
         else:
-            return None
+            return False
 
     def get_dependency_order(self):
-        if self.tree:
-            try:
-                dependencies = self.tree['sentences'][0]['dependencies']
-            except IndexError:
-                return None
+        sentence_tokens = word_tokenize(self.sentence.text)
 
-            sentence_tokens = word_tokenize(self.sentence.text)
+        # Find governor/root
+        governor_text = None
+        governor_index = None
+        dependent_index = None
 
-            # Find governor/root
-            governor_text = None
-            governor_index = None
-            dependent_index = None
+        is_source_governor = False
+        is_target_governor = False
 
-            is_source_governor = False
-            is_target_governor = False
+        for dependency in self.collapsed_dependencies:
+            type = dependency[0]
+            entity_text = dependency[2]
 
-            for dependency in dependencies:
-                type = dependency[0]
-                entity_text = dependency[2]
+            if type == "root":
+                governor_text = entity_text
+                break
 
-                if type == "root":
-                    governor_text = entity_text
-                    break
+        try:
+            if governor_text == self.source.text:
+                # Source is the governor - let's take a look where it is in the sentence
+                governor_index = sentence_tokens.index(governor_text)
+                is_source_governor = True
 
-            try:
-                if governor_text == self.source.text:
-                    # Source is the governor - let's take a look where it is in the sentence
-                    governor_index = sentence_tokens.index(governor_text)
-                    is_source_governor = True
+            elif governor_text == self.target.text:
+                # Target is the governor - let's take a look where it is in the sentence
+                governor_index = sentence_tokens.index(governor_text)
+                is_target_governor = True
 
-                elif governor_text == self.target.text:
-                    # Target is the governor - let's take a look where it is in the sentence
-                    governor_index = sentence_tokens.index(governor_text)
-                    is_target_governor = True
+            if is_source_governor:
+                # Find the position of target
+                dependent_index = sentence_tokens.index(self.target.text)
+            elif is_target_governor:
+                # Find the position of source
+                dependent_index = sentence_tokens.index(self.source.text)
 
-                if is_source_governor:
-                    # Find the position of target
-                    dependent_index = sentence_tokens.index(self.target.text)
-                elif is_target_governor:
-                    # Find the position of source
-                    dependent_index = sentence_tokens.index(self.source.text)
-
-            except ValueError:
-                # TODO: This shouldn't happen - It does though
-                return None
-
-            if governor_index > dependent_index:
-                return 0
-            elif governor_index < dependent_index:
-                return 1
-            else:
-                return 2
-
-        else:
+        except ValueError:
+            # TODO: This shouldn't happen - It does though
             return None
+
+        if governor_index > dependent_index:
+            return 0
+        elif governor_index < dependent_index:
+            return 1
+        else:
+            return 2
