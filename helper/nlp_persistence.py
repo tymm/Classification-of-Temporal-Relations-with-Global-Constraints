@@ -15,6 +15,9 @@ class Nlp_persistence:
         return self
 
     def __exit__(self, type, value, traceback):
+        self.close()
+
+    def close(self):
         # When exiting, update pickle file with new sentences and kill StanfordCoreNLP before so we definitely have enough memory for that
         del(self.corenlp)
 

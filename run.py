@@ -13,7 +13,7 @@ if __name__ == "__main__":
     logging.basicConfig(filename='logs',level=logging.DEBUG)
 
     # Define features
-    features = ["tense"]
+    features = ["aspect", "tense"]
 
     # Creating xml mapping objects from scratch with "False" as first argument
     load = False
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         lemma = Lemma(training)
     if "token" in features:
         token = Token(training)
-    if "dependency_types" in features or "dependency_is_root" in features or "dependency_order" in features or "tense" in features:
+    if "dependency_types" in features or "dependency_is_root" in features or "dependency_order" in features or "tense" in features or "aspect" in features:
         nlp_persistence = Nlp_persistence()
         print "Loading NLP data from file."
         nlp_persistence.load()
@@ -66,3 +66,6 @@ if __name__ == "__main__":
 
     print "Creating the evaluation data"
     test.create_evaluation_files()
+
+    # Close NLP cache and write new sentences to the cache
+    nlp_persistence.close()
