@@ -13,7 +13,7 @@ if __name__ == "__main__":
     logging.basicConfig(filename='logs',level=logging.DEBUG)
 
     # Define features
-    features = ["aspect", "tense"]
+    features = ["dependency_is_root"]
 
     # Creating xml mapping objects from scratch with "False" as first argument
     load = False
