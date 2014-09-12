@@ -7,6 +7,7 @@ class Nlp_persistence:
     def __init__(self):
         self.FILE = "nlp_infos.p"
         self.data = None
+        self.data_length = None
         self.corenlp_dir = "helper/stanfordnlp/corenlp-python/stanford-corenlp-full-2013-11-12/"
         self.corenlp = StanfordCoreNLP(self.corenlp_dir)
 
@@ -16,7 +17,10 @@ class Nlp_persistence:
     def __exit__(self, type, value, traceback):
         # When exiting, update pickle file with new sentences and kill StanfordCoreNLP before so we definitely have enough memory for that
         del(self.corenlp)
-        self._write()
+
+        # Write only if we added something to self.data
+        if self.data_length < len(self.data):
+            self._write()
 
     def create_persistence(self, relations):
         try:
@@ -72,6 +76,7 @@ class Nlp_persistence:
                 data = {}
             finally:
                 self.data = data
+                self.data_length = len(data)
         else:
             # Data is already there - there is nothing to do
             pass
