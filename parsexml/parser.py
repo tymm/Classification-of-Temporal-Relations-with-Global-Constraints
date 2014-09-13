@@ -245,12 +245,13 @@ class Parser:
         text = timex_node.text
         sentence = Sentence(timex_node, self.text_obj.filename)
         pos_in_sentence = sentence.get_position(timex_node.text)
+        parent = self.text_obj
 
         # Create Timex object
         if dct:
-            timex_obj = Timex(tid, type, value, text, sentence, pos_in_sentence, True)
+            timex_obj = Timex(tid, type, value, text, sentence, pos_in_sentence, True, parent)
         else:
-            timex_obj = Timex(tid, type, value, text, sentence, pos_in_sentence, False)
+            timex_obj = Timex(tid, type, value, text, sentence, pos_in_sentence, False, parent)
 
         return timex_obj
 
