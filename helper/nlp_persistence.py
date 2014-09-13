@@ -185,3 +185,16 @@ class Nlp_persistence:
         #  return info[1] + " " + info[0]
         else:
            return info[0]
+
+    def is_root(self, event):
+        sentence = event.sentence
+        collapsed_dependencies = self.get_info_for_sentence(sentence)['sentences'][0]['dependencies']
+
+        for dependency in collapsed_dependencies:
+            dependency_type = dependency[0]
+            dependent = dependency[2]
+
+            if dependency_type == "root" and dependent == event.text:
+                return True
+        else:
+            return False
