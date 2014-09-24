@@ -115,6 +115,9 @@ class Parser:
             # Adding relation
             inversed_relations.append(inverse_rel)
 
+        # Append to internal relations, so that when generating closure relations, we consider those relations here
+        self.relations += inversed_relations
+
         return inversed_relations
 
     def _produce_none_relations(self):
