@@ -67,7 +67,7 @@ class Parser:
         closure_relations_before = closure.get_closure_relations()
         self.text_obj.relations = self.text_obj.relations + closure_relations_before
 
-    def _produce_inverse_relations(self):
+    def get_inversed_relations(self):
         relations = self.text_obj.relations
         inversed_relations = []
 
@@ -75,41 +75,47 @@ class Parser:
             # Switching source and target and using inverse of relation
             if relation.relation_type == RelationType.AFTER:
                 # Switching AFTER to BEFORE
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.BEFORE)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.BEFORE)
             elif relation.relation_type == RelationType.BEFORE:
                 # Switching BEFORE to AFTER
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.AFTER)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.AFTER)
             elif relation.relation_type == RelationType.INCLUDES:
                 # Switching INCLUDES to IS_INCLUDED
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.IS_INCLUDED)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.IS_INCLUDED)
             elif relation.relation_type == RelationType.IS_INCLUDED:
                 # Switching IS_INCLUDED to INCLUDES
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.INCLUDES)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.INCLUDES)
             elif relation.relation_type == RelationType.ENDS:
                 # Switching ENDS to ENDED_BY
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.ENDED_BY)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.ENDED_BY)
             elif relation.relation_type == RelationType.ENDED_BY:
                 # Switching ENDED_BY to ENDS
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.ENDS)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.ENDS)
             elif relation.relation_type == RelationType.DURING:
                 # Switching DURING to DURING_INV
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.DURING_INV)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.DURING_INV)
             elif relation.relation_type == RelationType.DURING_INV:
                 # Switching DURING_INV to DURING
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.DURING)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.DURING)
             elif relation.relation_type == RelationType.IAFTER:
                 # Switching IAFTER to IBEFORE
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.IBEFORE)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.IBEFORE)
             elif relation.relation_type == RelationType.IBEFORE:
                 # Switching IBEFORE to IAFTER
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.source, relation.target, RelationType.IAFTER)
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.IAFTER)
+            elif relation.relation_type == RelationType.BEGINS:
+                # Switching BEGINS to BEGUN_BY
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.BEGUN_BY)
+            elif relation.relation_type == RelationType.BEGUN_BY:
+                # Switching BEGUN_BY to BEGINS
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.BEGINS)
             else:
                 continue
 
             # Adding relation
             inversed_relations.append(inverse_rel)
 
-        self.relations = self.relations + inversed_relations
+        return inversed_relations
 
     def _produce_none_relations(self):
         """Produce a NONE-relation between all pairs of events which don't share a relation."""
