@@ -1,6 +1,7 @@
 import logging
 import cPickle as pickle
 from corenlp import StanfordCoreNLP
+from pexpect import TIMEOUT
 
 class Nlp_persistence:
     """Persistence layer for having fast access to information produced by the StanfordCoreNLP tool."""
@@ -9,7 +10,10 @@ class Nlp_persistence:
         self.data = None
         self.data_length = None
         self.corenlp_dir = "helper/stanfordnlp/corenlp-python/stanford-corenlp-full-2013-11-12/"
-        self.corenlp = StanfordCoreNLP(self.corenlp_dir)
+        try:
+            self.corenlp = StanfordCoreNLP(self.corenlp_dir)
+        except TIMEOUT:
+            print "Stanford CoreNLP Timeout"
 
     def __enter__(self):
         return self
@@ -19,7 +23,11 @@ class Nlp_persistence:
 
     def close(self):
         # When exiting, update pickle file with new sentences and kill StanfordCoreNLP before so we definitely have enough memory for that
-        del(self.corenlp)
+        try:
+            del(self.corenlp)
+        except AttributeError:
+            # There was a timeout
+            pass
 
         # Write only if we added something to self.data
         if self.data_length < len(self.data):
@@ -101,6 +109,10 @@ class Nlp_persistence:
         else:
             logging.error("You have to use Nlp_persistence.load() before you can get the information of a sentence")
             return None
+
+    def get_collapsed_dependencies(self, sentence):
+        info = self.get_info_for_sentence(sentence)
+        return info['sentences'][0]['dependencies']
 
     def _write(self):
         # Save data to a file
