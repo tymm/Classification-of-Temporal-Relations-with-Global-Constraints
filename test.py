@@ -10,6 +10,7 @@ from feature.tense import Tense
 from helper.tense_chooser import Tense_chooser
 from Set import Set
 from parsexml.event import Event
+from feature.dependency_order import Dependency_order
 
 class Singleton(type):
     _instances = {}
@@ -355,6 +356,25 @@ class TenseFeature(unittest.TestCase):
 
         # Governing verb is "was picked" which is past
         self.assertEqual(tense, Tense.PAST)
+
+class DependencyOrderFeature(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Set up the CoreNLP persistence layer
+        singleton = NLP_cache()
+        cls.nlp_layer = singleton.nlp_layer
+
+        filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
+        cls.text_obj = Text(filename)
+
+        cls.relation = cls.text_obj.relations[0]
+        cls.dependency_order = Dependency_order(cls.relation, cls.nlp_layer)
+
+    def test_IsDependencyOrderCorrect(self):
+        self.assertTrue(self.dependency_order._is_e1_governing_e2("been", "a"))
+        self.assertTrue(self.dependency_order._is_e1_governing_e2("been", "has"))
+        self.assertTrue(self.dependency_order._is_e1_governing_e2("charge", "mission"))
+        self.assertFalse(self.dependency_order._is_e1_governing_e2("mission", "charge"))
 
 if __name__ == '__main__':
     unittest.main()
