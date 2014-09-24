@@ -112,8 +112,9 @@ class Parser:
             else:
                 continue
 
-            # Adding relation
-            inversed_relations.append(inverse_rel)
+            # Adding relation if it does not exist yet
+            if not inverse_rel in self.relations:
+                inversed_relations.append(inverse_rel)
 
         # Append to internal relations, so that when generating closure relations, we consider those relations here
         self.relations += inversed_relations
