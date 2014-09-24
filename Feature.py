@@ -10,6 +10,10 @@ from feature.sentence_distance import Sentence_distance
 from feature.entity_distance import Entity_distance
 from sklearn.preprocessing import OneHotEncoder
 from feature.dependency import Dependency
+from feature.dependency_root import Dependency_root
+from feature.dependency_type import Dependency_type
+from feature.dependency_order import Dependency_order
+from feature.dependency import EntitiesNotInSameSentence
 from feature.duration import Duration
 from feature.event_class import Event_class
 import scipy
@@ -24,8 +28,6 @@ class Feature:
             self.lemmas = self.lemmas
         if "token" in self.features:
             self.tokens = tokens
-        if "dependency" in self.features:
-            self.dependency = Dependency(self.relation, nlp_persistence_obj)
 
     def get_feature(self):
         feature = []
@@ -241,27 +243,33 @@ class Feature:
         return [distance]
 
     def get_dependency_type(self):
-        n_values = len(self.dependency.dependency_types)
+        dependency_type = Dependency_type(self.relation, self.nlp_persistence_obj)
+
+        n_values = dependency_type.get_length()
 
         enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0])
         enc.fit([n_values])
 
-        value = self.dependency.get_dependency_type()
-        if value is None:
+        try:
+            value = dependency_type.get_dependency_type()
+        except EntitiesNotInSameSentence:
             value = n_values
 
         feature = enc.transform([[value]]).toarray()[0]
         return feature.tolist()
 
     def get_dependency_order(self):
-        # 0: Governor after Dependent, 1: Governor before Dependent, 2: Governor at same position as Dependent, None: Entities not in same sentence
+        dependency_order = Dependency_order(self.relation, self.nlp_persistence_obj)
+
+        # 0: Governor after Dependent, 1: Governor before Dependent, 2: Governor == Dependent, None: Entities not in same sentence
         n_values = 4
 
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
         enc.fit([n_values-1])
 
-        value = self.dependency.get_dependency_order()
-        if not value:
+        try:
+            value = dependency_order.get_dependency_order()
+        except EntitiesNotInSameSentence:
             value = 3
 
         feature = enc.transform([[value]]).toarray()[0]
@@ -269,24 +277,20 @@ class Feature:
 
     def get_dependency_is_root(self):
         # Describes whether either the source or target entity is root or not
-        is_source_root = self.dependency.is_source_root()
-        is_target_root = self.dependency.is_target_root()
+        dependency_root = Dependency_root(self.relation, self.nlp_persistence_obj)
 
-        if is_source_root is None:
-            # The two entities are not in the same sentence
+        try:
+            dependency_root.get_dependency_is_root()
+            value_source = dependency_root.value_source
+            value_target = dependency_root.value_target
+        except EntitiesNotInSameSentence:
             value_source = 2
-        elif is_source_root == True:
-            value_source = 1
-        elif is_source_root == False:
-            value_source = 0
-
-        if is_target_root is None:
-            # The two entities are not in the same sentence
             value_target = 2
-        elif is_target_root == True:
-            value_target = 1
-        elif is_target_root == False:
-            value_target = 0
+
+        if value_source is None:
+            print "Root is None."
+            print self.relation.filename
+            print self.relation.parent.relations.index(self.relation)
 
         n_values = 3
 
