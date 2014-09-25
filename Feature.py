@@ -75,6 +75,9 @@ class Feature:
         if "entity_distance" in self.features:
             feature += self.get_entity_distance()
 
+        if "sentence_distance" in self.features:
+            feature += self.get_sentence_distance()
+
         return feature
 
     def get_dct(self):
@@ -266,11 +269,26 @@ class Feature:
             return [0]
 
     def get_sentence_distance(self):
+        # Maximum distance is 75 and average distance is 2.23
         sentence_distance = Sentence_distance(self.relation)
-
         distance = sentence_distance.get_distance()
-        # TODO: Make categoral
-        return [distance]
+
+        if distance == 0:
+            return [0,0,0,0,0,0,0,1]
+        elif distance == 1:
+            return [0,0,0,0,0,0,1,0]
+        elif distance == 2:
+            return [0,0,0,0,0,1,0,0]
+        elif distance >= 3 and distance <= 5:
+            return [0,0,0,0,1,0,0,0]
+        elif distance >= 6 and distance <= 8:
+            return [0,0,0,1,0,0,0,0]
+        elif distance >= 9 and distance <= 15:
+            return [0,0,1,0,0,0,0,0]
+        elif distance >= 15 and distance <= 20:
+            return [0,1,0,0,0,0,0,0]
+        elif distance > 20:
+            return [1,0,0,0,0,0,0,0]
 
     def get_entity_distance(self):
         entity_distance = Entity_distance(self.relation)
