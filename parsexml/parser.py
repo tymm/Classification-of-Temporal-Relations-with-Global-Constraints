@@ -41,31 +41,36 @@ class Parser:
     def get_entities_order(self):
         return self.text_structure.get_entities_ordered()
 
-    def _produce_closure_relations(self):
+    def get_closured_relations(self):
+        closure_relations = []
+
         # Create temporal closures for BEFORE
         closure = Closure(self.text_obj, RelationType.BEFORE)
-        closure_relations_before = closure.get_closure_relations()
-        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+        closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for AFTER
         closure = Closure(self.text_obj, RelationType.AFTER)
-        closure_relations_before = closure.get_closure_relations()
-        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+        closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for INCLUDES
         closure = Closure(self.text_obj, RelationType.INCLUDES)
-        closure_relations_before = closure.get_closure_relations()
-        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+        closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for IS_INCLUDED
         closure = Closure(self.text_obj, RelationType.IS_INCLUDED)
-        closure_relations_before = closure.get_closure_relations()
-        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+        closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for DURING
         closure = Closure(self.text_obj, RelationType.DURING)
-        closure_relations_before = closure.get_closure_relations()
-        self.text_obj.relations = self.text_obj.relations + closure_relations_before
+        closure_relations += closure.get_closure_relations()
+
+        # Remove closure relations which already exist
+        closure_relations = [closure for closure in closure_relations if closure not in self.relations]
+
+        # Append to internal relations, so that when generating other relations, we consider the relations here
+        self.relations += self.text_obj.relations + closure_relations
+
+        return closure_relations
 
     def get_inversed_relations(self):
         relations = self.text_obj.relations
