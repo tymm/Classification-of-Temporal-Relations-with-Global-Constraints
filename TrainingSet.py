@@ -3,7 +3,7 @@ from Feature import Feature
 
 class TrainingSet(Set):
     def __init__(self, load=True, *corpora):
-        Set.__init__(self, load, *corpora)
+        Set.__init__(self, load, False, *corpora)
 
     def get_classification_data_event_event(self, features, lemma=None, token=None, nlp_persistence_obj=None):
         X = []
