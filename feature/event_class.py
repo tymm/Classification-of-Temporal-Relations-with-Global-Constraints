@@ -6,22 +6,21 @@ class Event_class(object):
         self.classes = ["PERCEPTION", "I_STATE", "ASPECTUAL", "REPORTING", "I_ACTION", "STATE", "OCCURRENCE"]
 
     def get_length(self):
-        # +1 for N/A
-        return len(self.classes) + 1
+        return 8
 
     def get_index_source(self):
         if type(self.relation.source) == Event:
             return self._get_index(self.relation.source.e_class)
         else:
             # Return N/A value
-            return self.get_length()
+            return 7
 
     def get_index_target(self):
         if type(self.relation.target) == Event:
             return self._get_index(self.relation.target.e_class)
         else:
             # Return N/A value
-            return self.get_length()
+            return 7
 
     def _get_index(self, string):
         try:
