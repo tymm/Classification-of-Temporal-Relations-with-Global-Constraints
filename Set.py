@@ -90,7 +90,7 @@ class Set:
             return files
 
     def _remove_only_event_event_features(self, features):
-        features_event_timex = features[:]
+        features_event_timex = list(features)
 
         self._try_to_remove(features_event_timex, "same_tense")
         self._try_to_remove(features_event_timex, "same_aspect")
@@ -101,12 +101,14 @@ class Set:
         return features_event_timex
 
     def _remove_only_event_timex_features(self, features):
-        features_event_event = features[:]
+        features_event_event = list(features)
 
         self._try_to_remove(features_event_event, "dct")
         self._try_to_remove(features_event_event, "type")
         self._try_to_remove(features_event_event, "value")
         self._try_to_remove(features_event_event, "value")
+
+        return features_event_event
 
     def _try_to_remove(self, l, value):
         try:
