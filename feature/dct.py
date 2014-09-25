@@ -2,17 +2,16 @@ from parsexml.timex import Timex
 
 class Dct:
     def __init__(self, relation):
-        self._text_obj = relation.parent
-        self._a = relation.source
-        self._b = relation.target
+        self.source = relation.source
+        self.target = relation.target
 
     def has_dct(self):
-        if type(self._a) == Timex:
-            if self._a.dct:
+        if type(self.source) == Timex:
+            if self.source.is_dct:
                 return True
 
-        if type(self._b) == Timex:
-            if self._b.dct:
+        if type(self.target) == Timex:
+            if self.target.is_dct:
                 return True
 
         return False

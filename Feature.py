@@ -16,6 +16,7 @@ from feature.dependency_order import Dependency_order
 from feature.dependency import EntitiesNotInSameSentence
 from feature.duration import Duration
 from feature.event_class import Event_class
+from feature.dct import Dct
 import scipy
 
 class Feature:
@@ -46,6 +47,9 @@ class Feature:
         if "aspect" in self.features:
             feature += self.get_aspect()
 
+        if "same_aspect" in self.features:
+            feature += self.get_same_aspect()
+
         if "dependency_type" in self.features:
             feature += self.get_dependency_type()
 
@@ -55,7 +59,18 @@ class Feature:
         if "dependency_is_root" in self.features:
             feature += self.get_dependency_is_root()
 
+        if "dct" in self.features:
+            feature += self.get_dct()
+
         return feature
+
+    def get_dct(self):
+        dct = Dct(self.relation)
+
+        if dct.has_dct():
+            return [0]
+        else:
+            return [1]
 
     def get_duration(self):
         duration = Duration()
