@@ -63,6 +63,12 @@ class Feature:
         if "dct" in self.features:
             feature += self.get_dct()
 
+        if "polarity" in self.features:
+            feature += self.get_polarity()
+
+        if "same_polarity" in self.features:
+            feature += self.get_same_polarity()
+
         return feature
 
     def get_dct(self):
