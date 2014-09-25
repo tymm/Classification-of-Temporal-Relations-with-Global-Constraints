@@ -4,9 +4,10 @@ from Persistence import Persistence
 import sys
 
 class Set:
-    def __init__(self, load=True, *corpora):
+    def __init__(self, load=True, test=False, *corpora):
         self.corpora = corpora
         self.load = load
+        self.test = test
         # Hols all textfile objects
         self.text_objects = []
         self._parse()
@@ -66,7 +67,7 @@ class Set:
 
     def _parse_from_file(self, file):
         # Mapping xml data to python objects
-        text = Text(file)
+        text = Text(file, self.test)
 
         return text
 

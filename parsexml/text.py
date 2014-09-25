@@ -8,7 +8,7 @@ from helper.output import Output
 from parsexml.event import Event
 
 class Text:
-    def __init__(self, filename):
+    def __init__(self, filename, test=False):
         self.filename = filename
 
         # Parse text
@@ -18,6 +18,15 @@ class Text:
         self.events = parser.get_events()
         self.timex = parser.get_timex()
         self.relations = parser.get_relations()
+
+        # Only generate inversed and closured relations for training
+        if not test:
+            # Produce inversed relations
+            self.relations += parser.get_inversed_relations()
+
+            # Produce closure relations
+            #self.relations += parser.get_closured_relations()
+
         self.text_structure = parser.get_text_structure()
         self.entities_order = parser.get_entities_order()
 
