@@ -69,6 +69,12 @@ class Feature:
         if "same_polarity" in self.features:
             feature += self.get_same_polarity()
 
+        if "class" in self.features:
+            feature += self.get_event_class()
+
+        if "entity_distance" in self.features:
+            feature += self.get_entity_distance()
+
         return feature
 
     def get_dct(self):
@@ -270,8 +276,21 @@ class Feature:
         entity_distance = Entity_distance(self.relation)
 
         distance = entity_distance.get_distance()
-        # TODO: Make categoral
-        return [distance]
+        # Average distance in data is 0.67 and maximum distance is 10
+        if distance == -1:
+            return [0,0,0,0,0,0,1]
+        elif distance == 0:
+            return [0,0,0,0,0,1,0]
+        elif distance == 1:
+            return [0,0,0,0,1,0,0]
+        elif distance == 2:
+            return [0,0,0,1,0,0,0]
+        elif distance == 3:
+            return [0,0,1,0,0,0,0]
+        elif distance == 4:
+            return [0,1,0,0,0,0,0]
+        elif distance > 4:
+            return [1,0,0,0,0,0,0]
 
     def get_dependency_type(self):
         dependency_type = Dependency_type(self.relation, self.nlp_persistence_obj)
