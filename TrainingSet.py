@@ -11,6 +11,8 @@ class TrainingSet(Set):
 
         length = len(self._event_event_rels)
 
+        features = self._remove_only_event_timex_features(features)
+
         for i, relation in enumerate(self._event_event_rels):
             f = Feature(relation, lemma, token, nlp_persistence_obj, features)
             feature = f.get_feature()
@@ -30,6 +32,8 @@ class TrainingSet(Set):
         y = []
 
         length = len(self._event_timex_rels)
+
+        features = self._remove_only_event_event_features(features)
 
         for i, relation in enumerate(self._event_timex_rels):
             f = Feature(relation, lemma, token, nlp_persistence_obj, features)

@@ -4,9 +4,26 @@ import numpy
 
 class TestSet(Set):
     def __init__(self, load=True, *corpora):
-        Set.__init__(self, load, *corpora)
+        Set.__init__(self, load, True, *corpora)
+
+    def get_classification_data_event_event(self, features, lemma=None, token=None, nlp_persistence_obj=None):
+        features = self._remove_only_event_timex_features(features)
+
+        X = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj, features)
+        y = self._extract_classes(self._event_event_rels)
+
+        return (X, y)
+
+    def get_classification_data_event_timex(self, features, lemma=None, token=None, nlp_persistence_obj=None):
+        features = self._remove_only_event_event_features(features)
+
+        X = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj, features)
+        y = self._extract_classes(self._event_timex_rels)
+
+        return (X, y)
 
     def classify_existing_event_event_relations(self, classifier, features, lemma=None, token=None, nlp_persistence_obj=None):
+        # depreciated
         features = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj, features)
 
         self._produce_predictions(self._event_event_rels, classifier)
@@ -17,6 +34,7 @@ class TestSet(Set):
         return self._naive_evaluation(y_predicted, y_truth)
 
     def classify_existing_event_timex_relations(self, classifier, features, lemma=None, token=None, nlp_persistence_obj=None):
+        # depreciated
         features = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj, features)
 
         self._produce_predictions(self._event_timex_rels, classifier)
