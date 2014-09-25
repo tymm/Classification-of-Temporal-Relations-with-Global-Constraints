@@ -17,6 +17,7 @@ from feature.dependency import EntitiesNotInSameSentence
 from feature.duration import Duration
 from feature.event_class import Event_class
 from feature.dct import Dct
+from feature.type import Type
 import scipy
 
 class Feature:
@@ -71,6 +72,15 @@ class Feature:
             return [0]
         else:
             return [1]
+
+    def get_type(self):
+        type = Type(self.relation)
+
+        enc = OneHotEncoder(n_values=5, categorical_features=[0,1])
+        enc.fit([4,4])
+
+        feature = enc.transform([[type.source, type.target]]).toarray()[0]
+        return feature.tolist()
 
     def get_duration(self):
         duration = Duration()
