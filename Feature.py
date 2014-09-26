@@ -4,6 +4,7 @@ from feature.same_tense import Same_tense
 from feature.same_aspect import Same_aspect
 from feature.same_class import Same_class
 from feature.polarity import Polarity
+from feature.pos import Pos
 from feature.same_pos import Same_pos
 from feature.textual_order import Textual_order
 from feature.sentence_distance import Sentence_distance
@@ -78,6 +79,18 @@ class Feature:
         if "sentence_distance" in self.features:
             feature += self.get_sentence_distance()
 
+        if "textual_order" in self.features:
+            feature += self.get_textual_order()
+
+        if "pos" in self.features:
+            feature += self.get_pos()
+
+        if "duration" in self.features:
+            feature += self.get_duration()
+
+        if "duration_difference" in self.features:
+            feature += self.get_duration_difference()
+
         return feature
 
     def get_dct(self):
@@ -106,7 +119,6 @@ class Feature:
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
         enc.fit([n_values-1, n_values-1])
 
-        # TODO: If entity is noun, use governing verb instead of noun here
         duration_source = duration.get_duration(self.relation.source)
         if duration_source is None:
             duration_source = n_values - 1
@@ -127,7 +139,6 @@ class Feature:
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
         enc.fit([n_values-1])
 
-        # TODO: If entity is noun, use governing verb instead of noun here
         duration_source = duration.get_duration(self.relation.source)
         duration_target = duration.get_duration(self.relation.target)
 
@@ -251,6 +262,16 @@ class Feature:
             return [1]
         else:
             return [0]
+
+    def get_pos(self):
+        pos = Pos(self.relation, self.nlp_persistence_obj)
+        n_values = pos.get_length()
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc.fit([n_values-1, n_values-1])
+
+        feature = enc.transform([[pos.source, pos.target]]).toarray()[0]
+        return feature.tolist()
 
     def get_same_pos(self):
         same_pos = Same_pos(self.relation)

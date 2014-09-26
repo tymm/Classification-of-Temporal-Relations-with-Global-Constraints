@@ -4,8 +4,9 @@ from parsexml.event import Event
 from parsexml.timex import Timex
 
 class Duration:
-    def __init__(self):
+    def __init__(self, nlp_persistence_obj):
         self.FILE = "event.lexicon.distributions"
+        self.nlp_persistence_obj = nlp_persistence_obj
         self.durations = ["seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"]
 
     def get_duration(self, entity):
@@ -15,7 +16,13 @@ class Duration:
             return self._get_timex_duration(entity)
 
     def _get_event_duration(self, event):
-        return self._get_most_likely_duration(event.text)
+        if event.pos_xml == "NOUN" or event.pos_xml == "ADJECTIVE" or event.pos_xml == "PREPOSITION" or event.pos_xml == "PREP":
+            # Get governing verb
+            governing_verb = self.nlp_persistence_obj.get_governing_verb(event)
+
+            return self._get_most_likely_duration(governing_verb)
+        else:
+            return self._get_most_likely_duration(event.text)
 
     def _get_timex_duration(self, timex):
         value = timex.value
