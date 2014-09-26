@@ -210,3 +210,11 @@ class Nlp_persistence:
                 return True
         else:
             return False
+
+class PosTagNotFound(Exception):
+    def __init__(self, sentence, word):
+        self.sentence = sentence.text
+        self.word = word
+
+    def __str__(self):
+        return repr("Could not find POS tag for word %s in sentence: %s" % (self.word, self.sentence))
