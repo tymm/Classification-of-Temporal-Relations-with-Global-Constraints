@@ -8,6 +8,8 @@ class Timex(object):
         self.text = text
         self.sentence = sentence
         self.position_in_sentence = position_in_sentence
+        self.begin = None
+        self.end = None
         self.is_dct = is_dct
         self.parent = text_obj
 

@@ -19,6 +19,8 @@ class Text_structure:
         self._build_entities_ordered()
         self._build_structure()
 
+        self._extract_entity_positions_and_append_to_entities()
+
     def get_entities_ordered(self):
         return self._entities_ordered
 
@@ -72,6 +74,29 @@ class Text_structure:
             difference = None
 
         return difference
+
+    def _extract_entity_positions_and_append_to_entities(self):
+        for entity_node in self._entity_nodes_ordered:
+            begin, end = self._get_entity_position_in_sentence(entity_node)
+            entity = self._get_entity_by_node(entity_node)
+
+            entity.begin = begin
+            entity.end = end
+
+    def _get_entity_position_in_sentence(self, entity_node):
+        sentence = Sentence(entity_node, self.filename)
+
+        if entity_node.tail:
+            end = entity_node.text + entity_node.tail.split(".")[0]
+        else:
+            # No tail means that the entity is the last word
+            end = entity_node.text
+
+        # Search for end from the back of the sentence
+        start = sentence.text.rfind(end)
+        end = start + len(entity_node.text)
+
+        return (start, end)
 
     def _get_entity_by_node(self, entity_node):
         eid = entity_node.get("eid")

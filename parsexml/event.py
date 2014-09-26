@@ -8,8 +8,8 @@ class Event(object):
         self.text = text
         self.sentence = sentence
         self.position_in_sentence = position_in_sentence
-        # self.pos = self._get_pos()
-        self.pos = "NONE"
+        self.begin = None
+        self.end = None
 
         # As definied in xml data
         self.e_class = e_class
