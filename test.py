@@ -472,5 +472,20 @@ class Relations(unittest.TestCase):
 
         self.assertEqual(len(closured_rel), 3)
 
+class EntityExtraction(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
+        cls.text_obj = Text(filename)
+
+    def test_CheckForRightPositionInformation(self):
+        entity = self.text_obj.text_structure.get_entities_ordered()[1]
+        self.assertEqual(entity.begin, 8)
+        self.assertEqual(entity.end, 13)
+
+        entity = self.text_obj.text_structure.get_entities_ordered()[10]
+        self.assertEqual(entity.begin, 16)
+        self.assertEqual(entity.end, 28)
+
 if __name__ == '__main__':
     unittest.main()
