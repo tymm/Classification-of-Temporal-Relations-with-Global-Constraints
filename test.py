@@ -495,7 +495,7 @@ class SystemRun(unittest.TestCase):
     def setUpClass(cls):
         class Testdata:
             def __init__(self):
-                self.training = TrainingSet(False, "data/training/TBAQ-cleaned/TimeBank/ABC19980108.1830.0711.tml")
+                self.training = TrainingSet(False, "data/training/TBAQ-cleaned/TimeBank/ABC19980108.1830.0711.tml", "data/training/TBAQ-cleaned/TimeBank/AP900816-0139.tml", "data/training/TBAQ-cleaned/TimeBank/APW19980418.0210.tml")
                 self.test = TestSet(False, "data/test/te3-platinum/AP_20130322.tml")
         cls.testdata = Testdata()
 
