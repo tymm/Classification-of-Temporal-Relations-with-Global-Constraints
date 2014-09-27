@@ -14,6 +14,9 @@ from Set import Set
 from parsexml.event import Event
 from feature.dependency_order import Dependency_order
 from parsexml.relationtype import RelationType
+from System import System
+from TrainingSet import TrainingSet
+from TestSet import TestSet
 
 class Singleton(type):
     _instances = {}
@@ -486,6 +489,43 @@ class EntityExtraction(unittest.TestCase):
         entity = self.text_obj.text_structure.get_entities_ordered()[10]
         self.assertEqual(entity.begin, 16)
         self.assertEqual(entity.end, 28)
+
+class SystemRun(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        class Testdata:
+            def __init__(self):
+                self.training = TrainingSet(False, "data/training/TBAQ-cleaned/TimeBank/ABC19980108.1830.0711.tml")
+                self.test = TestSet(False, "data/test/te3-platinum/AP_20130322.tml")
+        cls.testdata = Testdata()
+
+    def test_IsSystemRunningThroughWithAllFeatures(self):
+        system = System(self.testdata)
+
+        # Turn on features
+        system.use_dependency_is_root()
+        system.use_dependency_order()
+        system.use_aspect()
+        system.use_tense()
+        system.use_same_tense()
+        system.use_same_aspect()
+        system.use_dependency_type()
+        system.use_dct()
+        system.use_type()
+        system.use_same_polarity()
+        system.use_polarity()
+        system.use_class()
+        system.use_entity_distance()
+        system.use_textual_order()
+        system.use_duration()
+        system.use_duration_difference()
+        system.use_same_pos()
+        system.use_pos()
+
+        system.create_features()
+        system.train()
+        system.eval()
+        self.assertTrue(True)
 
 if __name__ == '__main__':
     unittest.main()
