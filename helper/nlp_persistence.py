@@ -112,7 +112,24 @@ class Nlp_persistence:
 
     def get_collapsed_dependencies(self, sentence):
         info = self.get_info_for_sentence(sentence)
-        return info['sentences'][0]['dependencies']
+        index = self._get_the_right_index(info)
+
+        return info['sentences'][index]['dependencies']
+
+    def _get_the_right_index(self, info):
+        for i in range(5):
+            if len(info['sentences'][i]['dependencies']) != 0:
+                return i
+
+    def _get_the_right_index_for_word(self, info, word):
+        if len(info['sentences']) == 1:
+            return 0
+        else:
+            for i, sentence in enumerate(info['sentences']):
+                if word in info['sentences'][i]['text']:
+                    return i
+            else:
+                raise NoSentenceFound
 
     def _write(self):
         # Save data to a file
@@ -125,10 +142,11 @@ class Nlp_persistence:
     def get_pos_tag_for_word(self, sentence, word):
         """Returns the POS tag for a word in a sentence. If the word is not in the sentence raise WordNotInSentence error."""
         info_sentence = self.get_info_for_sentence(sentence)
-        words = info_sentence['sentences'][0]['words']
+        index = self._get_the_right_index_for_word(info_sentence, word)
+        words = info_sentence['sentences'][index]['words']
 
         for w in words:
-            if w[0] == word:
+            if w[0] in word:
                 return w[1]["PartOfSpeech"]
         else:
             raise PosTagNotFound(sentence, word)
@@ -136,7 +154,8 @@ class Nlp_persistence:
     def is_main_verb(self, sentence, word):
         """Returns true if word is a main verb of sentence and not an aux."""
         info_sentence = self.get_info_for_sentence(sentence)
-        dependencies = info_sentence['sentences'][0]['dependencies']
+        index = self._get_the_right_index_for_word(info_sentence, word)
+        dependencies = info_sentence['sentences'][index]['dependencies']
 
         for dependency in dependencies:
             if dependency[0] == "aux" and dependency[2] == word:
@@ -147,7 +166,8 @@ class Nlp_persistence:
     def get_all_aux_for_verb(self, sentence, verb):
         """Returns all distinct aux for verb as strings in order of the sentence."""
         info_sentence = self.get_info_for_sentence(sentence)
-        dependencies = info_sentence['sentences'][0]['dependencies']
+        index = self._get_the_right_index_for_word(info_sentence, verb)
+        dependencies = info_sentence['sentences'][index]['dependencies']
 
         aux = []
         for dependency in dependencies:
@@ -159,7 +179,8 @@ class Nlp_persistence:
     def get_verb_for_aux(self, sentence, aux):
         """Returns the governing verb for the aux as string."""
         info_sentence = self.get_info_for_sentence(sentence)
-        dependencies = info_sentence['sentences'][0]['dependencies']
+        index = self._get_the_right_index_for_word(info_sentence, aux)
+        dependencies = info_sentence['sentences'][index]['dependencies']
 
         for dependency in dependencies:
             if dependency[0] == "aux" and dependency[2] == aux:
@@ -192,15 +213,21 @@ class Nlp_persistence:
         info = sentence.get_info_on_governing_verb(event.text, self)
 
         if info is None:
-            return None
+            raise CouldNotFindGoverningVerb
         #elif info[1]:
         #  return info[1] + " " + info[0]
         else:
-           return info[0]
+            if info[0] is None:
+                raise CouldNotFindGoverningVerb
+            else:
+                return info[0]
 
     def is_root(self, event):
         sentence = event.sentence
-        collapsed_dependencies = self.get_info_for_sentence(sentence)['sentences'][0]['dependencies']
+        info_sentence = self.get_info_for_sentence(sentence)
+
+        index = self._get_the_right_index_for_word(info_sentence, event.text)
+        collapsed_dependencies = info_sentence['sentences'][index]['dependencies']
 
         for dependency in collapsed_dependencies:
             dependency_type = dependency[0]
@@ -218,3 +245,11 @@ class PosTagNotFound(Exception):
 
     def __str__(self):
         return repr("Could not find POS tag for word %s in sentence: %s" % (self.word, self.sentence))
+
+class NoSentenceFound(Exception):
+    def __str__(self):
+        return repr("Could not find a sub sentence in sentence which includes this word.")
+
+class CouldNotFindGoverningVerb(Exception):
+    def __str__(self):
+        return repr("Could not find a governing verb.")

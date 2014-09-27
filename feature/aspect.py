@@ -1,4 +1,5 @@
 from parsexml.event import Event
+from helper.nlp_persistence import CouldNotFindGoverningVerb
 
 class Aspect(object):
     NONE = 0 # Indefinite
@@ -7,6 +8,7 @@ class Aspect(object):
     PERFECTIVE_PROGRESSIVE = 3
     UNKNOWN = 4
     TIMEX = 5
+    ERROR = 6
 
     def __init__(self, relation, nlp_persistence_obj):
         self.relation = relation
@@ -16,13 +18,17 @@ class Aspect(object):
 
     @classmethod
     def get_length(cls):
-        return 6
+        return 7
 
     def _get_source(self):
         source = self.relation.source
 
         if type(source) == Event:
-            return self._determine_aspect(source)
+            try:
+                aspect = self._determine_aspect(source)
+                return aspect
+            except CouldNotFindGoverningVerb:
+                return Aspect.ERROR
         else:
             return Aspect.TIMEX
 
@@ -30,7 +36,10 @@ class Aspect(object):
         target = self.relation.target
 
         if type(target) == Event:
-            return self._determine_aspect(target)
+            try:
+                return self._determine_aspect(target)
+            except CouldNotFindGoverningVerb:
+                return Aspect.ERROR
         else:
             return Aspect.TIMEX
 
