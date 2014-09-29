@@ -85,6 +85,7 @@ class Sentence(object):
                 return word[1]['PartOfSpeech']
 
     def _get_governing_verb(self, non_verb, info):
+        # TODO: Searching for more than direct relationsships
         dependencies = info['sentences'][0]['dependencies']
 
         targets = [x[2] for x in dependencies]
@@ -105,6 +106,9 @@ class Sentence(object):
                 return source
 
         # This should not happen in a proper sentence
+        # Example for when it happens: "And in Hong Kong, a three percent drop." <- no verb
+        # Other example: "One exception was the swine flu pandemic of 2009-2010, when 348 children died." and "pandemic". "pandemic" is the root of the sentence and is not governed by anything
+        # Other corner case: "And the dominant flu strain early in the season was one that tends to cause more severe illness." for "season"
         return None
 
     def _is_verb(self, text, info):
