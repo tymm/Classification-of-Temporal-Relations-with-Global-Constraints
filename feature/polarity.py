@@ -6,14 +6,14 @@ class Polarity:
 
         if not type(self.relation.source) == Event:
             self.source = 2
-        elif self.relation.source.pos == "POS":
+        elif self.relation.source.polarity == "POS":
             self.source = 1
         else:
             self.source = 0
 
         if not type(self.relation.target) == Event:
             self.target = 2
-        elif self.relation.target.pos == "POS":
+        elif self.relation.target.polarity == "POS":
             self.target = 1
         else:
             self.target = 0
