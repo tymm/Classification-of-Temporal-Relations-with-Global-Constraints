@@ -62,7 +62,7 @@ class Nlp_persistence:
             logging.error("Could not finish loading all nlp information to the persistence file. Saving all processed ones.")
 
         # Save data to a file
-        pickle.dump(data, open(self.FILE, "wb"))
+        pickle.dump(data, open(self.FILE, "wb"), protocol=-1)
 
     def _update_data(self, entity, data):
         sentence_obj = entity.sentence
