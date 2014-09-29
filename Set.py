@@ -45,23 +45,8 @@ class Set:
             if not file.endswith('tml'):
                 continue
 
-            if self.load:
-                # TODO: Loading and saving a huge dictionary like the one in the Persistance class takes a lot of time
-                persistence = Persistence(file)
-
-                # Lets try to load the parsed information from the persistence layer
-                text_obj = persistence.get_text_object()
-
-                if not text_obj:
-                    # There is nothing stored yet, so lets parse from file
-                    text_obj = self._parse_from_file(file)
-                    # Save the parsed text object to the persitence layer
-                    persistence.save(text_obj)
-
-            else:
-                # load=False, so let's parse from file
+                # Parse from file
                 text_obj = self._parse_from_file(file)
-                # And save the parsed text object to the persitence layer
 
             self.text_objects.append(text_obj)
 
