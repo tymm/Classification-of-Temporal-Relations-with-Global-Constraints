@@ -16,6 +16,7 @@ from feature.dependency_type import Dependency_type
 from feature.dependency_order import Dependency_order
 from feature.dependency import EntitiesNotInSameSentence
 from feature.duration import Duration
+from feature.temporal_signal import Temporal_signal
 from feature.event_class import Event_class
 from feature.dct import Dct
 from feature.type import Type
@@ -85,11 +86,20 @@ class Feature:
         if "pos" in self.features:
             feature += self.get_pos()
 
+        if "same_pos" in self.features:
+            feature += self.get_same_pos()
+
         if "duration" in self.features:
             feature += self.get_duration()
 
         if "duration_difference" in self.features:
             feature += self.get_duration_difference()
+
+        if "value" in self.features:
+            feature += self.get_value()
+
+        if "temporal_signal" in self.features:
+            feature += self.get_temporal_signal()
 
         return feature
 
@@ -101,6 +111,56 @@ class Feature:
         else:
             return [1]
 
+    def get_value(self):
+        value = Value(self.relation)
+        n_values = value.get_length()
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc.fit([n_values-1, n_values-1])
+
+        feature = enc.transform([[value.source, value.target]]).toarray()[0]
+        return feature.tolist()
+
+    def get_temporal_signal(self):
+        temporal_signal = Temporal_signal(self.relation)
+
+        # First encode signal
+        n_values = temporal_signal.get_length()
+        signal = temporal_signal.get_signal()
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
+        enc.fit([n_values-1])
+        feature_signal = enc.transform([[signal]]).toarray()[0]
+        feature_signal = feature_signal.tolist()
+
+        # Encode if signal is at beginning of a sentence
+        beginning = temporal_signal.is_signal_at_beginning()
+        feature_beginning = None
+        if beginning:
+            feature_beginning = [0, 0, 1]
+        elif beginning == False:
+            feature_beginning = [0, 1, 0]
+        elif beginning is None:
+            feature_beginning = [1, 0, 0]
+
+        # Encode the position of signal and e1 and signal and e2
+        before_e1 = temporal_signal.entity_before_signal(self.relation.source)
+        before_e2 = temporal_signal.entity_before_signal(self.relation.target)
+
+        feature_order = None
+        if before_e1 is None and before_e2 is None:
+            feature_order = [0, 0, 0, 0, 1]
+        elif before_e1 and before_e2:
+            feature_order = [0, 0, 0, 1, 0]
+        elif not before_e1 and not before_e2:
+            feature_order = [0, 0, 1, 0, 0]
+        elif before_e1 and not before_e2:
+            feature_order = [0, 1, 0, 0, 0]
+        elif not before_e1 and before_e2:
+            feature_order = [1, 0, 0, 0, 0]
+
+        return feature_signal + feature_beginning + feature_order
+
     def get_type(self):
         type = Type(self.relation)
 
@@ -111,27 +171,21 @@ class Feature:
         return feature.tolist()
 
     def get_duration(self):
-        duration = Duration()
+        duration = Duration(self.nlp_persistence_obj)
 
-        # +1 for NONE
-        n_values = duration.get_length() + 1
+        n_values = duration.get_length()
 
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
         enc.fit([n_values-1, n_values-1])
 
         duration_source = duration.get_duration(self.relation.source)
-        if duration_source is None:
-            duration_source = n_values - 1
-
         duration_target = duration.get_duration(self.relation.target)
-        if duration_target is None:
-            duration_target = n_values - 1
 
         feature = enc.transform([[duration_source, duration_target]]).toarray()[0]
         return feature.tolist()
 
     def get_duration_difference(self):
-        duration = Duration()
+        duration = Duration(self.nlp_persistence_obj)
 
         # Values: same, less, more, none
         n_values = 4
@@ -274,7 +328,7 @@ class Feature:
         return feature.tolist()
 
     def get_same_pos(self):
-        same_pos = Same_pos(self.relation)
+        same_pos = Same_pos(self.relation, self.nlp_persistence_obj)
 
         if same_pos.is_same():
             return [1]
