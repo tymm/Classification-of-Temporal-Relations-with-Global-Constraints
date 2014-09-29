@@ -22,10 +22,11 @@ class Text:
         # Only generate inversed and closured relations for training
         if not test:
             # Produce inversed relations
-            self.relations += parser.get_inversed_relations()
+            #self.relations += parser.get_inversed_relations()
 
             # Produce closure relations
             #self.relations += parser.get_closured_relations()
+            pass
 
         self.text_structure = parser.get_text_structure()
         self.entities_order = parser.get_entities_order()
