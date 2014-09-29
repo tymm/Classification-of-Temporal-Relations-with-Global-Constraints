@@ -78,13 +78,13 @@ class Nlp_persistence:
         data.update({sentence_obj: tree})
 
     def load(self):
+        data = {}
+
         if self.data is None:
             try:
                 data = pickle.load(open(self.FILE, "rb"))
             except (IOError, EOFError):
                 logging.warning("No cached nlp data.")
-
-                data = {}
             finally:
                 self.data = data
                 self.data_length = len(data)
