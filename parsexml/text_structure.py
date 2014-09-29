@@ -46,7 +46,7 @@ class Text_structure:
                 return sentence
 
         else:
-            return None
+            raise CouldNotFindSentenceByEntity
 
     def get_sentence_distance(self, entity_one, entity_two):
         sentences = self.structure.values()
@@ -74,6 +74,15 @@ class Text_structure:
             difference = None
 
         return difference
+
+    def is_sentence_before_sentence(self, a, b):
+        position_a = self.structure.keys().index(a)
+        position_b = self.structure.keys().index(b)
+
+        if position_a < position_b:
+            return True
+        else:
+            return False
 
     def _extract_entity_positions_and_append_to_entities(self):
         for entity_node in self._entity_nodes_ordered:
@@ -229,3 +238,7 @@ class Text_structure:
                 return position_to_insert
 
         return len(list_of_sentences)
+
+class CouldNotFindSentenceByEntity(Exception):
+    def __str__(self):
+        return repr("Could not find sentence.")
