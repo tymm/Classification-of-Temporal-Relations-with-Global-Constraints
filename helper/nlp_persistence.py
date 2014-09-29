@@ -5,15 +5,16 @@ from pexpect import TIMEOUT
 
 class Nlp_persistence:
     """Persistence layer for having fast access to information produced by the StanfordCoreNLP tool."""
-    def __init__(self):
+    def __init__(self, fallback=False):
         self.FILE = "nlp_infos.p"
         self.data = None
         self.data_length = None
         self.corenlp_dir = "helper/stanfordnlp/corenlp-python/stanford-corenlp-full-2013-11-12/"
-        try:
-            self.corenlp = StanfordCoreNLP(self.corenlp_dir)
-        except TIMEOUT:
-            print "Stanford CoreNLP Timeout"
+        if fallback:
+            try:
+                self.corenlp = StanfordCoreNLP(self.corenlp_dir)
+            except TIMEOUT:
+                print "Stanford CoreNLP Timeout"
 
     def __enter__(self):
         return self
