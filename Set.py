@@ -95,6 +95,7 @@ class Set:
         self._try_to_remove(features_event_timex, "same_tense")
         self._try_to_remove(features_event_timex, "same_aspect")
         self._try_to_remove(features_event_timex, "same_class")
+        self._try_to_remove(features_event_timex, "same_pos")
         self._try_to_remove(features_event_timex, "same_polarity")
         self._try_to_remove(features_event_timex, "temporal_discourse")
 
@@ -105,7 +106,6 @@ class Set:
 
         self._try_to_remove(features_event_event, "dct")
         self._try_to_remove(features_event_event, "type")
-        self._try_to_remove(features_event_event, "value")
         self._try_to_remove(features_event_event, "value")
 
         return features_event_event
