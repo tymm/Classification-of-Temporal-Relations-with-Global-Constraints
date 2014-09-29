@@ -5,7 +5,7 @@ class Pos:
         self.relation = relation
         self.nlp_persistence_obj = nlp_persistence_obj
 
-        self.tags = ['PRP$', 'VBG', 'VBD', 'VBN', 'VBP', 'JJ', 'VBZ', 'DT', 'RP', 'NN', 'FW', 'POS', 'TO', 'LS', 'RB', ':', 'NNS', 'PRP', 'VB', 'WRB', 'CC', 'PDT', 'CD', 'IN', 'MD', 'NNPS', 'JJS', 'JJR', 'SYM', 'UH', 'NNP']
+        self.tags = ['PRP$', 'VBG', 'VBD', 'VBN', 'VBP', 'JJ', 'VBZ', 'DT', 'RP', 'NN', 'FW', 'POS', 'TO', 'LS', 'RB', ':', 'NNS', 'PRP', 'VB', 'WRB', 'CC', 'PDT', 'CD', 'IN', 'MD', 'NNPS', 'JJS', 'JJR', 'SYM', 'UH', 'NNP', '$']
 
         self.source = self._get_pos_tag(self.relation.source)
         self.target = self._get_pos_tag(self.relation.target)
