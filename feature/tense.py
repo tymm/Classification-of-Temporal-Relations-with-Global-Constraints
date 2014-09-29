@@ -1,5 +1,7 @@
 from parsexml.event import Event
 from helper.tense_chooser import Tense_chooser
+from helper.nlp_persistence import CouldNotFindGoverningVerb
+from feature.exception import FailedProcessingFeature
 
 class Tense(object):
     PRESENT = 0
@@ -25,7 +27,10 @@ class Tense(object):
         source = self.relation.source
 
         if type(source) == Event:
-            return self._determine_tense(source)
+            try:
+                return self._determine_tense(source)
+            except CouldNotFindGoverningVerb:
+                raise FailedProcessingFeature("Tense")
         else:
             return Tense.TIMEX
 
@@ -33,7 +38,10 @@ class Tense(object):
         target = self.relation.target
 
         if type(target) == Event:
-            return self._determine_tense(target)
+            try:
+                return self._determine_tense(target)
+            except CouldNotFindGoverningVerb:
+                raise FailedProcessingFeature("Tense")
         else:
             return Tense.TIMEX
 
