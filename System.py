@@ -26,7 +26,7 @@ class System:
             lemma = Lemma(training)
         if "token" in self.features:
             token = Token(training)
-        if "dependency_types" in self.features or "dependency_is_root" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features:
+        if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features:
             nlp_persistence = Nlp_persistence()
             print "Loading NLP data from file."
             nlp_persistence.load()
@@ -168,3 +168,11 @@ class System:
     def use_same_pos(self):
         if not "same_pos" in self.features:
             self.features.append("same_pos")
+
+    def use_value(self):
+        if not "value" in self.features:
+            self.features.append("value")
+
+    def use_temporal_signal(self):
+        if not "temporal_signal" in self.features:
+            self.features.append("temporal_signal")
