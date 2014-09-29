@@ -23,6 +23,8 @@ system.use_duration()
 system.use_duration_difference()
 system.use_same_pos()
 system.use_pos()
+system.use_duration()
+system.use_temporal_signal()
 
 system.create_features()
 system.train()
