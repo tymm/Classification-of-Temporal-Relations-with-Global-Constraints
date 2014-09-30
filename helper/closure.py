@@ -1,45 +1,91 @@
 from parsexml.relation import Relation
 from parsexml.relationtype import RelationType
+import numpy as np
 
 class Closure:
-    def __init__(self, text_obj, relation_type):
+    def __init__(self, text_obj, relation_type, transitives_of_transitives=False):
+        """If transitives_of_transitives is True we will calculate all possible transitives. Otherwise it will only be returned direct transitives."""
+        self.transitives_of_transitives = transitives_of_transitives
         self.text_obj = text_obj
+        self.relations = text_obj.relations
         self.relation_type = relation_type
-        # Copy. Don't reference
-        self.relations = list(self.text_obj.relations)
-        self.new_relations = self._generate_closure_relations()
 
     def get_closure_relations(self):
-        return self.new_relations
+        if self.transitives_of_transitives:
+            return self._generate_all_closures(self.relations)
+        else:
+            return self._generate_closure_relations(self.relations)
 
-    def _generate_closure_relations(self):
-        closures = []
+    def _generate_all_closures(self, relations):
+        # TODO: Not working yet. But also not being used at the moment.
+        all_closures = []
 
-        new_closures = self._generate_closures()
-        closures += new_closures
+        closures = self._generate_closure_relations(relations)
+        all_closures += closures
 
-        while len(new_closures) != 0:
-            new_closures = self._generate_closures()
-            closures += new_closures
+        while len(closures) != 0:
+            closures = self._generate_closure_relations(relations + all_closures)
+            all_closures += closures
 
-        return closures
+        return all_closures
 
-    def _generate_closures(self):
-        relations = [r for r in self.relations if r.relation_type == self.relation_type]
-        closures = []
+    def _generate_closure_relations(self, relations):
+        relevant_relations = self._get_relevant_relations(relations)
 
-        for relation in relations:
-            source = relation.source
-            target = relation.target
+        matrix = self._generate_boolean_matrix_from_relations(relevant_relations)
+        matrix_with_transitives_as_ones = matrix.dot(matrix)
 
-            for rel in relations:
-                if target == rel.source:
-                    closure = self._create_closured_relation(source, rel.target)
-                    if closure not in self.relations and closure not in closures:
-                        closures.append(closure)
+        closured = self._build_closured_relations_from_matrix(matrix_with_transitives_as_ones, relevant_relations)
 
-        self.relations += closures
-        return closures
+        return closured
+
+    def _get_relevant_relations(self, relations):
+        relevant_relations = [r for r in relations if r.relation_type == self.relation_type]
+
+        return relevant_relations
+
+    def _build_closured_relations_from_matrix(self, matrix, relevant_relations):
+        closured = []
+
+        entities = self._generate_entities_list(relevant_relations)
+        n = len(entities)
+
+        for source in range(n):
+            for target in range(n):
+                if matrix[source][target] == 1:
+                    source_enitity = entities[source]
+                    target_entity = entities[target]
+                    closured.append(self._create_closured_relation(source_enitity, target_entity))
+
+        return closured
+
+    def _generate_entities_list(self, relevant_relations):
+        entities = []
+
+        for relation in relevant_relations:
+            e1 = relation.source
+            e2 = relation.target
+
+            if e1 not in entities:
+                entities.append(e1)
+            if e2 not in entities:
+                entities.append(e2)
+
+        return entities
+
+    def _generate_boolean_matrix_from_relations(self, relevant_relations):
+        entities = self._generate_entities_list(relevant_relations)
+
+        n = len(entities)
+        matrix = np.zeros([n,n])
+
+        for relation in relevant_relations:
+            index_entities_source = entities.index(relation.source)
+            index_entities_target = entities.index(relation.target)
+
+            matrix[index_entities_source][index_entities_target] = 1
+
+        return matrix
 
     def _create_closured_relation(self, source, target):
         rel = Relation("closure", self.text_obj, source, target, self.relation_type)
