@@ -45,8 +45,8 @@ class Set:
             if not file.endswith('tml'):
                 continue
 
-                # Parse from file
-                text_obj = self._parse_from_file(file)
+            # Parse from file
+            text_obj = self._parse_from_file(file)
 
             self.text_objects.append(text_obj)
 
