@@ -388,13 +388,13 @@ class Relations(unittest.TestCase):
         cls.filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
         cls.closure_test = "data/closure-test.tml"
 
-        cls.text_obj = Text(cls.filename)
-        cls.parser_obj = Parser(cls.filename, cls.text_obj)
-
     def test_AreThereMoreRelationsAfterProducingInversedRelations(self):
-        before = len(self.parser_obj.relations)
-        self.parser_obj.get_inversed_relations()
-        after = len(self.parser_obj.relations)
+        text_obj = Text(self.filename)
+        parser_obj = Parser(self.filename, text_obj)
+
+        before = len(parser_obj.relations)
+        parser_obj.get_inversed_relations()
+        after = len(parser_obj.relations)
         self.assertGreater(after, before)
 
     def test_AreThereMoreRelationsAfterProducingClosuredRelations(self):
@@ -408,7 +408,10 @@ class Relations(unittest.TestCase):
         self.assertGreater(after, before)
 
     def test_CheckDistributionAfterInversedRelations(self):
-        parser_obj = Parser(self.filename, self.text_obj)
+        # test=True, so no inversed or closured relations are being created
+        text_obj = Text(self.filename, test=True)
+
+        parser_obj = Parser(self.filename, text_obj)
         parser_obj.get_inversed_relations()
 
         # Count temporal types
@@ -455,16 +458,18 @@ class Relations(unittest.TestCase):
         e2 = parser_obj.events[1]
         e3 = parser_obj.events[2]
         e4 = parser_obj.events[3]
+        # Existing relations: e1-e2, e2-e3, e3-e4
 
         r1 = Relation("closure", text_obj, e1, e3, RelationType.BEFORE)
         r2 = Relation("closure", text_obj, e2, e4, RelationType.BEFORE)
-        r3 = Relation("closure", text_obj, e1, e4, RelationType.BEFORE)
+        # Only calculating transitives. Not transitives of transitives of ...
+        # r3 = Relation("closure", text_obj, e1, e4, RelationType.BEFORE)
 
         closure_rel = parser_obj.get_closured_relations()
 
         self.assertIn(r1, closure_rel)
         self.assertIn(r2, closure_rel)
-        self.assertIn(r3, closure_rel)
+        # self.assertIn(r3, closure_rel)
 
     def test_IsThereTheRightAmountOfRelationsAfterClosures(self):
         # test = True, so there will be no inversed relations
@@ -473,7 +478,7 @@ class Relations(unittest.TestCase):
 
         closured_rel = parser_obj.get_closured_relations()
 
-        self.assertEqual(len(closured_rel), 3)
+        self.assertEqual(len(closured_rel), 2)
 
 class EntityExtraction(unittest.TestCase):
     @classmethod
