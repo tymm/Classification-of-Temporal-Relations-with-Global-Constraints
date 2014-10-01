@@ -40,27 +40,3 @@ class TestSet(Set):
             y_predicted.append(relation.predicted_class)
 
         return y_predicted
-
-    def _get_feature_data(self, relations, lemma, token, nlp_persistence_obj, features):
-        X = []
-        y = []
-
-        length = len(relations)
-
-        for i, relation in enumerate(relations):
-            try:
-                f = Feature(relation, lemma, token, nlp_persistence_obj, features)
-                feature = f.get_feature()
-            except FailedProcessingFeature:
-                continue
-
-            relation.set_feature(feature)
-
-            X.append(feature)
-            y.append(relation.relation_type)
-
-            # Print progress
-            self._print_progress(i, length)
-
-        print
-        return (X, y)
