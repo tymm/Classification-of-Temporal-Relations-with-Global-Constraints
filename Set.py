@@ -55,13 +55,13 @@ class Set(object):
 
         # Parse from files on all cores
         pool = multiprocessing.Pool()
-        pool.map_async(self._parse_from_file, tmls, callback=self._append_text_obj)
+        pool.map_async(self._parse_from_file, tmls, callback=self._append_text_objs)
 
         pool.close()
         pool.join()
 
-    def _append_text_obj(self, text_obj):
-        self.text_objects.append(text_obj)
+    def _append_text_objs(self, text_objs):
+        self.text_objects += text_objs
 
     def _parse_from_file(self, file):
         # Mapping xml data to python objects
