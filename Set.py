@@ -2,8 +2,13 @@ import os
 from parsexml.text import Text
 from Persistence import Persistence
 import sys
+import multiprocessing
+from helper.pickle_methods import activate
 
-class Set:
+# Needs to be done in order to use multiprocessing
+activate()
+
+class Set(object):
     def __init__(self, load=True, test=False, *corpora):
         self.corpora = corpora
         self.load = load
@@ -40,15 +45,23 @@ class Set:
             files = files + self._fetch_files(corpus)
 
         # Parse all files
+        tmls = []
         for file in files:
             # Only parse *.tml files
             if not file.endswith('tml'):
                 continue
 
-            # Parse from file
-            text_obj = self._parse_from_file(file)
+            tmls.append(file)
 
-            self.text_objects.append(text_obj)
+        # Parse from files on all cores
+        pool = multiprocessing.Pool()
+        pool.map_async(self._parse_from_file, tmls, callback=self._append_text_obj)
+
+        pool.close()
+        pool.join()
+
+    def _append_text_obj(self, text_obj):
+        self.text_objects.append(text_obj)
 
     def _parse_from_file(self, file):
         # Mapping xml data to python objects
