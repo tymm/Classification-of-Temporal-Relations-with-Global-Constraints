@@ -21,6 +21,9 @@ class Text_structure:
 
         self._extract_entity_positions_and_append_to_entities()
 
+        # Do not hold lxml objects, so we can pickle this
+        self._entity_nodes_ordered = None
+
     def get_entities_ordered(self):
         return self._entities_ordered
 
