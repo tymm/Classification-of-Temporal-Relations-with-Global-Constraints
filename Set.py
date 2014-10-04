@@ -65,10 +65,13 @@ class Set(object):
         self.text_objects += text_objs
 
     def _parse_from_file(self, file):
-        # Mapping xml data to python objects
-        text = Text(file, self.test)
+        try:
+            # Mapping xml data to python objects
+            text = Text(file, self.test)
 
-        return text
+            return text
+        except Exception as e:
+            print e
 
     def _fetch_files(self, directory_or_file):
         files = []
