@@ -13,14 +13,18 @@ class Parallel_features(object):
         self._run()
 
     def _run(self):
-        print "HALLO"
         args = [(text_obj, None, None, None, ['dct']) for text_obj in self.text_objs]
+        chunker = lambda lst, sz: [lst[i:i+sz] for i in range(0, len(lst), sz)]
 
         pool = multiprocessing.Pool()
-        pool.map_async(self._get_feature, args, callback=self._get_feature_data)
 
-        pool.close()
-        pool.join()
+        # Split into junks of 16 elements
+        for chunk in chunker(args, 5):
+            pool.map_async(self._get_feature, args, callback=self._get_feature_data)
+
+            pool.close()
+            pool.join()
+            print "Done first batch"
 
     def _get_feature(self, args):
         try:
@@ -44,7 +48,6 @@ class Parallel_features(object):
                         relation.set_feature(feature)
                     except FailedProcessingFeature:
                         continue
-
 
                 relations.append(relation)
 
