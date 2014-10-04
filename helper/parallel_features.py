@@ -8,7 +8,9 @@ class Parallel_features(object):
         self.event_event = event_event
         self.event_timex = event_timex
 
-        self.feature_data = None
+        self.X = []
+        self.y = []
+        self.feature_data = (self.X, self.y)
 
         self._run()
 
@@ -16,11 +18,10 @@ class Parallel_features(object):
         args = [(text_obj, None, None, None, ['dct']) for text_obj in self.text_objs]
         chunker = lambda lst, sz: [lst[i:i+sz] for i in range(0, len(lst), sz)]
 
-        pool = multiprocessing.Pool()
-
-        # Split into junks of 16 elements
+        # Split into junks of 5 elements
         for chunk in chunker(args, 5):
-            pool.map_async(self._get_feature, args, callback=self._get_feature_data)
+            pool = multiprocessing.Pool()
+            pool.map_async(self._get_feature, chunk, callback=self._get_feature_data)
 
             pool.close()
             pool.join()
@@ -51,18 +52,11 @@ class Parallel_features(object):
 
                 relations.append(relation)
 
-            print text_obj.filename
             return relations
         except Exception as e:
             print e
 
-    def _get_feature_data(self, sets_of_relations):
-        X = []
-        y = []
-
-        for relations in sets_of_relations:
-            for relation in relations:
-                X.append(relation.feature)
-                y.append(relation.relation_type)
-
-        self.feature_data = (X, y)
+    def _get_feature_data(self, relations):
+        for relation in relations:
+            self.X.append(relation.feature)
+            self.y.append(relation.relation_type)
