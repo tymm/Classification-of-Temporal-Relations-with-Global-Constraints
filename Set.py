@@ -5,6 +5,7 @@ import sys
 import multiprocessing
 from helper.pickle_methods import activate
 from feature.exception import FailedProcessingFeature
+from Feature import Feature
 
 # Needs to be done in order to use multiprocessing
 activate()
