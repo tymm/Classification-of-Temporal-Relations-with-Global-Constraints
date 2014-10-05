@@ -4,6 +4,7 @@ from Persistence import Persistence
 import sys
 import multiprocessing
 from helper.pickle_methods import activate
+from feature.exception import FailedProcessingFeature
 
 # Needs to be done in order to use multiprocessing
 activate()
