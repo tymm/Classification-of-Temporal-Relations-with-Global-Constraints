@@ -114,9 +114,9 @@ class Set(object):
         elif event_event is None and event_timex is None:
             raise WrongArguments
         elif event_event:
-            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, event_event=True)
+            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, features, event_event=True)
         elif event_timex:
-            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, event_timex=True)
+            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, features, event_timex=True)
 
         return parallel_feature_extraction.feature_data
 
