@@ -23,9 +23,10 @@ from feature.type import Type
 import scipy
 
 class Feature:
-    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, features):
+    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, duration_cache,  features):
         self.relation = relation
         self.features = features
+        self.duration_cache = duration_cache
         self.nlp_persistence_obj = nlp_persistence_obj
 
         if "lemma" in self.features:
@@ -115,7 +116,7 @@ class Feature:
         value = Value(self.relation)
         n_values = value.get_length()
 
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
         feature = enc.transform([[value.source, value.target]]).toarray()[0]
@@ -128,7 +129,7 @@ class Feature:
         n_values = temporal_signal.get_length()
         signal = temporal_signal.get_signal()
 
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0], dtype="int32")
         enc.fit([n_values-1])
         feature_signal = enc.transform([[signal]]).toarray()[0]
         feature_signal = feature_signal.tolist()
@@ -164,18 +165,18 @@ class Feature:
     def get_type(self):
         type = Type(self.relation)
 
-        enc = OneHotEncoder(n_values=5, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=5, categorical_features=[0,1], dtype="int32")
         enc.fit([4,4])
 
         feature = enc.transform([[type.source, type.target]]).toarray()[0]
         return feature.tolist()
 
     def get_duration(self):
-        duration = Duration(self.nlp_persistence_obj)
+        duration = Duration(self.nlp_persistence_obj, self.duration_cache)
 
         n_values = duration.get_length()
 
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
         duration_source = duration.get_duration(self.relation.source)
@@ -185,12 +186,12 @@ class Feature:
         return feature.tolist()
 
     def get_duration_difference(self):
-        duration = Duration(self.nlp_persistence_obj)
+        duration = Duration(self.nlp_persistence_obj, self.duration_cache)
 
         # Values: same, less, more, none
         n_values = 4
 
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0], dtype="int32")
         enc.fit([n_values-1])
 
         duration_source = duration.get_duration(self.relation.source)
@@ -212,7 +213,7 @@ class Feature:
     def get_token(self):
         n_values = self.tokens.get_length()
         # +1 for the unkown value when the token is not known
-        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values, n_values])
 
         source_index = self.tokens.get_index(self.relation.source.text)
@@ -230,7 +231,7 @@ class Feature:
     def get_lemma(self):
         n_values = self.lemmas.get_length()
         # +1 for the unkown value when the lemma is not known
-        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values, n_values])
 
         source_index = self.lemmas.get_index(self.relation.source.text)
@@ -247,7 +248,7 @@ class Feature:
 
     def get_tense(self):
         n_values = Tense.get_length()
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
         tense = Tense(self.relation, self.nlp_persistence_obj)
@@ -257,7 +258,7 @@ class Feature:
 
     def get_aspect(self):
         n_values = Aspect.get_length()
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
         aspect = Aspect(self.relation, self.nlp_persistence_obj)
@@ -269,7 +270,7 @@ class Feature:
         event_class = Event_class(self.relation)
 
         n_values = event_class.get_length()
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
         feature = enc.transform([[event_class.get_index_source(), event_class.get_index_target()]]).toarray()[0]
@@ -278,7 +279,7 @@ class Feature:
     def get_polarity(self):
         polarity = Polarity(self.relation)
 
-        enc = OneHotEncoder(n_values=3, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=3, categorical_features=[0,1], dtype="int32")
         enc.fit([2, 2])
 
         feature = enc.transform([[polarity.source, polarity.target]]).toarray()[0]
@@ -321,7 +322,7 @@ class Feature:
         pos = Pos(self.relation, self.nlp_persistence_obj)
         n_values = pos.get_length()
 
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
         feature = enc.transform([[pos.source, pos.target]]).toarray()[0]
@@ -390,7 +391,7 @@ class Feature:
 
         n_values = dependency_type.get_length()
 
-        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0])
+        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0], dtype="int32")
         enc.fit([n_values])
 
         try:
@@ -407,7 +408,7 @@ class Feature:
         # 0: Governor after Dependent, 1: Governor before Dependent, 2: Governor == Dependent, None: Entities not in same sentence
         n_values = 4
 
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0], dtype="int32")
         enc.fit([n_values-1])
 
         try:
@@ -437,7 +438,7 @@ class Feature:
 
         n_values = 3
 
-        enc = OneHotEncoder(n_values=n_values, categorical_features=[0, 1])
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0, 1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
         feature = enc.transform([[value_source, value_target]]).toarray()[0]

@@ -5,6 +5,8 @@ import sys
 import multiprocessing
 from helper.pickle_methods import activate
 from helper.parallel_features import Parallel_features
+from feature.exception import FailedProcessingFeature
+from Feature import Feature
 
 # Needs to be done in order to use multiprocessing
 activate()
@@ -24,6 +26,20 @@ class Set(object):
         self._extract_relations()
 
         self.relations = self._event_event_rels + self._event_timex_rels
+
+    def get_classification_data_event_event(self, features, lemma=None, token=None, nlp_persistence_obj=None, duration_cache=None):
+        features = self._remove_only_event_timex_features(features)
+
+        X, y = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj, duration_cache, features)
+
+        return (X, y)
+
+    def get_classification_data_event_timex(self, features, lemma=None, token=None, nlp_persistence_obj=None, duration_cache=None):
+        features = self._remove_only_event_event_features(features)
+
+        X, y = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj, duration_cache, features)
+
+        return (X, y)
 
     def _extract_relations(self):
         for text_obj in self.text_objects:
@@ -91,16 +107,16 @@ class Set(object):
 
             return files
 
-    def _get_feature_data(self, lemma, token, nlp_persistence_obj, features, event_event=None, event_timex=None):
+    def _get_feature_data(self, lemma, token, nlp_persistence_obj, features, duration_cache, event_event=None, event_timex=None):
         # Get either event-event relations or event-timex relations
         if event_event and event_timex:
             raise WrongArguments
         elif event_event is None and event_timex is None:
             raise WrongArguments
         elif event_event:
-            parallel_feature_extraction = Parallel_features(self.text_objects, event_event=True)
+            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, event_event=True)
         elif event_timex:
-            parallel_feature_extraction = Parallel_features(self.text_objects, event_timex=True)
+            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, event_timex=True)
 
         return parallel_feature_extraction.feature_data
 

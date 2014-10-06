@@ -1,4 +1,5 @@
 from helper.nlp_persistence import Nlp_persistence
+from helper.duration_cache import Duration_cache
 from sklearn.ensemble import RandomForestClassifier
 from Result import Result
 
@@ -24,8 +25,13 @@ class System:
 
         if "lemma" in self.features:
             lemma = Lemma(training)
+
         if "token" in self.features:
             token = Token(training)
+
+        if "duration" in self.features or "duration_difference" in self.features:
+            duration_cache = Duration_cache()
+
         if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features:
             nlp_persistence = Nlp_persistence()
             print "Loading NLP data from file."
@@ -34,16 +40,16 @@ class System:
 
         # Create training features and target values
         print "Creating features for the training data"
-        X_train_event_event, y_train_event_event = self.data.training.get_classification_data_event_event(self.features, lemma, token, nlp_persistence)
-        X_train_event_timex, y_train_event_timex = self.data.training.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence)
+        X_train_event_event, y_train_event_event = self.data.training.get_classification_data_event_event(self.features, lemma, token, nlp_persistence, duration_cache)
+        X_train_event_timex, y_train_event_timex = self.data.training.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence, duration_cache)
 
         self.training = (X_train_event_event + X_train_event_timex, y_train_event_event + y_train_event_timex)
         self.training_event_event = (X_train_event_event, y_train_event_event)
         self.training_event_timex = (X_train_event_timex, y_train_event_timex)
 
         print "Creating features for the test data"
-        X_test_event_event, y_test_event_event = self.data.test.get_classification_data_event_event(self.features, lemma, token, nlp_persistence)
-        X_test_event_timex, y_test_event_timex = self.data.test.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence)
+        X_test_event_event, y_test_event_event = self.data.test.get_classification_data_event_event(self.features, lemma, token, nlp_persistence, duration_cache)
+        X_test_event_timex, y_test_event_timex = self.data.test.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence, duration_cache)
 
         self.test = (X_test_event_event + X_test_event_timex, y_test_event_event + y_test_event_timex)
         self.test_event_event = (X_test_event_event, y_test_event_event)
