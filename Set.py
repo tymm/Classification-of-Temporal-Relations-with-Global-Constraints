@@ -26,17 +26,17 @@ class Set(object):
 
         self.relations = self._event_event_rels + self._event_timex_rels
 
-    def get_classification_data_event_event(self, features, lemma=None, token=None, nlp_persistence_obj=None):
+    def get_classification_data_event_event(self, features, lemma=None, token=None, nlp_persistence_obj=None, duration_cache=None):
         features = self._remove_only_event_timex_features(features)
 
-        X, y = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj, features)
+        X, y = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj, duration_cache, features)
 
         return (X, y)
 
-    def get_classification_data_event_timex(self, features, lemma=None, token=None, nlp_persistence_obj=None):
+    def get_classification_data_event_timex(self, features, lemma=None, token=None, nlp_persistence_obj=None, duration_cache=None):
         features = self._remove_only_event_event_features(features)
 
-        X, y = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj, features)
+        X, y = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj, duration_cache, features)
 
         return (X, y)
 
@@ -103,7 +103,7 @@ class Set(object):
 
             return files
 
-    def _get_feature_data(self, relations, lemma, token, nlp_persistence_obj, features):
+    def _get_feature_data(self, relations, lemma, token, nlp_persistence_obj, duration_cache, features):
         X = []
         y = []
 
@@ -111,7 +111,7 @@ class Set(object):
 
         for i, relation in enumerate(relations):
             try:
-                f = Feature(relation, lemma, token, nlp_persistence_obj, features)
+                f = Feature(relation, lemma, token, nlp_persistence_obj, duration_cache, features)
                 feature = f.get_feature()
             except FailedProcessingFeature:
                 continue

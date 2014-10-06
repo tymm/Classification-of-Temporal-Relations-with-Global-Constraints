@@ -1,14 +1,14 @@
 import re
-from nltk.stem.wordnet import WordNetLemmatizer
 from parsexml.event import Event
 from parsexml.timex import Timex
 from helper.nlp_persistence import CouldNotFindGoverningVerb
 from feature.exception import FailedProcessingFeature
 
 class Duration:
-    def __init__(self, nlp_persistence_obj):
-        self.FILE = "event.lexicon.distributions"
+    def __init__(self, nlp_persistence_obj, duration_cache):
         self.nlp_persistence_obj = nlp_persistence_obj
+        self._infinitive_cache = duration_cache.infinitives
+        self._infinitive_likelihood_cache = duration_cache.word_likelihoods
         self.durations = ["seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"]
 
     def get_length(self):
@@ -194,46 +194,16 @@ class Duration:
     def _get_most_likely_duration(self, verb, obj=None):
         infinitive = self._get_infinitive(verb)
 
-        if obj:
-            # Searching for verb and object
-            for line in open(self.FILE, "r"):
-                if infinitive.lower() in line and obj.lower() in line:
-                    # We found the line we are searching for
-                    index = self._get_duration_from_line(line)
-                    return index
-
-        else:
-            # Searching only for verb
-            for line in open(self.FILE, "r"):
-                if infinitive.lower() in line and "OBJ" not in line:
-                    # We found the line which only has the verb and no object
-                    index = self._get_duration_from_line(line)
-                    return index
-
-        raise InfinitiveNotInDistributionFile
+        # Get duration
+        try:
+            duration = self._infinitive_likelihood_cache[infinitive]
+            return duration
+        except KeyError:
+            raise InfinitiveNotInDistributionFile
 
     def _get_infinitive(self, verb):
-        lemmatizer = WordNetLemmatizer()
-        infinitive = lemmatizer.lemmatize(verb, 'v')
-
+        infinitive = self._infinitive_cache[verb.lower()]
         return infinitive
-
-    def _get_duration_from_line(self, line):
-        m = re.search(r"DISTR\=\[(.*)\]$", line)
-        if m:
-            probas = m.group(1)
-            probas = probas.strip(";").split(";")
-
-            max = 0
-            for proba in probas:
-                if float(proba) > float(max):
-                    max = proba
-
-            index_proba = probas.index(max)
-
-            return index_proba
-        else:
-            raise InfinitiveNotInDistributionFile
 
 class InfinitiveNotInDistributionFile(Exception):
     def __str__(self):

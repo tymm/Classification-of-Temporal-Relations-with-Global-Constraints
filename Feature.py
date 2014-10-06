@@ -23,9 +23,10 @@ from feature.type import Type
 import scipy
 
 class Feature:
-    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, features):
+    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, duration_cache,  features):
         self.relation = relation
         self.features = features
+        self.duration_cache = duration_cache
         self.nlp_persistence_obj = nlp_persistence_obj
 
         if "lemma" in self.features:
@@ -171,7 +172,7 @@ class Feature:
         return feature.tolist()
 
     def get_duration(self):
-        duration = Duration(self.nlp_persistence_obj)
+        duration = Duration(self.nlp_persistence_obj, self.duration_cache)
 
         n_values = duration.get_length()
 
@@ -185,7 +186,7 @@ class Feature:
         return feature.tolist()
 
     def get_duration_difference(self):
-        duration = Duration(self.nlp_persistence_obj)
+        duration = Duration(self.nlp_persistence_obj, self.duration_cache)
 
         # Values: same, less, more, none
         n_values = 4
