@@ -17,6 +17,7 @@ from parsexml.relationtype import RelationType
 from System import System
 from TrainingSet import TrainingSet
 from TestSet import TestSet
+from helper.duration_cache import Duration_cache
 
 class Singleton(type):
     _instances = {}
@@ -381,6 +382,18 @@ class DependencyOrderFeature(unittest.TestCase):
         self.assertTrue(self.dependency_order._is_e1_governing_e2("been", "has"))
         self.assertTrue(self.dependency_order._is_e1_governing_e2("charge", "mission"))
         self.assertFalse(self.dependency_order._is_e1_governing_e2("mission", "charge"))
+
+class DurationFeature(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.duration_cache = Duration_cache()
+
+    def test_IsRightDuration(self):
+        # The "right" information are in event.lexicon.distributions
+        self.assertEqual(self.duration_cache.word_likelihoods["crowd"], 3)
+        self.assertEqual(self.duration_cache.word_likelihoods["accumulate"], 5)
+        self.assertEqual(self.duration_cache.word_likelihoods["loom"], 7)
+        self.assertEqual(self.duration_cache.word_likelihoods["forbid"], 1)
 
 class Relations(unittest.TestCase):
     @classmethod
