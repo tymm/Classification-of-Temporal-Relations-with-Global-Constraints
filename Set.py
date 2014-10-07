@@ -17,8 +17,8 @@ class Set(object):
         self.load = load
         self.test = test
 
-        global test
-        test = self.test
+        global test_g
+        test_g = self.test
 
         # Hols all textfile objects
         self.text_objects = []
@@ -87,7 +87,7 @@ class Set(object):
     def _parse_from_file(self, file):
         try:
             # Mapping xml data to python objects
-            text = Text(file, test)
+            text = Text(file, test_g)
 
             return text
         except Exception as e:
