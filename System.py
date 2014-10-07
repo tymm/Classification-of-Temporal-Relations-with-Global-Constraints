@@ -62,18 +62,10 @@ class System:
             nlp_persistence.close()
 
     def train(self):
-        # Load features before using train()
-        if not self.training:
-            self.create_features()
-
         self.classifier_event_event = self._train_SVM(self.training_event_event)
         self.classifier_event_timex = self._train_SVM(self.training_event_timex)
 
     def eval(self):
-        # Train classifier before using test()
-        if not self.classifier and not self.classifier_event_event and not self.classifier_event_timex:
-            self.train()
-
         X_test_event_event = self.test_event_event[0]
         y_test_event_event = self.test_event_event[1]
 
