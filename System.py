@@ -44,7 +44,6 @@ class System:
         X_train_event_event, y_train_event_event = self.data.training.get_classification_data_event_event(self.features, lemma, token, nlp_persistence, duration_cache)
         X_train_event_timex, y_train_event_timex = self.data.training.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence, duration_cache)
 
-        self.training = (X_train_event_event + X_train_event_timex, y_train_event_event + y_train_event_timex)
         self.training_event_event = (X_train_event_event, y_train_event_event)
         self.training_event_timex = (X_train_event_timex, y_train_event_timex)
 
@@ -52,7 +51,6 @@ class System:
         X_test_event_event, y_test_event_event = self.data.test.get_classification_data_event_event(self.features, lemma, token, nlp_persistence, duration_cache)
         X_test_event_timex, y_test_event_timex = self.data.test.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence, duration_cache)
 
-        self.test = (X_test_event_event + X_test_event_timex, y_test_event_event + y_test_event_timex)
         self.test_event_event = (X_test_event_event, y_test_event_event)
         self.test_event_timex = (X_test_event_timex, y_test_event_timex)
 
