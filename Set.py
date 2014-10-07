@@ -83,7 +83,7 @@ class Set(object):
     def _parse_from_file(self, file):
         try:
             # Mapping xml data to python objects
-            text = Text(file, self.test)
+            text = Text(file, False)
 
             return text
         except Exception as e:

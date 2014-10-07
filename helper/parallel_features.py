@@ -1,7 +1,7 @@
 import multiprocessing
 from Feature import Feature
 from feature.exception import FailedProcessingFeature
-from multiprocessing import Value, Lock
+from multiprocessing import Value, Lock, Manager
 from ctypes import c_int
 import sys
 
@@ -14,6 +14,18 @@ class Parallel_features(object):
         self.event_event = event_event
         self.event_timex = event_timex
 
+        print "Creating manager stuff"
+        self.manager = Manager()
+        self.shared = self.manager.dict()
+        self.shared["nlp"] = self.nlp_persistence_obj
+        self.shared["duration"] = self.duration_cache
+        self.shared["features"] = self.features
+        if self.event_event:
+            self.shared["event_event"] = True
+        else:
+            self.shared["event_event"] = False
+        print "done manager"
+
         self._length = len(self.text_objs)
         #self._counter = Value(c_int)
         #self._counter_lock = Lock()
@@ -25,7 +37,7 @@ class Parallel_features(object):
         self._run()
 
     def _run(self):
-        args = [(text_obj, None, None, self.nlp_persistence_obj, self.duration_cache, self.features) for text_obj in self.text_objs]
+        args = [(arg, self.shared) for arg in self.text_objs]
 
         pool = multiprocessing.Pool()
         pool.map_async(self._get_feature, args, callback=self._get_feature_data)
@@ -35,23 +47,23 @@ class Parallel_features(object):
 
     def _get_feature(self, args):
         try:
-            text_obj, lemma, token, nlp_persistence_obj, duration_cache, features = args
+            text_obj, shared = args
 
             relations = []
 
             for relation in text_obj.relations:
-                if self.event_event and relation.is_event_event():
+                if shared["event_event"] and relation.is_event_event():
                     try:
-                        f = Feature(relation, None, None, nlp_persistence_obj, duration_cache, features)
+                        f = Feature(relation, None, None, shared["nlp"], shared["duration"], shared["features"])
                         feature = f.get_feature()
                         print feature
                         relation.set_feature(feature)
                     except FailedProcessingFeature:
                         continue
 
-                elif self.event_timex and relation.is_event_timex():
+                elif not shared["event_event"] and relation.is_event_timex():
                     try:
-                        f = Feature(relation, None, None, nlp_persistence_obj, duration_cache, features)
+                        f = Feature(relation, None, None, shared["nlp"], shared["duration"], shared["features"])
                         feature = f.get_feature()
                         print feature
                         relation.set_feature(feature)
