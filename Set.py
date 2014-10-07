@@ -4,6 +4,7 @@ from Persistence import Persistence
 import sys
 import multiprocessing
 from helper.pickle_methods import activate
+from helper.parallel_features import Parallel_features
 from feature.exception import FailedProcessingFeature
 from Feature import Feature
 
@@ -15,6 +16,10 @@ class Set(object):
         self.corpora = corpora
         self.load = load
         self.test = test
+
+        global test_g
+        test_g = self.test
+
         # Hols all textfile objects
         self.text_objects = []
         self._parse()
@@ -29,14 +34,14 @@ class Set(object):
     def get_classification_data_event_event(self, features, lemma=None, token=None, nlp_persistence_obj=None, duration_cache=None):
         features = self._remove_only_event_timex_features(features)
 
-        X, y = self._get_feature_data(self._event_event_rels, lemma, token, nlp_persistence_obj, duration_cache, features)
+        X, y = self._get_feature_data(lemma, token, nlp_persistence_obj, features, duration_cache, event_event=True)
 
         return (X, y)
 
     def get_classification_data_event_timex(self, features, lemma=None, token=None, nlp_persistence_obj=None, duration_cache=None):
         features = self._remove_only_event_event_features(features)
 
-        X, y = self._get_feature_data(self._event_timex_rels, lemma, token, nlp_persistence_obj, duration_cache, features)
+        X, y = self._get_feature_data(lemma, token, nlp_persistence_obj, features, duration_cache, event_timex=True)
 
         return (X, y)
 
@@ -80,10 +85,13 @@ class Set(object):
         self.text_objects += text_objs
 
     def _parse_from_file(self, file):
-        # Mapping xml data to python objects
-        text = Text(file, self.test)
+        try:
+            # Mapping xml data to python objects
+            text = Text(file, test_g)
 
-        return text
+            return text
+        except Exception as e:
+            print e
 
     def _fetch_files(self, directory_or_file):
         files = []
@@ -103,29 +111,18 @@ class Set(object):
 
             return files
 
-    def _get_feature_data(self, relations, lemma, token, nlp_persistence_obj, duration_cache, features):
-        X = []
-        y = []
+    def _get_feature_data(self, lemma, token, nlp_persistence_obj, features, duration_cache, event_event=None, event_timex=None):
+        # Get either event-event relations or event-timex relations
+        if event_event and event_timex:
+            raise WrongArguments
+        elif event_event is None and event_timex is None:
+            raise WrongArguments
+        elif event_event:
+            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, features, event_event=True)
+        elif event_timex:
+            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, duration_cache, features, event_timex=True)
 
-        length = len(relations)
-
-        for i, relation in enumerate(relations):
-            try:
-                f = Feature(relation, lemma, token, nlp_persistence_obj, duration_cache, features)
-                feature = f.get_feature()
-            except FailedProcessingFeature:
-                continue
-
-            relation.set_feature(feature)
-
-            X.append(feature)
-            y.append(relation.relation_type)
-
-            # Print progress
-            self._print_progress(i, length)
-
-        print
-        return (X, y)
+        return parallel_feature_extraction.feature_data
 
     def _remove_only_event_event_features(self, features):
         features_event_timex = list(features)
@@ -153,3 +150,7 @@ class Set(object):
             l.remove(value)
         except ValueError:
             pass
+
+class WrongArguments(Exception):
+    def __str__(self):
+        return repr("Using wrong arguments.")
