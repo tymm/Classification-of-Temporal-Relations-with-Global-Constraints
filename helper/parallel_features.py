@@ -15,21 +15,29 @@ class Parallel_features(object):
         self.event_event = event_event
         self.event_timex = event_timex
 
-        print "Creating manager stuff"
-        self.manager = Manager()
-        self.shared = self.manager.dict()
-        self.shared["nlp"] = self.nlp_persistence_obj
-        self.shared["duration"] = self.duration_cache
-        self.shared["features"] = self.features
-        if self.event_event:
-            self.shared["event_event"] = True
-        else:
-            self.shared["event_event"] = False
-        print "done manager"
+        global nlp_persistence_obj_g
+        nlp_persistence_obj_g = self.nlp_persistence_obj
 
-        self._length = len(self.text_objs)
-        #self._counter = Value(c_int)
-        #self._counter_lock = Lock()
+        global features_g
+        features_g = self.features
+
+        global duration_cache_g
+        duration_cache_g = self.duration_cache
+
+        global event_event_g
+        if event_event:
+            event_event_g = True
+        else:
+            event_event_g = False
+
+        global _length
+        _length = len(self.text_objs)
+
+        global _counter
+        global _counter_lock
+
+        _counter = Value(c_int)
+        _counter_lock = Lock()
 
         self.X = []
         self.y = []
@@ -38,54 +46,52 @@ class Parallel_features(object):
         self._run()
 
     def _run(self):
-        args = [(arg, self.shared) for arg in self.text_objs]
-
         pool = multiprocessing.Pool()
-        pool.map_async(self._get_feature, args, callback=self._get_feature_data)
+        pool.map_async(self._get_feature, self.text_objs, callback=self._get_feature_data)
 
         pool.close()
         pool.join()
 
-    def _get_feature(self, args):
+    def _get_feature(self, text_obj):
         try:
-            text_obj, shared = args
-
             relations = []
-
             for relation in text_obj.relations:
-                if shared["event_event"] and relation.is_event_event():
+                if event_event_g and relation.is_event_event():
                     try:
-                        f = Feature(relation, None, None, shared["nlp"], shared["duration"], shared["features"])
+                        f = Feature(relation, None, None, nlp_persistence_obj_g, duration_cache_g, features_g)
                         feature = f.get_feature()
-                        print feature
                         relation.set_feature(feature)
                     except FailedProcessingFeature:
                         continue
 
-                elif not shared["event_event"] and relation.is_event_timex():
+                elif not event_event_g and relation.is_event_timex():
                     try:
-                        f = Feature(relation, None, None, shared["nlp"], shared["duration"], shared["features"])
+                        f = Feature(relation, None, None, nlp_persistence_obj_g, duration_cache_g, features_g)
                         feature = f.get_feature()
-                        print feature
                         relation.set_feature(feature)
                     except FailedProcessingFeature:
                         continue
 
                 relations.append(relation)
 
-            #self._increment_and_print_progress()
+            # Print progress
+            with _counter_lock:
+                _counter.value += 1
+
+                sys.stdout.write("\r%d%%" % int(_counter.value*100/(_length - 1)))
+                sys.stdout.flush()
+
             return relations
         except Exception as e:
-            #self._increment_and_print_progress()
+            # Print progress
+            with _counter_lock:
+                _counter.value += 1
+
+                sys.stdout.write("\r%d%%" % int(_counter.value*100/(_length - 1)))
+                sys.stdout.flush()
+
             print e
             print traceback.format_exc()
-
-    def _increment_and_print_progress(self):
-        with counter_lock:
-            counter.value += 1
-
-            sys.stdout.write("\r%d%%" % int(counter.value*100/(self._length - 1)))
-            sys.stdout.flush()
 
     def _get_feature_data(self, set_of_relations):
         for relations in set_of_relations:
