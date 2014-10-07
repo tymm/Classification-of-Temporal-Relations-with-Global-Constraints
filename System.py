@@ -1,6 +1,7 @@
 from helper.nlp_persistence import Nlp_persistence
 from helper.duration_cache import Duration_cache
 from sklearn.ensemble import RandomForestClassifier
+from sklearn import svm
 from Result import Result
 
 class System:
@@ -67,9 +68,8 @@ class System:
         if not self.training:
             self.create_features()
 
-        #self.classifier = self._train_random_forest(self.training)
-        self.classifier_event_event = self._train_random_forest(self.training_event_event)
-        self.classifier_event_timex = self._train_random_forest(self.training_event_timex)
+        self.classifier_event_event = self._train_SVM(self.training_event_event)
+        self.classifier_event_timex = self._train_SVM(self.training_event_timex)
 
     def eval(self):
         # Train classifier before using test()
@@ -96,8 +96,17 @@ class System:
         rf = RandomForestClassifier(n_jobs=2, n_estimators=5)
         rf.fit(training_data[0], training_data[1])
 
-        print "Done training the classifier"
+        print "Done training the classifier."
         return rf
+
+    def _train_SVM(self, training_data):
+        print "Train SVM"
+        clf = svm.SVC()
+
+        clf.fit(training_data[0], training_data[1])
+
+        print "Done training the classifier."
+        return clf
 
     def use_tense(self):
         if not "tense" in self.features:
