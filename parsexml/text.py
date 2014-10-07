@@ -7,7 +7,7 @@ from Feature import Feature
 from helper.output import Output
 from parsexml.event import Event
 
-class Text:
+class Text(object):
     def __init__(self, filename, test=False):
         self.filename = filename
 

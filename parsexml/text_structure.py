@@ -4,7 +4,7 @@ from parsexml.fakesentence import FakeSentence
 from lxml import etree
 import nltk.data
 
-class Text_structure:
+class Text_structure(object):
     def __init__(self, filename, parser_obj):
         self.filename = filename
         self.sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')

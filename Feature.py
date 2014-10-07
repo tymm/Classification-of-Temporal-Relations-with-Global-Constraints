@@ -22,7 +22,7 @@ from feature.dct import Dct
 from feature.type import Type
 import scipy
 
-class Feature:
+class Feature(object):
     def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, duration_cache,  features):
         self.relation = relation
         self.features = features

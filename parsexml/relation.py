@@ -1,6 +1,6 @@
 from parsexml.timex import Timex
 
-class Relation:
+class Relation(object):
     def __init__(self, lid, text_obj, source_obj, target_obj, relation_type_id):
         self.lid = lid
         self.parent = text_obj

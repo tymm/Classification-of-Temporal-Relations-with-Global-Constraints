@@ -11,7 +11,7 @@ from parsexml.text_structure import Text_structure
 from helper.closure import Closure
 import re
 
-class Parser:
+class Parser(object):
     def __init__(self, filename, text_obj):
         self.filename = filename
         self.text_obj = text_obj

@@ -3,7 +3,7 @@ import cPickle as pickle
 from corenlp import StanfordCoreNLP
 from pexpect import TIMEOUT
 
-class Nlp_persistence:
+class Nlp_persistence(object):
     """Persistence layer for having fast access to information produced by the StanfordCoreNLP tool."""
     def __init__(self, fallback=False):
         self.FILE = "nlp_infos.p"
