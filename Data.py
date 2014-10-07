@@ -4,7 +4,8 @@ import cPickle as pickle
 import os.path
 
 class Data:
-    def __init__(self, reload=False):
+    # TODO: reload=True since there is unsolved strange memory behaviour when loading from cache with pickle
+    def __init__(self, reload=True):
         self.FILENAME_CACHE = "data.p"
 
         if reload or not os.path.isfile(self.FILENAME_CACHE):
