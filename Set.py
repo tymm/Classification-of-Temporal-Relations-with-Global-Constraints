@@ -16,6 +16,10 @@ class Set(object):
         self.corpora = corpora
         self.load = load
         self.test = test
+
+        global test
+        test = self.test
+
         # Hols all textfile objects
         self.text_objects = []
         self._parse()
@@ -83,7 +87,7 @@ class Set(object):
     def _parse_from_file(self, file):
         try:
             # Mapping xml data to python objects
-            text = Text(file, False)
+            text = Text(file, test)
 
             return text
         except Exception as e:
