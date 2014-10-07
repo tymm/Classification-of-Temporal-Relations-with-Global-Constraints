@@ -4,6 +4,7 @@ from feature.exception import FailedProcessingFeature
 from multiprocessing import Value, Lock, Manager
 from ctypes import c_int
 import sys
+import traceback
 
 class Parallel_features(object):
     def __init__(self, text_objs, nlp_persistence_obj, duration_cache, features, event_event=None, event_timex=None):
@@ -77,6 +78,7 @@ class Parallel_features(object):
         except Exception as e:
             #self._increment_and_print_progress()
             print e
+            print traceback.format_exc()
 
     def _increment_and_print_progress(self):
         with counter_lock:
