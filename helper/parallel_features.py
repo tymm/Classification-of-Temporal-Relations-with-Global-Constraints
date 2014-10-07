@@ -97,6 +97,5 @@ class Parallel_features(object):
     def _get_feature_data(self, set_of_relations):
         for relations in set_of_relations:
             for relation in relations:
-                print relation.feature
                 self.X.append(relation.feature)
                 self.y.append(relation.relation_type)
