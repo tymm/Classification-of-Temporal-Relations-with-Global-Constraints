@@ -12,6 +12,7 @@ class Data:
         else:
             try:
                 self.training, self.test = pickle.load(open(self.FILENAME_CACHE, "rb"))
+                print "Successfully loaded data from cache."
             except (IOError, EOFError):
                 print "Corrupt " + self.FILENAME_CACHE + "! Reload data and write new cache."
                 self._load_new()
