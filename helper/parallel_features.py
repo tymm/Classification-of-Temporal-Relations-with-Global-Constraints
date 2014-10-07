@@ -16,6 +16,7 @@ class Parallel_features(object):
         self.event_timex = event_timex
 
         global nlp_persistence_obj_g
+        # TODO: nlp_persistence_obj should not write stuff
         nlp_persistence_obj_g = self.nlp_persistence_obj
 
         global features_g
@@ -61,6 +62,7 @@ class Parallel_features(object):
                         f = Feature(relation, None, None, nlp_persistence_obj_g, duration_cache_g, features_g)
                         feature = f.get_feature()
                         relation.set_feature(feature)
+                        relations.append(relation)
                     except FailedProcessingFeature:
                         continue
 
@@ -69,10 +71,9 @@ class Parallel_features(object):
                         f = Feature(relation, None, None, nlp_persistence_obj_g, duration_cache_g, features_g)
                         feature = f.get_feature()
                         relation.set_feature(feature)
+                        relations.append(relation)
                     except FailedProcessingFeature:
                         continue
-
-                relations.append(relation)
 
             # Print progress
             with _counter_lock:
