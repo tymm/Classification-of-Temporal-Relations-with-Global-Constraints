@@ -11,7 +11,9 @@ class Data:
             self._load_new()
         else:
             try:
-                self.training, self.test = pickle.load(open(self.FILENAME_CACHE, "rb"))
+                with open(self.FILENAME_CACHE, "rb") as f:
+                    self.training, self.test = pickle.load(f)
+
                 print "Successfully loaded data from cache."
             except (IOError, EOFError):
                 print "Corrupt " + self.FILENAME_CACHE + "! Reload data and write new cache."
@@ -22,4 +24,5 @@ class Data:
         self.test = TestSet(False, "data/test/te3-platinum/")
 
         # Write to cache
-        pickle.dump((self.training, self.test), open(self.FILENAME_CACHE, "wb"), protocol=-1)
+        with open(self.FILENAME_CACHE, "wb") as f:
+            pickle.dump((self.training, self.test), f, protocol=-1)
