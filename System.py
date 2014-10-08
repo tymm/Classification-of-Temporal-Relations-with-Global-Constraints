@@ -62,8 +62,8 @@ class System:
             nlp_persistence.close()
 
     def train(self):
-        self.classifier_event_event = self._train_SVM(self.training_event_event)
-        self.classifier_event_timex = self._train_SVM(self.training_event_timex)
+        self.classifier_event_event = self._train_random_forest(self.training_event_event)
+        self.classifier_event_timex = self._train_random_forest(self.training_event_timex)
 
     def eval(self):
         X_test_event_event = self.test_event_event[0]
