@@ -211,7 +211,7 @@ class Nlp_persistence(object):
         sentence = event.sentence
 
         # info = [verb, aux, pos verb, pos aux]
-        info = sentence.get_info_on_governing_verb(event.text, self)
+        info = self.get_info_on_governing_verb(event.text, sentence)
 
         if info is None:
             raise CouldNotFindGoverningVerb
