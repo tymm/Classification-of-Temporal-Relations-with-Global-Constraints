@@ -179,7 +179,7 @@ class Feature(unittest.TestCase):
                 print feature.relation.target
             self.assertNotEqual(feature.get_sentence_distance()[0], None)
 
-class Sentences(unittest.TestCase):
+class GoverningVerb(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
@@ -196,26 +196,47 @@ class Sentences(unittest.TestCase):
         # The event we have is "learned"
         cls.sentence = Sentence(event_node, filename)
 
+        cls.sentence2 = FakeSentence("Saudi authorities, who have been fighting a wave of violence by suspected Al-Qaeda extremists since May 2003, have warned that they will crack down on any attempt to undermine security during the hajj.")
+
         # Set up the CoreNLP persistence layer
         singleton = NLP_cache()
         cls.nlp_layer = singleton.nlp_layer
 
     def test_CheckIfGoverningVerbIsCorrect(self):
         # Easy case - direct dependency to taken
-        info_a = self.sentence.get_info_on_governing_verb("agency", self.nlp_layer)
-        # TODO: Add case which is harder: No direct dependency connection between non-verb and governing verb like with "space"
-
+        info_a = self.nlp_layer.get_info_on_governing_verb("agency", self.sentence)
         # info_a[0] contains the verb itself
         self.assertEqual(info_a[0], "taken")
 
+        info_a = self.nlp_layer.get_info_on_governing_verb("space", self.sentence)
+        self.assertEqual(info_a[0], "taken")
+
+        info_a = self.nlp_layer.get_info_on_governing_verb("we", self.sentence)
+        self.assertEqual(info_a[0], "learned")
+
+        info_a = self.nlp_layer.get_info_on_governing_verb("giant", self.sentence)
+        self.assertEqual(info_a[0], "taken")
+
+        info_a = self.nlp_layer.get_info_on_governing_verb("wave", self.sentence2)
+        self.assertEqual(info_a[0], "fighting")
+
+        info_a = self.nlp_layer.get_info_on_governing_verb("suspected", self.sentence2)
+        self.assertEqual(info_a[0], "fighting")
+
+        info_a = self.nlp_layer.get_info_on_governing_verb("Al-Qaeda", self.sentence2)
+        self.assertEqual(info_a[0], "fighting")
+
+        info_a = self.nlp_layer.get_info_on_governing_verb("any", self.sentence2)
+        self.assertEqual(info_a[0], "crack")
+
     def test_CheckIfGoverningVerbMethodReturnsRightAux(self):
-        info_a = self.sentence.get_info_on_governing_verb("agency", self.nlp_layer)
+        info_a = self.nlp_layer.get_info_on_governing_verb("agency", self.sentence)
 
         # info_a[1] contains the aux
         self.assertEqual(info_a[1], "has")
 
     def test_CheckIfGoverningVerbMethodReturnsRightPOS(self):
-        info_a = self.sentence.get_info_on_governing_verb("agency", self.nlp_layer)
+        info_a = self.nlp_layer.get_info_on_governing_verb("agency", self.sentence)
 
         # info_a[2] contains the POS for the main verb and info_a[3] contains the POS for the aux
         self.assertEqual(info_a[2], "VBN")
@@ -224,13 +245,13 @@ class Sentences(unittest.TestCase):
     def test_CheckIfIsVerbMethodDetectsVerbs(self):
         info = self.nlp_layer.get_info_for_sentence(self.sentence)
 
-        r = self.sentence._is_verb("learned", info)
+        r = self.nlp_layer._is_verb("learned", info)
         self.assertEqual(r, True)
 
-        r = self.sentence._is_verb("taken", info)
+        r = self.nlp_layer._is_verb("taken", info)
         self.assertEqual(r, True)
 
-        r = self.sentence._is_verb("Finally", info)
+        r = self.nlp_layer._is_verb("Finally", info)
         self.assertEqual(r, False)
 
 class TenseChoosing(unittest.TestCase):
