@@ -44,4 +44,4 @@ if __name__ == "__main__":
                 infinitive = lemmatizer.lemmatize(verb, 'v')
                 add(verb, infinitive)
 
-pickle.dump(infinitive_verb, open("infinitives.p", "wb"), protocol=-1)
+    pickle.dump(infinitive_verb, open("infinitives.p", "wb"), protocol=-1)
