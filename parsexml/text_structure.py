@@ -3,6 +3,7 @@ from parsexml.sentence import Sentence
 from parsexml.fakesentence import FakeSentence
 from lxml import etree
 import nltk.data
+from nltk import word_tokenize
 
 class Text_structure(object):
     def __init__(self, filename, parser_obj):
@@ -29,6 +30,9 @@ class Text_structure(object):
 
     def get_structure(self):
         return self.structure
+
+    def get_sentences(self):
+        return [sentence for sentence in self.structure]
 
     def print_structure(self):
         print "----Structure start----"
@@ -89,11 +93,12 @@ class Text_structure(object):
 
     def _extract_entity_positions_and_append_to_entities(self):
         for entity_node in self._entity_nodes_ordered:
-            begin, end = self._get_entity_position_in_sentence(entity_node)
+            begin, end, index = self._get_entity_position_in_sentence(entity_node)
             entity = self._get_entity_by_node(entity_node)
 
             entity.begin = begin
             entity.end = end
+            entity.index = index
 
     def _get_entity_position_in_sentence(self, entity_node):
         sentence = Sentence(entity_node, self.filename)
@@ -108,7 +113,19 @@ class Text_structure(object):
         start = sentence.text.rfind(end)
         end = start + len(entity_node.text)
 
-        return (start, end)
+        # Search for index (starting at 1 and starting from 1 for every subordinate clause, like the output of StanfordCoreNLP) in sentence
+        index = self._get_index_of_word_in_sentence(entity_node.text, start, end, sentence.text)
+
+        return (start, end, index)
+
+    def _get_index_of_word_in_sentence(self, text, start, end, sentence_text):
+        # Look at text until start
+        left_text = sentence_text[:start]
+
+        # Count words (and punctuation marks, just like StanfordCoreNLP) until start
+        words_before = len(word_tokenize(left_text))
+
+        return words_before + 1
 
     def _get_entity_by_node(self, entity_node):
         eid = entity_node.get("eid")

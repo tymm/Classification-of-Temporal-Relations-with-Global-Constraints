@@ -31,7 +31,7 @@ class NLP_cache(object):
     __metaclass__ = Singleton
 
     # Set up the CoreNLP persistence layer
-    nlp_layer = Nlp_persistence()
+    nlp_layer = Nlp_persistence(fallback=True)
     nlp_layer.load()
 
 class TextStructure(unittest.TestCase):
@@ -204,39 +204,39 @@ class GoverningVerb(unittest.TestCase):
 
     def test_CheckIfGoverningVerbIsCorrect(self):
         # Easy case - direct dependency to taken
-        info_a = self.nlp_layer.get_info_on_governing_verb("agency", self.sentence)
+        info_a = self.nlp_layer.get_info_on_governing_verb("agency", 9, self.sentence)
         # info_a[0] contains the verb itself
         self.assertEqual(info_a[0], "taken")
 
-        info_a = self.nlp_layer.get_info_on_governing_verb("space", self.sentence)
+        info_a = self.nlp_layer.get_info_on_governing_verb("space", 8, self.sentence)
         self.assertEqual(info_a[0], "taken")
 
-        info_a = self.nlp_layer.get_info_on_governing_verb("we", self.sentence)
+        info_a = self.nlp_layer.get_info_on_governing_verb("we", 4, self.sentence)
         self.assertEqual(info_a[0], "learned")
 
-        info_a = self.nlp_layer.get_info_on_governing_verb("giant", self.sentence)
+        info_a = self.nlp_layer.get_info_on_governing_verb("giant", 14, self.sentence)
         self.assertEqual(info_a[0], "taken")
 
-        info_a = self.nlp_layer.get_info_on_governing_verb("wave", self.sentence2)
+        info_a = self.nlp_layer.get_info_on_governing_verb("wave", 9, self.sentence2)
         self.assertEqual(info_a[0], "fighting")
 
-        info_a = self.nlp_layer.get_info_on_governing_verb("suspected", self.sentence2)
+        info_a = self.nlp_layer.get_info_on_governing_verb("suspected", 13, self.sentence2)
         self.assertEqual(info_a[0], "fighting")
 
-        info_a = self.nlp_layer.get_info_on_governing_verb("Al-Qaeda", self.sentence2)
+        info_a = self.nlp_layer.get_info_on_governing_verb("Al-Qaeda", 14, self.sentence2)
         self.assertEqual(info_a[0], "fighting")
 
-        info_a = self.nlp_layer.get_info_on_governing_verb("any", self.sentence2)
+        info_a = self.nlp_layer.get_info_on_governing_verb("any", 28, self.sentence2)
         self.assertEqual(info_a[0], "crack")
 
     def test_CheckIfGoverningVerbMethodReturnsRightAux(self):
-        info_a = self.nlp_layer.get_info_on_governing_verb("agency", self.sentence)
+        info_a = self.nlp_layer.get_info_on_governing_verb("agency", 9, self.sentence)
 
         # info_a[1] contains the aux
         self.assertEqual(info_a[1], "has")
 
     def test_CheckIfGoverningVerbMethodReturnsRightPOS(self):
-        info_a = self.nlp_layer.get_info_on_governing_verb("agency", self.sentence)
+        info_a = self.nlp_layer.get_info_on_governing_verb("agency", 9, self.sentence)
 
         # info_a[2] contains the POS for the main verb and info_a[3] contains the POS for the aux
         self.assertEqual(info_a[2], "VBN")
@@ -245,13 +245,13 @@ class GoverningVerb(unittest.TestCase):
     def test_CheckIfIsVerbMethodDetectsVerbs(self):
         info = self.nlp_layer.get_info_for_sentence(self.sentence)
 
-        r = self.nlp_layer._is_verb("learned", info)
+        r = self.nlp_layer._is_verb("learned", info, 0)
         self.assertEqual(r, True)
 
-        r = self.nlp_layer._is_verb("taken", info)
+        r = self.nlp_layer._is_verb("taken", info, 0)
         self.assertEqual(r, True)
 
-        r = self.nlp_layer._is_verb("Finally", info)
+        r = self.nlp_layer._is_verb("Finally", info, 0)
         self.assertEqual(r, False)
 
 class TenseChoosing(unittest.TestCase):
@@ -520,7 +520,7 @@ class EntityExtraction(unittest.TestCase):
         filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
         cls.text_obj = Text(filename)
 
-    def test_CheckForRightPositionInformation(self):
+    def test_CheckForRightBeginAndEnd(self):
         entity = self.text_obj.text_structure.get_entities_ordered()[1]
         self.assertEqual(entity.begin, 8)
         self.assertEqual(entity.end, 13)
@@ -528,6 +528,16 @@ class EntityExtraction(unittest.TestCase):
         entity = self.text_obj.text_structure.get_entities_ordered()[10]
         self.assertEqual(entity.begin, 16)
         self.assertEqual(entity.end, 28)
+
+    def test_CheckForRightIndexOfEvents(self):
+        learned = self.text_obj.text_structure.get_entities_ordered()[2]
+        self.assertEqual(learned.index, 5)
+
+        taken = self.text_obj.text_structure.get_entities_ordered()[3]
+        self.assertEqual(taken.index, 12)
+
+        boss = self.text_obj.text_structure.get_entities_ordered()[9]
+        self.assertEqual(boss.index, 15)
 
 class SystemRun(unittest.TestCase):
     @classmethod

@@ -10,6 +10,7 @@ class Event(object):
         self.position_in_sentence = position_in_sentence
         self.begin = None
         self.end = None
+        self.index = None
 
         # As definied in xml data
         self.e_class = e_class

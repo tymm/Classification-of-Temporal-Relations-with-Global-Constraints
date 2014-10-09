@@ -122,15 +122,25 @@ class Nlp_persistence(object):
             if len(info['sentences'][i]['dependencies']) != 0:
                 return i
 
-    def _get_the_right_index_for_word(self, info, word):
+    def _get_the_right_index_for_word(self, info, word, index):
         if len(info['sentences']) == 1:
             return 0
         else:
-            for i, sentence in enumerate(info['sentences']):
-                if word in info['sentences'][i]['text']:
-                    return i
+            if index:
+                word = word + "-" + str(index)
+                for i, sentence in enumerate(info['sentences']):
+                    for dependency in info['sentences'][i]['indexeddependencies']:
+                        if word == dependency[1] or word == dependency[2]:
+                            return i
+                else:
+                    raise NoSentenceFound
             else:
-                raise NoSentenceFound
+                for i, sentence in enumerate(info['sentences']):
+                    for dependency in info['sentences'][i]['dependencies']:
+                        if word == dependency[1] or word == dependency[2]:
+                            return i
+                else:
+                    raise NoSentenceFound
 
     def _write(self):
         # Save data to a file
@@ -143,7 +153,7 @@ class Nlp_persistence(object):
     def get_pos_tag_for_word(self, sentence, word):
         """Returns the POS tag for a word in a sentence. If the word is not in the sentence raise WordNotInSentence error."""
         info_sentence = self.get_info_for_sentence(sentence)
-        index = self._get_the_right_index_for_word(info_sentence, word)
+        index = self._get_the_right_index_for_word(info_sentence, word, None)
         words = info_sentence['sentences'][index]['words']
 
         for w in words:
@@ -155,7 +165,7 @@ class Nlp_persistence(object):
     def is_main_verb(self, sentence, word):
         """Returns true if word is a main verb of sentence and not an aux."""
         info_sentence = self.get_info_for_sentence(sentence)
-        index = self._get_the_right_index_for_word(info_sentence, word)
+        index = self._get_the_right_index_for_word(info_sentence, word, None)
         dependencies = info_sentence['sentences'][index]['dependencies']
 
         for dependency in dependencies:
@@ -167,7 +177,7 @@ class Nlp_persistence(object):
     def get_all_aux_for_verb(self, sentence, verb):
         """Returns all distinct aux for verb as strings in order of the sentence."""
         info_sentence = self.get_info_for_sentence(sentence)
-        index = self._get_the_right_index_for_word(info_sentence, verb)
+        index = self._get_the_right_index_for_word(info_sentence, verb, None)
         dependencies = info_sentence['sentences'][index]['dependencies']
 
         aux = []
@@ -180,7 +190,7 @@ class Nlp_persistence(object):
     def get_verb_for_aux(self, sentence, aux):
         """Returns the governing verb for the aux as string."""
         info_sentence = self.get_info_for_sentence(sentence)
-        index = self._get_the_right_index_for_word(info_sentence, aux)
+        index = self._get_the_right_index_for_word(info_sentence, aux, None)
         dependencies = info_sentence['sentences'][index]['dependencies']
 
         for dependency in dependencies:
@@ -189,15 +199,15 @@ class Nlp_persistence(object):
         else:
             raise AuxNotFound(aux)
 
-    def find_all_verb_pos_tags(self, sentence, event_text):
+    def find_all_verb_pos_tags(self, sentence, verb):
         """Returns all pos tags for all verbs based on the dependencies relation of the sentence."""
 
-        if self.is_main_verb(sentence, event_text):
-            # event_text is not an aux
-            main_verb = event_text
+        if self.is_main_verb(sentence, verb):
+            # verb is not an aux
+            main_verb = verb
         else:
-            # event_text is aux (this should normally not happen due to the data)
-            main_verb = self.get_verb_for_aux(sentence, event_text)
+            # verb is aux (this should normally not happen due to the data)
+            main_verb = self.get_verb_for_aux(sentence, verb)
 
         auxes = self.get_all_aux_for_verb(sentence, main_verb)
 
@@ -211,7 +221,7 @@ class Nlp_persistence(object):
         sentence = event.sentence
 
         # info = [verb, aux, pos verb, pos aux]
-        info = self.get_info_on_governing_verb(event.text, sentence)
+        info = self.get_info_on_governing_verb(event.text, event.index, sentence)
 
         if info is None:
             raise CouldNotFindGoverningVerb
@@ -227,7 +237,7 @@ class Nlp_persistence(object):
         sentence = event.sentence
         info_sentence = self.get_info_for_sentence(sentence)
 
-        index = self._get_the_right_index_for_word(info_sentence, event.text)
+        index = self._get_the_right_index_for_word(info_sentence, event.text, None)
         collapsed_dependencies = info_sentence['sentences'][index]['dependencies']
 
         for dependency in collapsed_dependencies:
@@ -239,7 +249,7 @@ class Nlp_persistence(object):
         else:
             return False
 
-    def get_info_on_governing_verb(self, non_verb, sentence):
+    def get_info_on_governing_verb(self, non_verb, index, sentence):
         """This method returns information about the governing verb of a non-verb.
 
         It returns an array with the following format: [verb, aux, POS of verb, POS of aux]
@@ -248,21 +258,22 @@ class Nlp_persistence(object):
 
         if info:
             # Search for non_verb
-            governing_verb = self._get_governing_verb(non_verb, info)
+            governing_verb = self._get_governing_verb(non_verb, index, info)
+            sentence_index_of_governing_verb = self._get_the_right_index_for_word(info, non_verb, index)
 
             info_on_governing_verb = [governing_verb, None, None, None]
 
             # Set POS of main verb
-            pos_verb = self._get_pos_of_verb(governing_verb, info)
+            pos_verb = self._get_pos_of_verb(governing_verb, info, sentence_index_of_governing_verb)
             info_on_governing_verb[2] = pos_verb
 
             # Searching for an Aux for the governing verb
-            aux = self._get_aux_of_verb(governing_verb, info)
+            aux = self._get_aux_of_verb(governing_verb, info, sentence_index_of_governing_verb)
             info_on_governing_verb[1] = aux
 
             # If there is an aux, get it's POS
             if aux:
-                pos_aux = self._get_pos_of_verb(aux, info)
+                pos_aux = self._get_pos_of_verb(aux, info, sentence_index_of_governing_verb)
                 info_on_governing_verb[3] = pos_aux
 
             return info_on_governing_verb
@@ -270,9 +281,8 @@ class Nlp_persistence(object):
         else:
             return None
 
-    def _get_aux_of_verb(self, verb, info):
-        index = self._get_the_right_index_for_word(info, verb)
-        dependencies = info['sentences'][index]['dependencies']
+    def _get_aux_of_verb(self, verb, info, sentence_index):
+        dependencies = info['sentences'][sentence_index]['dependencies']
 
         sources = [x[1] for x in dependencies]
 
@@ -291,9 +301,8 @@ class Nlp_persistence(object):
 
             return aux
 
-    def _get_pos_of_verb(self, verb, info):
-        index = self._get_the_right_index_for_word(info, verb)
-        info_on_words = info['sentences'][index]['words']
+    def _get_pos_of_verb(self, verb, info, sentence_index):
+        info_on_words = info['sentences'][sentence_index]['words']
 
         for word in info_on_words:
             if word[0] == verb:
@@ -306,34 +315,57 @@ class Nlp_persistence(object):
         else:
             return None
 
-    def _get_governing_verb(self, non_verb, info):
-        index = self._get_the_right_index_for_word(info, non_verb)
+    def _find_governing_word_index(self, word, index, index_dependencies):
+        word = word + "-" + str(index)
 
-        dependencies = info['sentences'][index]['dependencies']
+        for dependency in index_dependencies:
+            if dependency[2] == word:
+                # Remove governor with index appended
+                return dependency[1]
+        else:
+            return None
+
+    def _remove_index_from_token(self, token):
+        if token:
+            token = token.split("-")[:-1]
+            return "-".join(token)
+        else:
+            return None
+
+    def _get_index_from_token(self, token):
+        if token:
+            index = token.split("-")[-1]
+            return index
+        else:
+            return None
+
+    def _get_governing_verb(self, non_verb, index, info):
+        sentence_index = self._get_the_right_index_for_word(info, non_verb, index)
+
+        index_dependencies = info['sentences'][sentence_index]['indexeddependencies']
 
         # Try to find a governor for non_verb
-        governor = self._find_governing_word(non_verb, dependencies)
-        while not self._is_verb(governor, info) and governor is not None:
-            dependent = governor
-            governor = self._find_governing_word(dependent, dependencies)
+        governor = self._find_governing_word_index(non_verb, index, index_dependencies)
 
-            if dependent == governor:
-                governor = None
+        # Search through tree as long we find a verb and until we can go further up
+        while not self._is_verb(self._remove_index_from_token(governor), info, sentence_index) and governor is not None:
+            governor = self._find_governing_word_index(self._remove_index_from_token(governor), self._get_index_from_token(governor), index_dependencies)
 
         if governor:
-            return governor
+            # Remove index from governor string
+            return self._remove_index_from_token(governor)
         else:
             # Examples when this is allowed to happen:
             # Example for when it happens: "And in Hong Kong, a three percent drop." <- no verb
             # Other example: "One exception was the swine flu pandemic of 2009-2010, when 348 children died." and "pandemic". "pandemic" is the root of the sentence and is not governed by anything
             # Other corner case: "And the dominant flu strain early in the season was one that tends to cause more severe illness." for "season"
-            raise CouldNotFindGoverningVerb
+            raise CouldNotFindGoverningVerb(non_verb, index)
 
-
-    def _is_verb(self, text, info):
+    def _is_verb(self, text, info, sentence_index):
         """Checks if text has the POS tag of a verb."""
-        index = self._get_the_right_index_for_word(info, text)
-        words = info['sentences'][index]['words']
+        if not text: return False
+
+        words = info['sentences'][sentence_index]['words']
 
         for word in words:
             if word[0] == text:
@@ -357,5 +389,12 @@ class NoSentenceFound(Exception):
         return repr("Could not find a sub sentence in sentence which includes this word.")
 
 class CouldNotFindGoverningVerb(Exception):
+    def __init__(self, non_verb=None, index=None):
+        self.non_verb = non_verb
+        self.index = index
+
     def __str__(self):
-        return repr("Could not find a governing verb.")
+        if not self.non_verb and not self.index:
+            return repr("Could not find a governing verb.")
+        else:
+            return repr("Could not find a governing verb for '%s' with index %i" % (self.non_verb, self.index))

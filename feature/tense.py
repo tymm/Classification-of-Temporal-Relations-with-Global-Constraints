@@ -64,21 +64,25 @@ class Tense(object):
             if event.pos_xml == "NOUN" or event.pos_xml == "ADJECTIVE" or event.pos_xml == "PREPOSITION" or event.pos_xml == "PREP":
                 # The event is noun, adjective or preposition
                 # Let's return the tense of the governing verb
-                governing_verb = self.nlp_persistence_obj.get_governing_verb(event)
+                try:
+                    governing_verb = self.nlp_persistence_obj.get_governing_verb(event)
 
-                if governing_verb is not None:
-                    # Check if the governing verb has an entry with a tense (prefered method because we don't have to guess the tense then)
-                    text_obj = self.relation.parent
-                    governing_verb_as_event = text_obj.try_to_find_governing_verb_as_event(governing_verb, event)
+                    if governing_verb:
+                        # Check if the governing verb has an entry with a tense (prefered method because we don't have to guess the tense then)
+                        text_obj = self.relation.parent
+                        governing_verb_as_event = text_obj.try_to_find_governing_verb_as_event(governing_verb, event)
 
-                    if governing_verb_as_event and governing_verb_as_event.tense != Tense.NONE:
-                        # We found the governing verb as an event
-                        return self._determine_tense(governing_verb_as_event)
+                        if governing_verb_as_event and governing_verb_as_event.tense != Tense.NONE:
+                            # We found the governing verb as an event
+                            return self._determine_tense(governing_verb_as_event)
+                        else:
+                            # Let's guess the tense
+                            tense_chooser = Tense_chooser(self.nlp_persistence_obj)
+                            return tense_chooser.get_tense(event, governing_verb)
                     else:
-                        # Let's guess the tense
-                        tense_chooser = Tense_chooser(self.nlp_persistence_obj)
-                        return tense_chooser.get_tense(event, governing_verb)
-                else:
+                        return Tense.NONE
+
+                except CouldNotFindGoverningVerb:
                     return Tense.NONE
             else:
                 tense_chooser = Tense_chooser(self.nlp_persistence_obj)
