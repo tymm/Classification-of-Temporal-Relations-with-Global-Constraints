@@ -314,7 +314,11 @@ class Nlp_persistence(object):
         # Try to find a governor for non_verb
         governor = self._find_governing_word(non_verb, dependencies)
         while not self._is_verb(governor, info) and governor is not None:
-            governor = self._find_governing_word(governor, dependencies)
+            dependent = governor
+            governor = self._find_governing_word(dependent, dependencies)
+
+            if dependent == governor:
+                governor = None
 
         if governor:
             return governor
