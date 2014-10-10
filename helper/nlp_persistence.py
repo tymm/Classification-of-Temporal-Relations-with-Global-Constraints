@@ -45,21 +45,18 @@ class Nlp_persistence(object):
             data = {}
 
         # Create nlp information for all relevant sentences
-        try:
-            for relation in relations:
-                if not relation.source.sentence in data:
-                    self._update_data(relation.source, data)
-                else:
-                    print "Sentence is already in data"
+        for relation in relations:
+            if not relation.source.sentence in data:
+                self._update_data(relation.source, data)
+            else:
+                print "Sentence is already in data"
 
-                if not relation.target.sentence in data:
-                    self._update_data(relation.target, data)
-                else:
-                    print "Sentence is already in data"
-            print "Done!"
-            logging.info("Successfully loaded all nlp information to persistence file.")
-        except:
-            logging.error("Could not finish loading all nlp information to the persistence file. Saving all processed ones.")
+            if not relation.target.sentence in data:
+                self._update_data(relation.target, data)
+            else:
+                print "Sentence is already in data"
+        print "Done!"
+        logging.info("Successfully loaded all nlp information to persistence file.")
 
         # Save data to a file
         pickle.dump(data, open(self.FILE, "wb"), protocol=-1)
