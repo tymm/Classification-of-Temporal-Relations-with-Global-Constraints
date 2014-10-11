@@ -34,7 +34,7 @@ class Duration:
     def _get_event_duration(self, event):
         if event.pos_xml == "NOUN" or event.pos_xml == "ADJECTIVE" or event.pos_xml == "PREPOSITION" or event.pos_xml == "PREP":
             # Get governing verb
-            governing_verb = self.nlp_persistence_obj.get_governing_verb(event)
+            governing_verb = self.nlp_persistence_obj.get_governing_verb(event)[0]
 
             return self._get_most_likely_duration(governing_verb)
         else:

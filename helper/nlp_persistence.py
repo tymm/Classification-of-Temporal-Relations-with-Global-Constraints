@@ -187,18 +187,16 @@ class Nlp_persistence(object):
     def get_governing_verb(self, event):
         sentence = event.sentence
 
-        # info = [verb, aux, pos verb, pos aux]
+        # info = [verb, aux, pos verb, pos aux, index_of_verb]
         info = self.get_info_on_governing_verb(event.text, event.index, sentence)
 
         if info is None:
             raise CouldNotFindGoverningVerb
-        #elif info[1]:
-        #  return info[1] + " " + info[0]
         else:
             if info[0] is None:
                 raise CouldNotFindGoverningVerb
             else:
-                return info[0]
+                return (info[0], info[4])
 
     def is_root(self, event):
         sentence = event.sentence
@@ -218,15 +216,15 @@ class Nlp_persistence(object):
     def get_info_on_governing_verb(self, non_verb, index, sentence):
         """This method returns information about the governing verb of a non-verb.
 
-        It returns an array with the following format: [verb, aux, POS of verb, POS of aux]
+        It returns an array with the following format: [verb, aux, POS of verb, POS of aux, index_of_verb]
         """
         info = self.get_info_for_sentence(sentence)
 
         if info:
             # Search for non_verb
-            governing_verb = self._get_governing_verb(non_verb, index, info)
+            governing_verb, index = self._get_governing_verb(non_verb, index, info)
 
-            info_on_governing_verb = [governing_verb, None, None, None]
+            info_on_governing_verb = [governing_verb, None, None, None, index]
 
             # Set POS of main verb
             pos_verb = self._get_pos_of_verb(governing_verb, info)
@@ -322,7 +320,7 @@ class Nlp_persistence(object):
 
         if governor:
             # Remove index from governor string
-            return self._remove_index_from_token(governor)
+            return (self._remove_index_from_token(governor), int(self._get_index_from_token(governor)))
         else:
             # Examples when this is allowed to happen:
             # Example for when it happens: "And in Hong Kong, a three percent drop." <- no verb

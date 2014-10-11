@@ -15,7 +15,7 @@ infinitive_verb = {}
 def _get_verb(event):
     if event.pos_xml == "NOUN" or event.pos_xml == "ADJECTIVE" or event.pos_xml == "PREPOSITION" or event.pos_xml == "PREP":
         # Get governing verb
-        governing_verb = nlp_persistence_obj.get_governing_verb(event)
+        governing_verb = nlp_persistence_obj.get_governing_verb(event)[0]
 
         return governing_verb.lower()
     else:
@@ -41,6 +41,7 @@ if __name__ == "__main__":
                     verb = _get_verb(relation.target)
                 except CouldNotFindGoverningVerb:
                     continue
+
                 infinitive = lemmatizer.lemmatize(verb, 'v')
                 add(verb, infinitive)
 

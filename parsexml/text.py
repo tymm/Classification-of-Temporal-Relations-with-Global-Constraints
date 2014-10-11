@@ -86,46 +86,20 @@ class Text(object):
         output.create_relations(self.relations)
         output.write()
 
-    def try_to_find_governing_verb_as_event(self, governing_verb, close_event):
-        text_obj = close_event.parent
-        entities = close_event.parent.entities_order
+    def try_to_find_governing_verb_as_event(self, governing_verb, index, event_in_same_sentence):
 
-        verb = None
-        aux = None
-        if len(governing_verb.split()) == 1:
-            # no aux
-            verb = governing_verb
-        else:
-            # aux and verb
-            aux = governing_verb.split()[0]
-            verb = governing_verb.split()[1]
+        sentence = event_in_same_sentence.sentence
 
-        # Search for governing verb in entities
-        indexes = []
-        for entity in entities:
-            if aux:
-                if entity.text == aux + " " + verb or entity.text == verb:
-                    if type(entity) == Event:
-                        indexes.append(entities.index(entity))
-            else:
-                if entity.text == verb:
-                    if type(entity) == Event:
-                        indexes.append(entities.index(entity))
+        # Get events which are in the same sentence
+        events_in_same_sentence = []
+        for entity in self.text_structure.get_entities_by_sentence(sentence):
+            if type(entity) == Event:
+                events_in_same_sentence.append(entity)
 
-        # Choose the entity which is the closest to the event
-        if len(indexes) != 0:
-            close_event_index = entities.index(close_event)
+        for event in events_in_same_sentence:
+            if event.text == governing_verb and event.index == index:
+                return event
 
-            diff_smallest = abs(indexes[0] - close_event_index)
-            smallest = indexes[0]
-
-            for index in indexes:
-                diff = abs(index - close_event_index)
-                if diff_smallest > diff:
-                    diff_smallest = diff
-                    smallest = index
-
-            return entities[smallest]
         else:
             return None
 

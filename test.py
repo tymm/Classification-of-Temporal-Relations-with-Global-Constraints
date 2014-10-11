@@ -365,9 +365,9 @@ class TenseFeature(unittest.TestCase):
         noun_event = self.entities[5]
         governing_verb_event = self.entities[4]
 
-        governing_verb = self.nlp_layer.get_governing_verb(noun_event)
+        governing_verb, index = self.nlp_layer.get_governing_verb(noun_event)
 
-        potential_governing_verb_event = self.text_obj.try_to_find_governing_verb_as_event(governing_verb, noun_event)
+        potential_governing_verb_event = self.text_obj.try_to_find_governing_verb_as_event(governing_verb, index, noun_event)
 
         self.assertEqual(governing_verb_event, potential_governing_verb_event)
 

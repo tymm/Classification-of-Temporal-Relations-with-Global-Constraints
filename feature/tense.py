@@ -65,12 +65,12 @@ class Tense(object):
                 # The event is noun, adjective or preposition
                 # Let's return the tense of the governing verb
                 try:
-                    governing_verb = self.nlp_persistence_obj.get_governing_verb(event)
+                    governing_verb, index = self.nlp_persistence_obj.get_governing_verb(event)
 
                     if governing_verb:
                         # Check if the governing verb has an entry with a tense (prefered method because we don't have to guess the tense then)
                         text_obj = self.relation.parent
-                        governing_verb_as_event = text_obj.try_to_find_governing_verb_as_event(governing_verb, event)
+                        governing_verb_as_event = text_obj.try_to_find_governing_verb_as_event(governing_verb, index, event)
 
                         if governing_verb_as_event and governing_verb_as_event.tense != Tense.NONE:
                             # We found the governing verb as an event
