@@ -55,6 +55,11 @@ class Text_structure(object):
         else:
             raise CouldNotFindSentenceByEntity
 
+    def get_entities_by_sentence(self, sentence):
+        for sen, entities in self.structure.items():
+            if sen == sentence:
+                return entities
+
     def get_sentence_distance(self, entity_one, entity_two):
         sentences = self.structure.values()
 
