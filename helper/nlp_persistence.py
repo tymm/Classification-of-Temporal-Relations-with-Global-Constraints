@@ -311,7 +311,7 @@ class Nlp_persistence(object):
         governor = self._find_governing_word_index(non_verb, index, index_dependencies)
 
         # Search through tree as long we find a verb and until we can go further up
-        while not self._is_verb(self._remove_index_from_token(governor), info, sentence_index) and governor is not None:
+        while not self._is_verb(self._remove_index_from_token(governor), info) and governor is not None:
             governor = self._find_governing_word_index(self._remove_index_from_token(governor), self._get_index_from_token(governor), index_dependencies)
 
         if governor:
@@ -324,11 +324,11 @@ class Nlp_persistence(object):
             # Other corner case: "And the dominant flu strain early in the season was one that tends to cause more severe illness." for "season"
             raise CouldNotFindGoverningVerb(non_verb, index)
 
-    def _is_verb(self, text, info, sentence_index):
+    def _is_verb(self, text, info):
         """Checks if text has the POS tag of a verb."""
         if not text: return False
 
-        words = info['sentences'][sentence_index]['words']
+        words = info['sentences'][0]['words']
 
         for word in words:
             if word[0] == text:
