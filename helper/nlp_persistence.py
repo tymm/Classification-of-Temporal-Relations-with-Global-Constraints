@@ -312,7 +312,13 @@ class Nlp_persistence(object):
 
         # Search through tree as long we find a verb and until we can go further up
         while not self._is_verb(self._remove_index_from_token(governor), info) and governor is not None:
+            old_governor = governor
             governor = self._find_governing_word_index(self._remove_index_from_token(governor), self._get_index_from_token(governor), index_dependencies)
+
+            if governor == old_governor:
+                # Detected circle (does not happen often, but happens. Not sure why.)
+                governor = None
+                break
 
         if governor:
             # Remove index from governor string
