@@ -34,14 +34,14 @@ class Set(object):
     def get_classification_data_event_event(self, features, strings_cache=None, nlp_persistence_obj=None, duration_cache=None):
         features = self._remove_only_event_timex_features(features)
 
-        X, y = self._get_feature_data(lemma, token, nlp_persistence_obj, strings_cache, features, duration_cache, event_event=True)
+        X, y = self._get_feature_data(nlp_persistence_obj, strings_cache, features, duration_cache, event_event=True)
 
         return (X, y)
 
     def get_classification_data_event_timex(self, features, strings_cache=None, nlp_persistence_obj=None, duration_cache=None):
         features = self._remove_only_event_event_features(features)
 
-        X, y = self._get_feature_data(lemma, token, nlp_persistence_obj, strings_cache, features, duration_cache, event_timex=True)
+        X, y = self._get_feature_data(nlp_persistence_obj, strings_cache, features, duration_cache, event_timex=True)
 
         return (X, y)
 
@@ -111,7 +111,7 @@ class Set(object):
 
             return files
 
-    def _get_feature_data(self, lemma, token, nlp_persistence_obj, strings_cache, features, duration_cache, event_event=None, event_timex=None):
+    def _get_feature_data(self, nlp_persistence_obj, strings_cache, features, duration_cache, event_event=None, event_timex=None):
         # Get either event-event relations or event-timex relations
         if event_event and event_timex:
             raise WrongArguments
