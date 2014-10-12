@@ -22,6 +22,8 @@ class System:
 
     def create_features(self):
         nlp_persistence = None
+        duration_cache = None
+        strings_cache = None
 
         if "strings" in self.features:
             strings_cache = pickle.load(open("strings.p", "rb"))
