@@ -14,6 +14,7 @@ system.use_dependency_type()
 
 system.use_dct()
 system.use_type()
+system.use_value()
 system.use_same_polarity()
 system.use_polarity()
 system.use_class()
