@@ -20,6 +20,7 @@ from feature.temporal_signal import Temporal_signal
 from feature.event_class import Event_class
 from feature.dct import Dct
 from feature.type import Type
+from feature.value import Value
 import scipy
 
 class Feature(object):
