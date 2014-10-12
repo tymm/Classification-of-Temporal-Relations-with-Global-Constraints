@@ -12,7 +12,7 @@ class Value:
         return len(self.values) + 2
 
     def _get_index(self, entity):
-        if type(Entity) == Timex:
+        if type(entity) == Timex:
             try:
                 return self.values.index(entity.value) + 2
             except ValueError:
