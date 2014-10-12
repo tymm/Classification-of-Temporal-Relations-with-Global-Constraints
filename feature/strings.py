@@ -15,6 +15,5 @@ class Strings:
             # String is not known from training set
             self.target = len(self.cache) + 1
 
-
     def get_length(self):
-        return len(strings_cache) + 1
+        return len(self.cache) + 1
