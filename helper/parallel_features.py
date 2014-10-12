@@ -7,10 +7,11 @@ import sys
 import traceback
 
 class Parallel_features(object):
-    def __init__(self, text_objs, nlp_persistence_obj, duration_cache, features, event_event=None, event_timex=None):
+    def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=None, event_timex=None):
         self.features = features
         self.text_objs = text_objs
         self.nlp_persistence_obj = nlp_persistence_obj
+        self.strings_cache = strings_cache
         self.duration_cache = duration_cache
         self.event_event = event_event
         self.event_timex = event_timex
@@ -24,6 +25,9 @@ class Parallel_features(object):
 
         global duration_cache_g
         duration_cache_g = self.duration_cache
+
+        global strings_cache_g
+        strings_cache_g = self.strings_cache
 
         global event_event_g
         if event_event:
@@ -59,7 +63,7 @@ class Parallel_features(object):
             for relation in text_obj.relations:
                 if event_event_g and relation.is_event_event():
                     try:
-                        f = Feature(relation, None, None, nlp_persistence_obj_g, duration_cache_g, features_g)
+                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
                         feature = f.get_feature()
                         relation.set_feature(feature)
                         relations.append(relation)
@@ -68,7 +72,7 @@ class Parallel_features(object):
 
                 elif not event_event_g and relation.is_event_timex():
                     try:
-                        f = Feature(relation, None, None, nlp_persistence_obj_g, duration_cache_g, features_g)
+                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
                         feature = f.get_feature()
                         relation.set_feature(feature)
                         relations.append(relation)

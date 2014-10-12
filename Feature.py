@@ -21,27 +21,21 @@ from feature.event_class import Event_class
 from feature.dct import Dct
 from feature.type import Type
 from feature.value import Value
+from feature.strings import Strings
 import scipy
 
 class Feature(object):
-    def __init__(self, relation, lemmas, tokens, nlp_persistence_obj, duration_cache,  features):
+    def __init__(self, relation, strings_cache, nlp_persistence_obj, duration_cache,  features):
         self.relation = relation
         self.features = features
         self.duration_cache = duration_cache
         self.nlp_persistence_obj = nlp_persistence_obj
-
-        if "lemma" in self.features:
-            self.lemmas = self.lemmas
-        if "token" in self.features:
-            self.tokens = tokens
+        self.strings_cache = strings_cache
 
     def get_feature(self):
         feature = []
-        if "lemma" in self.features:
-            feature += self.get_lemma()
-
-        if "token" in self.features:
-            feature += self.get_token()
+        if "strings" in self.features:
+            feature += self.get_strings()
 
         if "tense" in self.features:
             feature += self.get_tense()
@@ -112,6 +106,17 @@ class Feature(object):
             return [0]
         else:
             return [1]
+
+    def get_strings(self):
+        strings = Strings(self.relation, self.strings_cache)
+
+        n_values = strings.get_length()
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
+        enc.fit([n_values-1, n_values-1])
+
+        feature = enc.transform([[strings.source, strings.target]]).toarray()[0]
+        return feature.tolist()
 
     def get_value(self):
         value = Value(self.relation)

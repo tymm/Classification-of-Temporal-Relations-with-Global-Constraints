@@ -3,6 +3,7 @@ from helper.duration_cache import Duration_cache
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from Result import Result
+import cPickle as pickle
 
 class System:
     def __init__(self, data, features=None):
@@ -20,15 +21,10 @@ class System:
         self.classifier = None
 
     def create_features(self):
-        lemma = None
-        token = None
         nlp_persistence = None
 
-        if "lemma" in self.features:
-            lemma = Lemma(training)
-
-        if "token" in self.features:
-            token = Token(training)
+        if "strings" in self.features:
+            strings_cache = pickle.load(open("strings.p", "rb"))
 
         if "duration" in self.features or "duration_difference" in self.features:
             duration_cache = Duration_cache()
@@ -41,15 +37,15 @@ class System:
 
         # Create training features and target values
         print "Creating features for the training data"
-        X_train_event_event, y_train_event_event = self.data.training.get_classification_data_event_event(self.features, lemma, token, nlp_persistence, duration_cache)
-        X_train_event_timex, y_train_event_timex = self.data.training.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence, duration_cache)
+        X_train_event_event, y_train_event_event = self.data.training.get_classification_data_event_event(self.features, strings_cache, nlp_persistence, duration_cache)
+        X_train_event_timex, y_train_event_timex = self.data.training.get_classification_data_event_timex(self.features, strings_cache, nlp_persistence, duration_cache)
 
         self.training_event_event = (X_train_event_event, y_train_event_event)
         self.training_event_timex = (X_train_event_timex, y_train_event_timex)
 
         print "Creating features for the test data"
-        X_test_event_event, y_test_event_event = self.data.test.get_classification_data_event_event(self.features, lemma, token, nlp_persistence, duration_cache)
-        X_test_event_timex, y_test_event_timex = self.data.test.get_classification_data_event_timex(self.features, lemma, token, nlp_persistence, duration_cache)
+        X_test_event_event, y_test_event_event = self.data.test.get_classification_data_event_event(self.features, strings_cache, nlp_persistence, duration_cache)
+        X_test_event_timex, y_test_event_timex = self.data.test.get_classification_data_event_timex(self.features, strings_cache, nlp_persistence, duration_cache)
 
         self.test_event_event = (X_test_event_event, y_test_event_event)
         self.test_event_timex = (X_test_event_timex, y_test_event_timex)
@@ -181,3 +177,7 @@ class System:
     def use_temporal_signal(self):
         if not "temporal_signal" in self.features:
             self.features.append("temporal_signal")
+
+    def use_strings(self):
+        if not "strings" in self.features:
+            self.features.append("strings")
