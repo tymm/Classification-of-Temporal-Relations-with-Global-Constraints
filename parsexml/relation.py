@@ -1,4 +1,5 @@
 from parsexml.timex import Timex
+from parsexml.event import Event
 
 class Relation(object):
     def __init__(self, lid, text_obj, source_obj, target_obj, relation_type_id):
@@ -41,7 +42,7 @@ class Relation(object):
 
     def _check_timex(self):
         """Check if this relation is an event-event relation or an event-timex relation."""
-        if type(self.source) is Timex or type(self.target) is Timex:
+        if (type(self.source) is Timex and type(self.target) is Event) or (type(self.source) is Event and type(self.target) is Timex):
             self._is_timex = True
         else:
             self._is_timex = False
