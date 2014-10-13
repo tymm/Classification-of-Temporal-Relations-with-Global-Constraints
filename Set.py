@@ -7,6 +7,7 @@ from helper.pickle_methods import activate
 from helper.parallel_features import Parallel_features
 from feature.exception import FailedProcessingFeature
 from Feature import Feature
+from helper.sparse import build_sparse_matrix
 
 # Needs to be done in order to use multiprocessing
 activate()
@@ -122,7 +123,10 @@ class Set(object):
         elif event_timex:
             parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True)
 
-        return parallel_feature_extraction.feature_data
+        sparse_X_matrix = build_sparse_matrix(parallel_feature_extraction.feature_data[0])
+        y = parallel_feature_extraction.feature_data[1]
+
+        return (sparse_X_matrix, y)
 
     def _remove_only_event_event_features(self, features):
         features_event_timex = list(features)

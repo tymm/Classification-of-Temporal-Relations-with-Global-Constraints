@@ -1,6 +1,7 @@
 from helper.nlp_persistence import Nlp_persistence
 from helper.duration_cache import Duration_cache
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import MultinomialNB
 from sklearn import svm
 from Result import Result
 import cPickle as pickle
@@ -60,8 +61,8 @@ class System:
             nlp_persistence.close()
 
     def train(self):
-        self.classifier_event_event = self._train_random_forest(self.training_event_event)
-        self.classifier_event_timex = self._train_random_forest(self.training_event_timex)
+        self.classifier_event_event = self._train_naive_bayes(self.training_event_event)
+        self.classifier_event_timex = self._train_naive_bayes(self.training_event_timex)
 
     def eval(self):
         X_test_event_event = self.test_event_event[0]
@@ -82,10 +83,19 @@ class System:
         print "Train a random forest classifier"
 
         rf = RandomForestClassifier(n_jobs=2, n_estimators=5)
-        rf.fit(training_data[0], training_data[1])
+        rf.fit(training_data[0].toarray(), training_data[1])
 
         print "Done training the classifier."
         return rf
+
+    def _train_naive_bayes(self, training_data):
+        print "Train a naive bayes classifier"
+
+        clf = MultinomialNB()
+        clf.fit(training_data[0], training_data[1])
+
+        print "Done training the classifier"
+        return clf
 
     def _train_SVM(self, training_data):
         print "Train SVM"

@@ -23,6 +23,7 @@ from feature.type import Type
 from feature.value import Value
 from feature.strings import Strings
 import scipy
+from scipy import sparse
 
 class Feature(object):
     def __init__(self, relation, strings_cache, nlp_persistence_obj, duration_cache,  features):
@@ -32,70 +33,81 @@ class Feature(object):
         self.nlp_persistence_obj = nlp_persistence_obj
         self.strings_cache = strings_cache
 
+    def _put_feature_into_sparse_matrix(self, func, flag_first, feature):
+        if flag_first:
+            feature = func()
+            flag_first = False
+        else:
+            feature = sparse.hstack((feature, func()))
+
+        return feature, flag_first
+
     def get_feature(self):
-        feature = []
+        feature = None
+        flag_first = True
+
         if "strings" in self.features:
-            feature += self.get_strings()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_strings, flag_first, feature)
 
         if "tense" in self.features:
-            feature += self.get_tense()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_tense, flag_first, feature)
 
         if "same_tense" in self.features:
-            feature += self.get_same_tense()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_same_tense, flag_first, feature)
 
         if "aspect" in self.features:
-            feature += self.get_aspect()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_aspect, flag_first, feature)
 
         if "same_aspect" in self.features:
-            feature += self.get_same_aspect()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_same_aspect, flag_first, feature)
 
         if "dependency_type" in self.features:
-            feature += self.get_dependency_type()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_dependency_type, flag_first, feature)
 
         if "dependency_order" in self.features:
-            feature += self.get_dependency_order()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_dependency_order, flag_first, feature)
 
         if "dependency_is_root" in self.features:
-            feature += self.get_dependency_is_root()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_dependency_is_root, flag_first, feature)
 
         if "dct" in self.features:
-            feature += self.get_dct()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_dct, flag_first, feature)
 
         if "polarity" in self.features:
-            feature += self.get_polarity()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_polarity, flag_first, feature)
 
         if "same_polarity" in self.features:
-            feature += self.get_same_polarity()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_same_polarity, flag_first, feature)
 
         if "class" in self.features:
-            feature += self.get_event_class()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_event_class, flag_first, feature)
 
         if "entity_distance" in self.features:
-            feature += self.get_entity_distance()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_entity_distance, flag_first, feature)
 
         if "sentence_distance" in self.features:
-            feature += self.get_sentence_distance()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_sentence_distance, flag_first, feature)
 
         if "textual_order" in self.features:
-            feature += self.get_textual_order()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_textual_order, flag_first, feature)
 
         if "pos" in self.features:
-            feature += self.get_pos()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_pos, flag_first, feature)
 
         if "same_pos" in self.features:
-            feature += self.get_same_pos()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_same_pos, flag_first, feature)
 
         if "duration" in self.features:
-            feature += self.get_duration()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_duration, flag_first, feature)
 
         if "duration_difference" in self.features:
-            feature += self.get_duration_difference()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_duration_difference, flag_first, feature)
 
         if "value" in self.features:
-            feature += self.get_value()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_value, flag_first, feature)
 
         if "temporal_signal" in self.features:
-            feature += self.get_temporal_signal()
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_temporal_signal, flag_first, feature)
 
         return feature
 
@@ -115,8 +127,8 @@ class Feature(object):
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
-        feature = enc.transform([[strings.source, strings.target]]).toarray()[0]
-        return feature.tolist()
+        feature = enc.transform([[strings.source, strings.target]])
+        return feature
 
     def get_value(self):
         value = Value(self.relation)
