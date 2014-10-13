@@ -12,7 +12,7 @@ class Duration:
         self.durations = ["seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"]
 
     def get_length(self):
-        return 9
+        return 10
 
     def get_duration(self, entity):
         if type(entity) is Event:
@@ -20,9 +20,11 @@ class Duration:
                 duration = self._get_event_duration(entity)
                 return duration
             except InfinitiveNotInDistributionFile:
+                # 8 is the standard error value
                 return 8
             except CouldNotFindGoverningVerb:
-                raise FailedProcessingFeature("Duration")
+                # 9 is the error value, when there is no governing verb
+                return 9
 
         elif type(entity) is Timex:
             try:

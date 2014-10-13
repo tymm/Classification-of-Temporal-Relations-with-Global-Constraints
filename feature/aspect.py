@@ -28,7 +28,7 @@ class Aspect(object):
                 aspect = self._determine_aspect(source)
                 return aspect
             except CouldNotFindGoverningVerb:
-                raise FailedProcessingFeature("Aspect")
+                return Aspect.UNKNOWN
         else:
             return Aspect.TIMEX
 
@@ -39,7 +39,7 @@ class Aspect(object):
             try:
                 return self._determine_aspect(target)
             except CouldNotFindGoverningVerb:
-                raise FailedProcessingFeature("Aspect")
+                return Aspect.UNKNOWN
         else:
             return Aspect.TIMEX
 
@@ -49,22 +49,19 @@ class Aspect(object):
         if event.pos_xml == "NOUN" or event.pos_xml == "ADJECTIVE" or event.pos_xml == "PREPOSITION" or event.pos_xml == "PREP":
             # The event is noun, adjective or preposition
             # Let's return the aspect of the governing verb
-            try:
-                governing_verb, index = self.nlp_persistence_obj.get_governing_verb(event)
+            governing_verb, index = self.nlp_persistence_obj.get_governing_verb(event)
 
-                if governing_verb:
-                    # Check if the governing verb has an entry with a aspect (prefered method because we don't have to guess the aspect then)
-                    text_obj = self.relation.parent
-                    governing_verb_as_event = text_obj.try_to_find_governing_verb_as_event(governing_verb, index, event)
+            if governing_verb:
+                # Check if the governing verb has an entry with a aspect (prefered method because we don't have to guess the aspect then)
+                text_obj = self.relation.parent
+                governing_verb_as_event = text_obj.try_to_find_governing_verb_as_event(governing_verb, index, event)
 
-                    if governing_verb_as_event:
-                        # We found the governing verb as an event
-                        return self._determine_aspect(governing_verb_as_event)
-                    else:
-                        return Aspect.UNKNOWN
+                if governing_verb_as_event:
+                    # We found the governing verb as an event
+                    return self._determine_aspect(governing_verb_as_event)
+                else:
+                    return Aspect.UNKNOWN
 
-            except CouldNotFindGoverningVerb:
-                return Aspect.UNKNOWN
         elif text == "PROGRESSIVE":
             return Aspect.PROGRESSIVE
         elif text == "PERFECTIVE":
