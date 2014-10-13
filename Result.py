@@ -14,6 +14,11 @@ class Result:
         output += "Recall:    %s  %s           %s     %s        %s    %s        %s       %s      %s            %s      %s        %s      %s          %s        %s\n" % (self.get_recall(RelationType.BEFORE), self.get_recall(RelationType.IS_INCLUDED), self.get_recall(RelationType.AFTER), self.get_recall(RelationType.INCLUDES), self.get_recall(RelationType.ENDS), self.get_recall(RelationType.ENDED_BY), self.get_recall(RelationType.IBEFORE), self.get_recall(RelationType.IAFTER), self.get_recall(RelationType.SIMULTANEOUS), self.get_recall(RelationType.BEGINS), self.get_recall(RelationType.BEGUN_BY), self.get_recall(RelationType.DURING), self.get_recall(RelationType.DURING_INV), self.get_recall(RelationType.IDENTITY), self.get_recall(RelationType.NONE))
         output += "F1-Score:  %s  %s           %s     %s        %s    %s        %s       %s      %s            %s      %s        %s      %s          %s        %s\n" % (self.get_f1(RelationType.BEFORE), self.get_f1(RelationType.IS_INCLUDED), self.get_f1(RelationType.AFTER), self.get_f1(RelationType.INCLUDES), self.get_f1(RelationType.ENDS), self.get_f1(RelationType.ENDED_BY), self.get_f1(RelationType.IBEFORE), self.get_f1(RelationType.IAFTER), self.get_f1(RelationType.SIMULTANEOUS), self.get_f1(RelationType.BEGINS), self.get_f1(RelationType.BEGUN_BY), self.get_f1(RelationType.DURING), self.get_f1(RelationType.DURING_INV), self.get_f1(RelationType.IDENTITY), self.get_f1(RelationType.NONE))
         output += "Accuracy:  %s  %s           %s     %s        %s    %s        %s       %s      %s            %s      %s        %s      %s          %s        %s\n" % (self.get_accuracy(RelationType.BEFORE), self.get_accuracy(RelationType.IS_INCLUDED), self.get_accuracy(RelationType.AFTER), self.get_accuracy(RelationType.INCLUDES), self.get_accuracy(RelationType.ENDS), self.get_accuracy(RelationType.ENDED_BY), self.get_accuracy(RelationType.IBEFORE), self.get_accuracy(RelationType.IAFTER), self.get_accuracy(RelationType.SIMULTANEOUS), self.get_accuracy(RelationType.BEGINS), self.get_accuracy(RelationType.BEGUN_BY), self.get_accuracy(RelationType.DURING), self.get_accuracy(RelationType.DURING_INV), self.get_accuracy(RelationType.IDENTITY), self.get_accuracy(RelationType.NONE))
+
+        output += "\n"
+        output += "Averaged f1-score: %s\n" % f1_score(self.truth, self.predicted)
+        output += "Averaged accuracy: %s\n" % accuracy_score(self.truth, self.predicted)
+
         return output
 
     def get_precision(self, c):
@@ -36,7 +41,6 @@ class Result:
 
     def get_f1(self, c):
         """Return recall for class c."""
-        print "Scikit f1-score: " + str(f1_score(self.truth, self.predicted))
 
         recall = self.get_recall(c)
         precision = self.get_precision(c)
@@ -48,8 +52,6 @@ class Result:
 
     def get_accuracy(self, c):
         """Return accuracy for class c."""
-        print "Scikit accuracy_score: " + str(accuracy_score(self.truth, self.predicted))
-        print
         tp, fp, fn, tn = self._get_table(c)
 
         try:
