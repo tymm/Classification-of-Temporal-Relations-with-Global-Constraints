@@ -46,6 +46,13 @@ class Feature(object):
         feature = None
         flag_first = True
 
+        if "all" in self.features:
+            if self.relation.is_event_event():
+                self.features = ["strings", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_order", "dependency_is_root", "polarity", "same_polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration", "duration_difference", "temporal_signal"]
+
+            elif self.relation.is_event_timex():
+                self.features = ["strings", "tense", "aspect", "dependency_type", "dependency_order", "dependency_is_root", "dct", "polarity", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration", "duration_difference", "value", "temporal_signal"]
+
         if "strings" in self.features:
             feature, flag_first = self._put_feature_into_sparse_matrix(self.get_strings, flag_first, feature)
 

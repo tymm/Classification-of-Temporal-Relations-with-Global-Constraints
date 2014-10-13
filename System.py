@@ -193,3 +193,7 @@ class System:
     def use_strings(self):
         if not "strings" in self.features:
             self.features.append("strings")
+
+    def use_all_features(self):
+        if not "all" in self.features:
+            self.features.append("all")
