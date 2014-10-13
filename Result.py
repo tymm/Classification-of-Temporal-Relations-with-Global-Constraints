@@ -1,4 +1,6 @@
 from parsexml.relationtype import RelationType
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
 
 class Result:
     def __init__(self, y_test_truth, y_test_predicted):
@@ -34,6 +36,8 @@ class Result:
 
     def get_f1(self, c):
         """Return recall for class c."""
+        print "Scikit f1-score: " + str(f1_score(self.truth, self.predicted))
+
         recall = self.get_recall(c)
         precision = self.get_precision(c)
 
@@ -44,6 +48,8 @@ class Result:
 
     def get_accuracy(self, c):
         """Return accuracy for class c."""
+        print "Scikit accuracy_score: " + str(accuracy_score(self.truth, self.predicted))
+        print
         tp, fp, fn, tn = self._get_table(c)
 
         try:
