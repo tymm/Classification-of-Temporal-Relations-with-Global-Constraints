@@ -21,7 +21,7 @@ class Data:
                 self._load_new()
 
     def _load_new(self):
-        self.training = TrainingSet(False, "data/training/TE3-Silver-data/", "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
+        self.training = TrainingSet(False, "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
         self.test = TestSet(False, "data/test/te3-platinum/")
 
         # Write to cache
