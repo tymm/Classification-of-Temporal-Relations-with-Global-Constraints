@@ -31,6 +31,13 @@ class Text(object):
         self.text_structure = parser.get_text_structure()
         self.entities_order = parser.get_entities_order()
 
+    def find_relation_by_lid(self, lid):
+        for relation in self.relations:
+            if relation.lid == lid:
+                return relation
+        else:
+            return None
+
     def find_event_by_eiid(self, eiid):
         for event in self.events:
             if eiid in event.eiid:

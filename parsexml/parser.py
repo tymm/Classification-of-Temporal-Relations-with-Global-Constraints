@@ -276,21 +276,10 @@ class Parser(object):
 
         for relation in root_node.iterdescendants("TLINK"):
             # Only consider event-event and event-timex relations; Ignoring timex-timex
-            if not relation.get("eventInstanceID"):
+            if not relation.get("eventInstanceID") and not relation.get("relatedToEventInstance"):
                 continue
 
             lid = relation.get("lid")
-            source_eiid = relation.get("eventInstanceID")
-
-            event_event = True
-            if relation.get("relatedToEventInstance"):
-                # Event-event relation
-                target_eiid = relation.get("relatedToEventInstance")
-            else:
-                # Event-timex relation
-                target_tid = relation.get("relatedToTime")
-                event_event = False
-
 
             # Get relation type as a string
             relation_type = relation.get("relType")
@@ -298,19 +287,35 @@ class Parser(object):
             # Get relation_type_id
             relation_type_id = RelationType.get_id(relation_type)
 
-            # Find source event
-            source_event_obj = self.find_event_by_eiid(self.events, source_eiid)
+            if not relation.get("timeID") and not relation.get("relatedToTime"):
+                # This is event-event
+                source_eiid = relation.get("eventInstanceID")
+                target_eiid = relation.get("relatedToEventInstance")
 
-            # Find target event or target timex
-            if event_event:
-                # Event-event
-                target_event_obj = self.find_event_by_eiid(self.events, target_eiid)
-                relation_obj = Relation(lid, self.text_obj, source_event_obj, target_event_obj, relation_type_id)
+                # Find source event
+                source_obj = self.find_event_by_eiid(self.events, source_eiid)
+                # Find target event
+                target_obj = self.find_event_by_eiid(self.events, target_eiid)
+
             else:
-                # Event-timex
-                target_timex_obj = self.find_timex_by_tid(target_tid)
-                relation_obj = Relation(lid, self.text_obj, source_event_obj, target_timex_obj, relation_type_id)
+                # This must be event-timex or timex-event
+                target_tid = relation.get("relatedToTime")
+                target_eiid = relation.get("relatedToEventInstance")
 
+                source_tid = relation.get("timeID")
+                source_eiid = relation.get("eventInstanceID")
+
+                if source_tid and target_eiid:
+                    # timex-event
+                    source_obj = self.find_timex_by_tid(source_tid)
+                    target_obj = self.find_event_by_eiid(self.events, target_eiid)
+                elif source_eiid and target_tid:
+                    # event-timex
+                    source_obj = self.find_event_by_eiid(self.events, source_eiid)
+                    target_obj = self.find_timex_by_tid(target_tid)
+
+
+            relation_obj = Relation(lid, self.text_obj, source_obj, target_obj, relation_type_id)
             relations.append(relation_obj)
 
         return relations
