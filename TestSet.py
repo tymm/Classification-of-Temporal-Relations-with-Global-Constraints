@@ -4,8 +4,9 @@ import numpy
 from feature.exception import FailedProcessingFeature
 
 class TestSet(Set):
-    def __init__(self, load=True, *corpora):
-        Set.__init__(self, load, True, *corpora)
+    def __init__(self, *corpora):
+        # No inverses and closures in the test set
+        Set.__init__(self, False, False, *corpora)
 
     def create_evaluation_files(self):
         for text_obj in self.text_objects:
