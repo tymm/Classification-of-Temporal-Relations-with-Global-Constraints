@@ -9,7 +9,7 @@ class Relation(object):
         self.source = source_obj
         self.target = target_obj
         self.relation_type = relation_type_id
-        # If self._is_timex is True, it is an event-timex relation. Otherwise it's an event-event relation.
+        # If self._is_timex is True, it is an event-timex or timex-event relation. Otherwise it's an event-event relation.
         self._is_timex = None
         self.feature = None
         self.confidence_score = None
