@@ -35,6 +35,11 @@ class Parallel_features(object):
         else:
             event_event_g = False
 
+        if event_timex:
+            event_event_g = False
+        else:
+            event_event_g = True
+
         global _length
         _length = len(self.text_objs)
 
