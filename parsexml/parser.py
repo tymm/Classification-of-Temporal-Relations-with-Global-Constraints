@@ -64,6 +64,9 @@ class Parser(object):
         closure = Closure(self.text_obj, RelationType.DURING)
         closure_relations += closure.get_closure_relations()
 
+        # Remove timex-timex closures
+        closure_relations = [closure for closure in closure_relations if type(closure.source) is not Timex and type(closure.target) is not Timex]
+
         # Remove closure relations which already exist
         closure_relations = [closure for closure in closure_relations if closure not in self.relations]
 
@@ -313,7 +316,6 @@ class Parser(object):
                     # event-timex
                     source_obj = self.find_event_by_eiid(self.events, source_eiid)
                     target_obj = self.find_timex_by_tid(target_tid)
-
 
             relation_obj = Relation(lid, self.text_obj, source_obj, target_obj, relation_type_id)
             relations.append(relation_obj)
