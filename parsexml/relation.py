@@ -9,12 +9,13 @@ class Relation(object):
         self.source = source_obj
         self.target = target_obj
         self.relation_type = relation_type_id
+        # If self._is_timex is True, it is an event-timex relation. Otherwise it's an event-event relation.
         self._is_timex = None
         self.feature = None
         self.confidence_score = None
         self.predicted_class = None
 
-        self._check_timex()
+        self._check_if_event_event_or_event_timex()
 
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()
@@ -40,10 +41,9 @@ class Relation(object):
     def is_event_event(self):
         return not self.is_event_timex()
 
-    def _check_timex(self):
+    def _check_if_event_event_or_event_timex(self):
         """Check if this relation is an event-event relation or an event-timex relation."""
         if (type(self.source) is Timex and type(self.target) is Event) or (type(self.source) is Event and type(self.target) is Timex):
             self._is_timex = True
-        else:
+        elif type(self.source) is Event and type(self.target) is Event:
             self._is_timex = False
-
