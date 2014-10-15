@@ -62,22 +62,16 @@ class Parallel_features(object):
             relations = []
             for relation in text_obj.relations:
                 if event_event_g and relation.is_event_event():
-                    try:
-                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
-                        feature = f.get_feature()
-                        relation.set_feature(feature)
-                        relations.append(relation)
-                    except FailedProcessingFeature:
-                        continue
+                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                    feature = f.get_feature()
+                    relation.set_feature(feature)
+                    relations.append(relation)
 
                 elif not event_event_g and relation.is_event_timex():
-                    try:
-                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
-                        feature = f.get_feature()
-                        relation.set_feature(feature)
-                        relations.append(relation)
-                    except FailedProcessingFeature:
-                        continue
+                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                    feature = f.get_feature()
+                    relation.set_feature(feature)
+                    relations.append(relation)
 
             # Print progress
             with _counter_lock:
