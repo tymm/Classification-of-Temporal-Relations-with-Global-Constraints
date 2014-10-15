@@ -25,7 +25,6 @@ class Text(object):
             self.relations += parser.get_inversed_relations()
 
             # Produce closure relations
-            print "Create closures"
             self.relations += parser.get_closured_relations()
 
         self.text_structure = parser.get_text_structure()
