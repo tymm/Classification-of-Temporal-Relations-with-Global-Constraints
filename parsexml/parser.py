@@ -19,6 +19,7 @@ class Parser(object):
         self.events = None
         self.timex = None
         self.relations = None
+        self.inversed_relations = None
         self.text_structure = None
 
         self._parse()
@@ -125,7 +126,7 @@ class Parser(object):
                 inversed_relations.append(inverse_rel)
 
         # Append to internal relations, so that when generating closure relations, we consider those relations here
-        self.relations += inversed_relations
+        self.inversed_relations = inversed_relations
 
         return inversed_relations
 
