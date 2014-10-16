@@ -5,13 +5,13 @@ class Token:
 
         try:
             self.source = self.cache.index(self.relation.source.text.lower())
-        except IndexError:
+        except ValueError:
             # String is not known from training set
             self.source = len(self.cache)
 
         try:
             self.target = self.cache.index(self.relation.target.text.lower())
-        except IndexError:
+        except ValueError:
             # String is not known from training set
             self.target = len(self.cache)
 
