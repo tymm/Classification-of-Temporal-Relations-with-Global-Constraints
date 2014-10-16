@@ -1,5 +1,6 @@
 from helper.nlp_persistence import Nlp_persistence
 from helper.duration_cache import Duration_cache
+from helper.strings_cache import Strings_cache
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import svm
@@ -26,13 +27,13 @@ class System:
         duration_cache = None
         strings_cache = None
 
-        if "strings" in self.features:
-            strings_cache = pickle.load(open("strings.p", "rb"))
+        if "lemma" in self.features or "token" in self.features:
+            strings_cache = Strings_cache()
 
         if "duration" in self.features or "duration_difference" in self.features:
             duration_cache = Duration_cache()
 
-        if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features:
+        if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features or "lemma" in self.features:
             nlp_persistence = Nlp_persistence()
             print "Loading NLP data from file."
             nlp_persistence.load()
@@ -190,9 +191,13 @@ class System:
         if not "temporal_signal" in self.features:
             self.features.append("temporal_signal")
 
-    def use_strings(self):
-        if not "strings" in self.features:
-            self.features.append("strings")
+    def use_lemma(self):
+        if not "lemma" in self.features:
+            self.features.append("lemma")
+
+    def use_token(self):
+        if not "token" in self.features:
+            self.features.append("token")
 
     def use_all_features(self):
         if not "all" in self.features:

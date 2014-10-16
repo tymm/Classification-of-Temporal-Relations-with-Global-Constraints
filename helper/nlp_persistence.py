@@ -132,6 +132,17 @@ class Nlp_persistence(object):
         else:
             raise PosTagNotFound(sentence, word)
 
+    def get_lemma_for_word(self, sentence, word):
+        """Returns the lemma for a word in sentence."""
+        info_sentence = self.get_info_for_sentence(sentence)
+        words = info_sentence['sentences'][0]['words']
+
+        for w in words:
+            if w[0] in word:
+                return w[1]["Lemma"]
+        else:
+            raise LemmaNotFound(sentence, word)
+
     def is_main_verb(self, sentence, word):
         """Returns true if word is a main verb of sentence and not an aux."""
         info_sentence = self.get_info_for_sentence(sentence)
@@ -350,6 +361,14 @@ class PosTagNotFound(Exception):
 
     def __str__(self):
         return repr("Could not find POS tag for word %s in sentence: %s" % (self.word, self.sentence))
+
+class LemmaNotFound(Exception):
+    def __init__(self, sentence, word):
+        self.sentence = sentence.text
+        self.word = word
+
+    def __str__(self):
+        return repr("Could not find lemma for word %s in sentence: %s" % (self.word, self.sentence))
 
 class NoSentenceFound(Exception):
     def __str__(self):

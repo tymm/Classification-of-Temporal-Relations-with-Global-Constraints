@@ -21,12 +21,13 @@ from feature.event_class import Event_class
 from feature.dct import Dct
 from feature.type import Type
 from feature.value import Value
-from feature.strings import Strings
+from feature.token import Token
+from feature.lemma import Lemma
 import scipy
 from scipy import sparse
 
 class Feature(object):
-    def __init__(self, relation, strings_cache, nlp_persistence_obj, duration_cache,  features):
+    def __init__(self, relation, strings_cache, nlp_persistence_obj, duration_cache, features):
         self.relation = relation
         self.features = features
         self.duration_cache = duration_cache
@@ -48,13 +49,16 @@ class Feature(object):
 
         if "all" in self.features:
             if self.relation.is_event_event():
-                self.features = ["strings", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_order", "dependency_is_root", "polarity", "same_polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration", "duration_difference", "temporal_signal"]
+                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_order", "dependency_is_root", "polarity", "same_polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration", "duration_difference", "temporal_signal"]
 
             elif self.relation.is_event_timex():
-                self.features = ["strings", "tense", "aspect", "dependency_type", "dependency_order", "dependency_is_root", "dct", "polarity", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration", "duration_difference", "value", "temporal_signal"]
+                self.features = ["lemma", "token", "strings", "tense", "aspect", "dependency_type", "dependency_order", "dependency_is_root", "dct", "polarity", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration", "duration_difference", "value", "temporal_signal"]
 
-        if "strings" in self.features:
-            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_strings, flag_first, feature)
+        if "lemma" in self.features:
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_lemma, flag_first, feature)
+
+        if "token" in self.features:
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_token, flag_first, feature)
 
         if "tense" in self.features:
             feature, flag_first = self._put_feature_into_sparse_matrix(self.get_tense, flag_first, feature)
@@ -126,15 +130,26 @@ class Feature(object):
         else:
             return [1]
 
-    def get_strings(self):
-        strings = Strings(self.relation, self.strings_cache)
+    def get_token(self):
+        token = Token(self.relation, self.strings_cache)
 
-        n_values = strings.get_length()
+        n_values = token.get_length()
 
         enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
         enc.fit([n_values-1, n_values-1])
 
-        feature = enc.transform([[strings.source, strings.target]])
+        feature = enc.transform([[token.source, token.target]])
+        return feature
+
+    def get_lemma(self):
+        lemma = Lemma(self.relation, self.strings_cache, self.nlp_persistence_obj)
+
+        n_values = lemma.get_length()
+
+        enc = OneHotEncoder(n_values=n_values, categorical_features=[0,1], dtype="int32")
+        enc.fit([n_values-1, n_values-1])
+
+        feature = enc.transform([[lemma.source, lemma.target]])
         return feature
 
     def get_value(self):
@@ -234,42 +249,6 @@ class Feature(object):
         elif duration_source > duration_target:
             feature = enc.transform([[0]]).toarray()[0]
             return feature.tolist()
-
-    def get_token(self):
-        n_values = self.tokens.get_length()
-        # +1 for the unkown value when the token is not known
-        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1], dtype="int32")
-        enc.fit([n_values, n_values])
-
-        source_index = self.tokens.get_index(self.relation.source.text)
-        target_index = self.tokens.get_index(self.relation.target.text)
-
-        # If the token is unknown, set the index to n_values as the "unknown" value
-        if not source_index:
-            source_index = n_values
-        if not target_index:
-            target_index = n_values
-
-        feature = enc.transform([[source_index, target_index]]).toarray()[0]
-        return feature.tolist()
-
-    def get_lemma(self):
-        n_values = self.lemmas.get_length()
-        # +1 for the unkown value when the lemma is not known
-        enc = OneHotEncoder(n_values=n_values+1, categorical_features=[0,1], dtype="int32")
-        enc.fit([n_values, n_values])
-
-        source_index = self.lemmas.get_index(self.relation.source.text)
-        target_index = self.lemmas.get_index(self.relation.target.text)
-
-        # If the lemma is unknown, set the index to n_values as the "unknown" value
-        if not source_index:
-            source_index = n_values
-        if not target_index:
-            target_index = n_values
-
-        feature = enc.transform([[source_index, target_index]]).toarray()[0]
-        return feature.tolist()
 
     def get_tense(self):
         n_values = Tense.get_length()

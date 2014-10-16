@@ -1,30 +1,19 @@
-from parsexml.event import Event
-
 class Token:
-    def __init__(self, training_set):
-        self.tokens = self._get_all_tokens(training_set)
+    def __init__(self, relation, strings_cache):
+        self.relation = relation
+        self.cache = list(strings_cache.tokens)
 
-    def get_index(self, token):
         try:
-            index = self.tokens.index(token.lower())
-        except ValueError:
-            return None
+            self.source = self.cache.index(self.relation.source.text.lower())
+        except IndexError:
+            # String is not known from training set
+            self.source = len(self.cache)
+
+        try:
+            self.target = self.cache.index(self.relation.target.text.lower())
+        except IndexError:
+            # String is not known from training set
+            self.target = len(self.cache)
 
     def get_length(self):
-        return len(self.tokens)
-
-    def _get_all_tokens(self, training_set):
-        tokens = set()
-
-        # Getting all tokens
-        for text_obj in training_set.text_objects:
-            for relation in text_obj.relations:
-                if type(relation.source) == Event:
-                    tokens.add(self._get_token(relation.source.text))
-                if type(relation.target) == Event:
-                    tokens.add(self._get_token(relation.target.text))
-
-        return list(tokens)
-
-    def _get_token(self, text):
-        return text.lower()
+        return len(self.cache) + 1

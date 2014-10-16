@@ -4,7 +4,8 @@ from System import System
 data = Data()
 system = System(data)
 
-system.use_strings()
+system.use_token()
+system.use_lemma()
 system.use_dependency_is_root()
 system.use_dependency_order()
 system.use_aspect()
