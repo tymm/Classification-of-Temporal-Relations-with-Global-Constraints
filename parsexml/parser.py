@@ -20,6 +20,7 @@ class Parser(object):
         self.timex = None
         self.relations = None
         self.inversed_relations = None
+        self.closure_relations = None
         self.text_structure = None
 
         self._parse()
@@ -72,7 +73,7 @@ class Parser(object):
         closure_relations = [closure for closure in closure_relations if closure not in self.relations]
 
         # Append to internal relations, so that when generating other relations, we consider the relations here
-        self.relations += self.text_obj.relations + closure_relations
+        self.closure_relations = closure_relations
 
         return closure_relations
 
