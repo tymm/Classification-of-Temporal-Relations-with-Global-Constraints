@@ -1,3 +1,4 @@
+from helper.nlp_persistence import LemmaNotFound
 class Lemma:
     def __init__(self, relation, strings_cache, nlp_persistence_obj):
         self.relation = relation
@@ -6,13 +7,13 @@ class Lemma:
 
         try:
             self.source = self.cache.index(self._get_lemma(self.relation.source))
-        except ValueError:
+        except (ValueError, LemmaNotFound):
             # String is not known from training set
             self.source = len(self.cache)
 
         try:
             self.target = self.cache.index(self._get_lemma(self.relation.target))
-        except ValueError:
+        except (ValueError, LemmaNotFound):
             # String is not known from training set
             self.target = len(self.cache)
 
