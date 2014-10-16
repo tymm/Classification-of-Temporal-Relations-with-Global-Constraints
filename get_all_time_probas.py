@@ -43,5 +43,5 @@ def get_likelihoods_from_file(filename):
     return l
 
 if __name__ == "__main__":
-    infinitive_likelihood = get_likelihoods_from_file("../event.lexicon.distributions")
-    pickle.dump(infinitive_likelihood, open("../word_likelihoods.p", "wb"), protocol=-1)
+    infinitive_likelihood = get_likelihoods_from_file("event.lexicon.distributions")
+    pickle.dump(infinitive_likelihood, open("word_likelihoods.p", "wb"), protocol=-1)
