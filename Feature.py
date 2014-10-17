@@ -49,10 +49,17 @@ class Feature(object):
 
         if "all" in self.features:
             if self.relation.is_event_event():
-                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_order", "dependency_is_root", "polarity", "same_polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration", "duration_difference", "temporal_signal"]
+                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_order", "dependency_is_root", "class", "polarity", "same_polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration", "duration_difference", "temporal_signal"]
 
             elif self.relation.is_event_timex():
-                self.features = ["lemma", "token", "strings", "tense", "aspect", "dependency_type", "dependency_order", "dependency_is_root", "dct", "polarity", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration", "duration_difference", "value", "temporal_signal"]
+                self.features = ["lemma", "token", "strings", "tense", "aspect", "dependency_type", "dependency_order", "type", "dependency_is_root", "dct", "polarity", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration", "duration_difference", "value", "temporal_signal"]
+
+        if "best" in self.features:
+            if self.relation.is_event_event():
+                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_is_root", "polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration_difference", "temporal_signal"]
+
+            elif self.relation.is_event_timex():
+                self.features = ["lemma", "token", "strings", "tense", "aspect", "dependency_type", "dct", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration_difference", "temporal_signal"]
 
         if "lemma" in self.features:
             feature, flag_first = self._put_feature_into_sparse_matrix(self.get_lemma, flag_first, feature)
@@ -92,6 +99,9 @@ class Feature(object):
 
         if "class" in self.features:
             feature, flag_first = self._put_feature_into_sparse_matrix(self.get_event_class, flag_first, feature)
+
+        if "type" in self.features:
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_type, flag_first, feature)
 
         if "entity_distance" in self.features:
             feature, flag_first = self._put_feature_into_sparse_matrix(self.get_entity_distance, flag_first, feature)

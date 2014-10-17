@@ -4,6 +4,7 @@ from System import System
 data = Data()
 system = System(data)
 
+"""
 system.use_token()
 system.use_lemma()
 system.use_dependency_is_root()
@@ -28,6 +29,8 @@ system.use_same_pos()
 system.use_pos()
 system.use_duration()
 system.use_temporal_signal()
+"""
+system.use_best_feature_set()
 
 system.create_features()
 system.train()

@@ -27,13 +27,13 @@ class System:
         duration_cache = None
         strings_cache = None
 
-        if "lemma" in self.features or "token" in self.features:
+        if "lemma" in self.features or "token" in self.features or "best" in self.features:
             strings_cache = Strings_cache()
 
-        if "duration" in self.features or "duration_difference" in self.features:
+        if "duration" in self.features or "duration_difference" in self.features or "best" in self.features:
             duration_cache = Duration_cache()
 
-        if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features or "lemma" in self.features:
+        if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features or "lemma" in self.features or "best" in self.features:
             nlp_persistence = Nlp_persistence()
             print "Loading NLP data from file."
             nlp_persistence.load()
@@ -202,3 +202,6 @@ class System:
     def use_all_features(self):
         if not "all" in self.features:
             self.features.append("all")
+
+    def use_best_feature_set(self):
+        self.features = ["best"]
