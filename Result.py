@@ -66,21 +66,39 @@ class Result:
 
     def _get_table(self, c):
         """Return table (tp, fp, fn, tn) for class c."""
+        y_truth = list(self.truth)
+        y_predicted = list(self.predicted)
+
+        # c = 1, other classes = 0
+        self._make_binary(truth)
+        self._make_binary(predicted)
+
         tp = fp = fn = tn = 0
-        for i, y in enumerate(self.predicted):
-            if y == c and y == self.truth[i]:
+        for i, predicted in enumerate(y_predicted):
+            if predicted == c and predicted == y_truth[i]:
+                # Recognized as c and it is c
                 tp += 1
 
-            if y == c and y != self.truth[i]:
-                fp += 1
-
-            if y != c and y == self.truth[i]:
+            if predicted != c and predicted != y_truth[i]:
+                # Not recognized as c but actually c
                 fn += 1
 
-            if y != c and y != self.truth[i]:
+            if predicted == c and predicted != y_truth[i]:
+                # Recognized as c but it is not c
+                fp += 1
+
+            if predicted != c and predicted == y_truth[i]:
+                # Recognized as not c which is the truth
                 tn += 1
 
         return (tp, fp, fn, tn)
+
+    def _make_binary(data, c):
+        for i, d in enumerate(data):
+            if d == c:
+                data[i] = 1
+            else:
+                data[i] = 0
 
     def _print_dristibution(self):
         Row = namedtuple("Row", ["Class", "TP", "FP", "FN"])
