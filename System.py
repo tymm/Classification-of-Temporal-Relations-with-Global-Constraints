@@ -20,6 +20,9 @@ class System:
         self.training_event_event = None
         self.training_event_timex = None
 
+        self.test_event_event = None
+        self.test_event_timex = None
+
         self.classifier = None
 
     def create_features(self):
