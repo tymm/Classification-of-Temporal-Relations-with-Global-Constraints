@@ -8,12 +8,14 @@ class Lemma:
         try:
             self.source = self.cache.index(self._get_lemma(self.relation.source))
         except (ValueError, LemmaNotFound):
+            # TODO: When LemmaNotFound, get lemma manually
             # String is not known from training set
             self.source = len(self.cache)
 
         try:
             self.target = self.cache.index(self._get_lemma(self.relation.target))
         except (ValueError, LemmaNotFound):
+            # TODO: When LemmaNotFound, get lemma manually
             # String is not known from training set
             self.target = len(self.cache)
 
