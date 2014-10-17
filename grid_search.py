@@ -4,6 +4,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.svm import SVC
 from time import time
 from operator import itemgetter
+import numpy as np
 
 # Utility function to report best scores
 def report(grid_scores, n_top=3):
