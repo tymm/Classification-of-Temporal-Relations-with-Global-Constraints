@@ -11,18 +11,29 @@ class Result:
         self.predicted = y_test_predicted
 
     def __str__(self):
-        output =  "Class: BEFORE  IS_INCLUDED  AFTER  INCLUDES  ENDS  ENDED_BY  IBEFORE  IAFTER  SIMULTANEOUS  BEGINS  BEGUN_BY  DURING  DURING_INV  IDENTITY  NONE\n"
-        output += "Precision: %s  %s           %s     %s        %s    %s        %s       %s      %s            %s      %s        %s      %s          %s        %s\n" % (self.get_precision(RelationType.BEFORE), self.get_precision(RelationType.IS_INCLUDED), self.get_precision(RelationType.AFTER), self.get_precision(RelationType.INCLUDES), self.get_precision(RelationType.ENDS), self.get_precision(RelationType.ENDED_BY), self.get_precision(RelationType.IBEFORE), self.get_precision(RelationType.IAFTER), self.get_precision(RelationType.SIMULTANEOUS), self.get_precision(RelationType.BEGINS), self.get_precision(RelationType.BEGUN_BY), self.get_precision(RelationType.DURING), self.get_precision(RelationType.DURING_INV), self.get_precision(RelationType.IDENTITY), self.get_precision(RelationType.NONE))
-        output += "Recall:    %s  %s           %s     %s        %s    %s        %s       %s      %s            %s      %s        %s      %s          %s        %s\n" % (self.get_recall(RelationType.BEFORE), self.get_recall(RelationType.IS_INCLUDED), self.get_recall(RelationType.AFTER), self.get_recall(RelationType.INCLUDES), self.get_recall(RelationType.ENDS), self.get_recall(RelationType.ENDED_BY), self.get_recall(RelationType.IBEFORE), self.get_recall(RelationType.IAFTER), self.get_recall(RelationType.SIMULTANEOUS), self.get_recall(RelationType.BEGINS), self.get_recall(RelationType.BEGUN_BY), self.get_recall(RelationType.DURING), self.get_recall(RelationType.DURING_INV), self.get_recall(RelationType.IDENTITY), self.get_recall(RelationType.NONE))
-        output += "F1-Score:  %s  %s           %s     %s        %s    %s        %s       %s      %s            %s      %s        %s      %s          %s        %s\n" % (self.get_f1(RelationType.BEFORE), self.get_f1(RelationType.IS_INCLUDED), self.get_f1(RelationType.AFTER), self.get_f1(RelationType.INCLUDES), self.get_f1(RelationType.ENDS), self.get_f1(RelationType.ENDED_BY), self.get_f1(RelationType.IBEFORE), self.get_f1(RelationType.IAFTER), self.get_f1(RelationType.SIMULTANEOUS), self.get_f1(RelationType.BEGINS), self.get_f1(RelationType.BEGUN_BY), self.get_f1(RelationType.DURING), self.get_f1(RelationType.DURING_INV), self.get_f1(RelationType.IDENTITY), self.get_f1(RelationType.NONE))
-        output += "Accuracy:  %s  %s           %s     %s        %s    %s        %s       %s      %s            %s      %s        %s      %s          %s        %s\n" % (self.get_accuracy(RelationType.BEFORE), self.get_accuracy(RelationType.IS_INCLUDED), self.get_accuracy(RelationType.AFTER), self.get_accuracy(RelationType.INCLUDES), self.get_accuracy(RelationType.ENDS), self.get_accuracy(RelationType.ENDED_BY), self.get_accuracy(RelationType.IBEFORE), self.get_accuracy(RelationType.IAFTER), self.get_accuracy(RelationType.SIMULTANEOUS), self.get_accuracy(RelationType.BEGINS), self.get_accuracy(RelationType.BEGUN_BY), self.get_accuracy(RelationType.DURING), self.get_accuracy(RelationType.DURING_INV), self.get_accuracy(RelationType.IDENTITY), self.get_accuracy(RelationType.NONE))
-
-        output += "\n"
+        output = ""
         output += "Averaged f1-score: %s\n" % f1_score(self.truth, self.predicted)
         output += "Averaged accuracy: %s\n" % accuracy_score(self.truth, self.predicted)
+        self._print_detailed_results()
         self._print_dristibution()
 
         return output
+
+    def _print_detailed_results(self):
+        table = []
+        header = ["Class", "Precision", "Recall", "F1-Score", "Accuracy"]
+        table.append(header)
+
+        for rel_type in RelationType():
+            tp, fp, fn, tn = self._get_table(rel_type)
+            row = [RelationType.get_string_by_id(rel_type)]
+            row.append(self.get_precision(rel_type))
+            row.append(self.get_recall(rel_type))
+            row.append(self.get_f1(rel_type))
+            row.append(self.get_accuracy(rel_type))
+            table.append(row)
+
+        print tabulate(table)
 
     def get_precision(self, c):
         """Return precision for class c."""
