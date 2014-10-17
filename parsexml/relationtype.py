@@ -84,4 +84,4 @@ class RelationType:
             print "Unkown relation type: " + text
 
     def __iter__(self):
-        return iter([self.BEFORE, self.IS_INCLUDED, self.INCLUDES, self.AFTER, self.ENDS, self.ENDED_BY, self.IBEFORE, self.IAFTER, self.BEGINS, self.BEGUN_BY, self.DURING, self.DURING_INV, self.SIMULTANEOUS, self.NONE, self.UNKNOWN])
+        return iter([self.BEFORE, self.AFTER, self.IBEFORE, self.IAFTER, self.BEGINS, self.BEGUN_BY, self.ENDS, self.ENDED_BY, self.DURING, self.DURING_INV, self.INCLUDES, self.IS_INCLUDED, self.SIMULTANEOUS, self.IDENTITY])
