@@ -14,6 +14,7 @@ class Result:
         output = ""
         output += "Averaged f1-score: %s\n" % f1_score(self.truth, self.predicted)
         output += "Averaged accuracy: %s\n" % accuracy_score(self.truth, self.predicted)
+        output += "Accuracy, as defined in paper: %s\n" % self._get_accuracy_paper()
         self._print_detailed_results()
         self._print_dristibution()
 
@@ -34,6 +35,17 @@ class Result:
             table.append(row)
 
         print tabulate(table)
+
+    def _get_accuracy_paper(self):
+        # Calculates the accuracy as defined in "Classifying Temporal Relations with Simple Features": Adding up all TP and dividing by the number of all annotated relations
+        number_of_all_annotated_links = len(self.truth)
+
+        TP = 0
+        for rel_type in RelationType():
+            tp, _, _, _ = self._get_table(rel_type)
+            TP += tp
+
+        return TP/float(number_of_all_annotated_links)
 
     def get_precision(self, c):
         """Return precision for class c."""
