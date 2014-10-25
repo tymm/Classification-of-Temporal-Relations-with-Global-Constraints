@@ -2,6 +2,7 @@ from helper.tagger import StanfordNLP
 
 class Event(object):
     def __init__(self, eid, eiid, text_obj, text, sentence, position_in_sentence, e_class, tense, aspect, polarity, pos, modality):
+        self.id = eid
         self.eid = eid
         self.eiid = [eiid]
         self.parent = text_obj

@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<TimeML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://timeml.org/timeMLdocs/TimeML_1.2.1.xsd">
+
+<DOCID>APW19980807.0261</DOCID>
+
+<DCT><TIMEX3 tid="t0" type="TIME" value="1998-08-07" temporalFunction="false" functionInDocument="CREATION_TIME">1998-08-07</TIMEX3></DCT>
+
+<TITLE>Explosions rock U.S. embassies in Tanzania, Kenya</TITLE>
+
+<TEXT>
+
+NAIROBI, Kenya (AP) _
+
+Suspected bombs <EVENT eid="e1" class="OCCURRENCE">exploded</EVENT> outside the U.S. embassies in the Kenyan and Tanzanian capitals <TIMEX3 tid="t1" type="DATE" value="1998-08-07" temporalFunction="false" functionInDocument="NONE">Friday</TIMEX3>, <EVENT eid="e2" class="OCCURRENCE">killing</EVENT> dozens of people, witnesses <EVENT eid="e3" class="REPORTING">said</EVENT>.
+
+The American ambassador to Kenya was among hundreds <EVENT eid="e12" class="OCCURRENCE">injured</EVENT>, a local TV <EVENT eid="e4" class="REPORTING">said</EVENT>.
+
+``It was definitely a bomb,'' <EVENT eid="e5" class="REPORTING">said</EVENT> a U.S. Embassy official in Nairobi, who <EVENT eid="e6" class="OCCURRENCE">refused</EVENT> to <EVENT eid="e7" class="OCCURRENCE">identify</EVENT> himself. ``You can <EVENT eid="e8" class="PERCEPTION">see</EVENT> a huge crater behind the building, and a bomb <EVENT eid="e9" class="OCCURRENCE">went</EVENT> off at the embassy in Tanzania at the same time,'' he <EVENT eid="e10" class="REPORTING">said</EVENT>.
+
+</TEXT>
+
+
+<MAKEINSTANCE eventID="e1" eiid="ei1" tense="PAST" aspect="NONE" polarity="POS" pos="UNKNOWN"/>
+<MAKEINSTANCE eventID="e2" eiid="ei2" tense="PRESPART" aspect="NONE" polarity="POS" pos="VERB"/>
+<MAKEINSTANCE eventID="e3" eiid="ei3" tense="PAST" aspect="NONE" polarity="POS" pos="UNKNOWN"/>
+<MAKEINSTANCE eventID="e4" eiid="ei4" tense="PAST" aspect="NONE" polarity="POS" pos="UNKNOWN"/>
+<TLINK lid="AB" relType="SIMULTANEOUS" eventInstanceID="ei1" relatedToEventInstance="ei2" origin="USER"/>
+<TLINK lid="BC" relType="BEFORE" eventInstanceID="ei2" relatedToEventInstance="ei3" origin="USER"/>
+<TLINK lid="AC" relType="AFTER" eventInstanceID="ei1" relatedToEventInstance="ei3" origin="USER"/>
+</TimeML>
+
+

@@ -18,6 +18,9 @@ from System import System
 from TrainingSet import TrainingSet
 from TestSet import TestSet
 from helper.duration_cache import Duration_cache
+from Constraints import Constraints
+from ilp.variable import Variable
+from ilp.directed_pair import Directed_Pair
 
 class Singleton(type):
     _instances = {}
@@ -576,6 +579,257 @@ class SystemRun(unittest.TestCase):
         system.train()
         system.eval()
         self.assertTrue(True)
+
+class ConstraintsComplete(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        pass
+
+    def test_SimpleGraph(self):
+        text_obj = Text("data/simple-graph.tml", inverse=False, closure=False)
+
+        A = text_obj.events[0]
+        B = text_obj.events[1]
+        C = text_obj.events[2]
+
+        A_C_before = Relation("closure", text_obj, A, C, RelationType.BEFORE)
+
+        result = [text_obj.relations[0], text_obj.relations[1], A_C_before]
+
+        constraints = Constraints(text_obj, test=True)
+
+        # A--before 0.9--B, B--before 0.9--C, A--after 0.7--C
+        A_B = Directed_Pair(A, B, [0.9, 0, 0], [0, 1, 2])
+        B_C = Directed_Pair(B, C, [0.9, 0, 0], [0, 1, 2])
+        A_C = Directed_Pair(A, C, [0, 0, 0.7], [0, 1, 2])
+
+        constraints.directed_pairs = [A_B, B_C, A_C]
+        constraints._build_model()
+
+        best_set = constraints.get_best_set()
+
+        self.assertEqual(result, best_set)
+
+    def test_SimpleGraph2(self):
+        text_obj = Text("data/simple-graph.tml", inverse=False, closure=False)
+
+        A = text_obj.events[0]
+        B = text_obj.events[1]
+        C = text_obj.events[2]
+
+        # B-before-C will become B-after-C. Why? Becuase the relation has to exist due to the constraints and it doesn't make the graph invalid
+        B_C_after = Relation("", text_obj, B, C, RelationType.AFTER)
+
+        result = [text_obj.relations[0], B_C_after, text_obj.relations[2]]
+
+        constraints = Constraints(text_obj, test=True)
+
+        # A--before 0.9--B, B--before 0.6--C, A--after 0.7--C
+        A_B = Directed_Pair(A, B, [0.9, 0, 0], [0, 1, 2])
+        B_C = Directed_Pair(B, C, [0.6, 0, 0], [0, 1, 2])
+        A_C = Directed_Pair(A, C, [0, 0, 0.7], [0, 1, 2])
+
+        constraints.directed_pairs = [A_B, B_C, A_C]
+        constraints._build_model()
+
+        best_set = constraints.get_best_set()
+
+        self.assertEqual(result, best_set)
+
+    def test_AnotherSimpleGraph(self):
+        text_obj = Text("data/simple-graph-2.tml", inverse=False, closure=False)
+
+        A = text_obj.events[0]
+        B = text_obj.events[1]
+        C = text_obj.events[2]
+
+        B_C_iafter = Relation("", text_obj, B, C, RelationType.IAFTER)
+
+        result = [text_obj.relations[0], B_C_iafter, text_obj.relations[2]]
+
+        constraints = Constraints(text_obj, test=True)
+
+        # A--simultaneous 0.5--B, B--before 0.5--C, A--after 0.6--C
+        A_B = Directed_Pair(A, B, [0, 0, 0, 0, 0, 0, 0, 0, 0.5], [0, 1, 2, 3, 4, 5, 6, 7, 8])
+        B_C = Directed_Pair(B, C, [0.5, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 2, 3, 4, 5, 6, 7, 8])
+        A_C = Directed_Pair(A, C, [0.1, 0, 0.6, 0, 0, 0, 0, 0, 0], [0, 1, 2, 3, 4, 5, 6, 7, 8])
+
+        constraints.directed_pairs = [A_B, B_C, A_C]
+        constraints._build_model()
+
+        best_set = constraints.get_best_set()
+
+        self.assertEqual(result, best_set)
+
+    def test_AnotherSimpleGraph_2(self):
+        text_obj = Text("data/simple-graph-2.tml", inverse=False, closure=False)
+
+        A = text_obj.events[0]
+        B = text_obj.events[1]
+        C = text_obj.events[2]
+
+        A_C_before = Relation("", text_obj, A, C, RelationType.BEFORE)
+
+        result = [text_obj.relations[0], text_obj.relations[1], A_C_before]
+
+        constraints = Constraints(text_obj, test=True)
+
+        #                                           A--before 0.1--C
+        # A--simultaneous 0.5--B, B--before 0.5--C, A--after 0.5--C
+        A_B = Directed_Pair(A, B, [0, 0, 0, 0, 0, 0, 0, 0, 0.5], [0, 1, 2, 3, 4, 5, 6, 7, 8])
+        B_C = Directed_Pair(B, C, [0.5, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 2, 3, 4, 5, 6, 7, 8])
+        A_C = Directed_Pair(A, C, [0.1, 0, 0.5, 0, 0, 0, 0, 0, 0], [0, 1, 2, 3, 4, 5, 6, 7, 8])
+
+        constraints.directed_pairs = [A_B, B_C, A_C]
+        constraints._build_model()
+
+        best_set = constraints.get_best_set()
+
+        self.assertEqual(result, best_set)
+
+class TransitivityConstraints(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.constraints = Constraints(None, test=True)
+
+    def test_CheckTargetEqualsSource(self):
+        dummy_probabilities = [0.1, 0.2, 0.2, 0.3]
+        dummy_classes = [0,1,2,3]
+        # X before Y && Y before Z => X before Z
+        pair1 = Directed_Pair("X", "Y", dummy_probabilities, dummy_classes)
+        pair2 = Directed_Pair("Y", "Z", dummy_probabilities, dummy_classes)
+        pair3 = Directed_Pair("X", "Z", dummy_probabilities, dummy_classes)
+        v1 = Variable(None, pair1, RelationType.BEFORE)
+        v2 = Variable(None, pair2, RelationType.BEFORE)
+        v3 = Variable(None, pair3, RelationType.BEFORE)
+
+        self.constraints.directed_pairs = [pair1, pair2, pair3]
+        self.constraints.variables = [v1, v2, v3]
+
+        triples = self.constraints._get_triples_by_rule(["A", RelationType.BEFORE, "B", "B", RelationType.BEFORE, "C", "A", RelationType.BEFORE, "C"])
+
+        self.assertEqual([[v1, v2, v3]], triples)
+
+    def test_CheckTargetEqualsSourceWithMore(self):
+        dummy_probabilities = [0.1, 0.2, 0.2, 0.3]
+        dummy_classes = [0,1,2,3]
+        # X before Y && Y before Z => X before Z
+        # X before Y && Y before D => X before D
+        pair1 = Directed_Pair("X", "Y", dummy_probabilities, dummy_classes)
+        pair2 = Directed_Pair("Y", "Z", dummy_probabilities, dummy_classes)
+        pair3 = Directed_Pair("X", "Z", dummy_probabilities, dummy_classes)
+        pair4 = Directed_Pair("Y", "D", dummy_probabilities, dummy_classes)
+        pair5 = Directed_Pair("X", "D", dummy_probabilities, dummy_classes)
+        v1 = Variable(None, pair1, RelationType.BEFORE)
+        v2 = Variable(None, pair2, RelationType.BEFORE)
+        v3 = Variable(None, pair3, RelationType.BEFORE)
+        v4 = Variable(None, pair4, RelationType.BEFORE)
+        v5 = Variable(None, pair5, RelationType.BEFORE)
+
+        self.constraints.directed_pairs = [pair1, pair2, pair3, pair4, pair5]
+        self.constraints.variables = [v1, v2, v3, v4, v5]
+
+        triples = self.constraints._get_triples_by_rule(["A", RelationType.BEFORE, "B", "B", RelationType.BEFORE, "C", "A", RelationType.BEFORE, "C"])
+
+        self.assertEqual([[v1, v2, v3], [v1, v4, v5]], triples)
+
+    def test_CheckTargetEqualsSourceWithEvenMore(self):
+        dummy_probabilities = [0.1, 0.2, 0.2, 0.3]
+        dummy_classes = [0,1,2,3]
+        # A before B && B before C && C before D => A before C, B before D, A before D
+        pair1 = Directed_Pair("A", "B", dummy_probabilities, dummy_classes)
+        pair2 = Directed_Pair("B", "C", dummy_probabilities, dummy_classes)
+        pair3 = Directed_Pair("C", "D", dummy_probabilities, dummy_classes)
+        pair4 = Directed_Pair("A", "C", dummy_probabilities, dummy_classes)
+        pair5 = Directed_Pair("B", "D", dummy_probabilities, dummy_classes)
+        pair6 = Directed_Pair("A", "D", dummy_probabilities, dummy_classes)
+        v1 = Variable(None, pair1, RelationType.BEFORE)
+        v2 = Variable(None, pair2, RelationType.BEFORE)
+        v3 = Variable(None, pair3, RelationType.BEFORE)
+        v4 = Variable(None, pair4, RelationType.BEFORE)
+        v5 = Variable(None, pair5, RelationType.BEFORE)
+        v6 = Variable(None, pair6, RelationType.BEFORE)
+
+        self.constraints.directed_pairs = [pair1, pair2, pair3, pair4, pair5, pair6]
+        self.constraints.variables = [v1, v2, v3, v4, v5, v6]
+
+        triples = self.constraints._get_triples_by_rule(["A", RelationType.BEFORE, "B", "B", RelationType.BEFORE, "C", "A", RelationType.BEFORE, "C"])
+
+        self.assertEqual(sorted([[v1, v5, v6], [v1, v2, v4], [v2, v3, v5], [v4, v3, v6]]), sorted(triples))
+
+    def test_CheckSourcesAreEqual(self):
+        dummy_probabilities = [0.1, 0.2, 0.2, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2]
+        dummy_classes = [0,1,2,3,4,5,6,7,8]
+        # A simultaneous B && A before C => B before C
+        pair1 = Directed_Pair("A", "B", dummy_probabilities, dummy_classes)
+        pair2 = Directed_Pair("A", "C", dummy_probabilities, dummy_classes)
+        pair3 = Directed_Pair("B", "C", dummy_probabilities, dummy_classes)
+        v1 = Variable(None, pair1, RelationType.SIMULTANEOUS)
+        v2 = Variable(None, pair2, RelationType.BEFORE)
+        v3 = Variable(None, pair3, RelationType.BEFORE)
+
+        self.constraints.directed_pairs = [pair1, pair2, pair3]
+        self.constraints.variables = [v1, v2, v3]
+
+        triples = self.constraints._get_triples_by_rule(["A", RelationType.SIMULTANEOUS, "B", "A", RelationType.BEFORE, "C", "B", RelationType.BEFORE, "C"])
+
+        self.assertEqual([[v1, v2, v3]], triples)
+
+    def test_CheckTargetsEquals(self):
+        dummy_probabilities = [0.1, 0.2, 0.2, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2]
+        dummy_classes = [0,1,2,3,4,5,6,7,8]
+        # A simultaneous B && C simultaneous B => A simultaneous C
+        pair1 = Directed_Pair("A", "B", dummy_probabilities, dummy_classes)
+        pair2 = Directed_Pair("C", "B", dummy_probabilities, dummy_classes)
+        pair3 = Directed_Pair("A", "C", dummy_probabilities, dummy_classes)
+        v1 = Variable(None, pair1, RelationType.SIMULTANEOUS)
+        v2 = Variable(None, pair2, RelationType.SIMULTANEOUS)
+        v3 = Variable(None, pair3, RelationType.SIMULTANEOUS)
+
+        self.constraints.directed_pairs = [pair1, pair2, pair3]
+        self.constraints.variables = [v1, v2, v3]
+
+        triples = self.constraints._get_triples_by_rule(["A", RelationType.SIMULTANEOUS, "B", "C", RelationType.SIMULTANEOUS, "B", "A", RelationType.SIMULTANEOUS, "C"])
+
+        self.assertEqual([[v1, v2, v3]], triples)
+
+    def test_CheckSourceEqualsTarget(self):
+        dummy_probabilities = [0.1, 0.2, 0.2, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2]
+        dummy_classes = [0,1,2,3,4,5,6,7,8]
+        # B simultaneous A && C simultaneous B => A simultaneous C
+        pair1 = Directed_Pair("B", "A", dummy_probabilities, dummy_classes)
+        pair2 = Directed_Pair("C", "B", dummy_probabilities, dummy_classes)
+        pair3 = Directed_Pair("A", "C", dummy_probabilities, dummy_classes)
+        v1 = Variable(None, pair1, RelationType.SIMULTANEOUS)
+        v2 = Variable(None, pair2, RelationType.SIMULTANEOUS)
+        v3 = Variable(None, pair3, RelationType.SIMULTANEOUS)
+
+        self.constraints.directed_pairs = [pair1, pair2, pair3]
+        self.constraints.variables = [v1, v2, v3]
+
+        triples = self.constraints._get_triples_by_rule(["B", RelationType.SIMULTANEOUS, "A", "C", RelationType.SIMULTANEOUS, "B", "A", RelationType.SIMULTANEOUS, "C"])
+
+        # TODO: Not sure if I really want this result
+        self.assertEqual(sorted([[v1, v2, v3], [v2, v3, v1], [v3, v1, v2]]), sorted(triples))
+
+    def test_CheckIfThereIsNoOutputIfThereIsNoGraph(self):
+        dummy_probabilities = [0.1, 0.2, 0.2, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2]
+        dummy_classes = [0,1,2,3,4,5,6,7,8]
+        # A simultaneous B && C simultaneous B => A simultaneous C
+        pair1 = Directed_Pair("A", "B", dummy_probabilities, dummy_classes)
+        pair2 = Directed_Pair("C", "B", dummy_probabilities, dummy_classes)
+        pair3 = Directed_Pair("A", "C", dummy_probabilities, dummy_classes)
+        v1 = Variable(None, pair1, RelationType.BEFORE)
+        v2 = Variable(None, pair2, RelationType.BEFORE)
+        v3 = Variable(None, pair3, RelationType.AFTER)
+
+        self.constraints.directed_pairs = [pair1, pair2, pair3]
+        self.constraints.variables = [v1, v2, v3]
+
+        triples = self.constraints._get_triples_by_rule(["A", RelationType.BEFORE, "B", "C", RelationType.BEFORE, "B", "A", RelationType.BEFORE, "C"])
+
+        self.assertEqual([], triples)
+
 
 if __name__ == '__main__':
     unittest.main()

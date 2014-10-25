@@ -6,6 +6,7 @@ from parsexml.relation import Relation
 from Feature import Feature
 from helper.output import Output
 from parsexml.event import Event
+from ilp.directed_pair import Directed_Pair
 
 class Text(object):
     def __init__(self, filename, inverse=True, closure=True):
@@ -18,6 +19,8 @@ class Text(object):
         self.events = parser.get_events()
         self.timex = parser.get_timex()
         self.relations = parser.get_relations()
+        # Entity pairs which contain confidence scores for target values
+        self.directed_pairs = []
 
         # Only generate inversed and closured relations for training
         if inverse:
@@ -30,6 +33,27 @@ class Text(object):
 
         self.text_structure = parser.get_text_structure()
         self.entities_order = parser.get_entities_order()
+
+    def create_confidence_scores(self, classifier):
+        # Create a confidence score for every relation type for every existing relation
+        for relation in self.relations:
+            probas = classifier.predict_proba(relation.feature)
+            pair = Directed_Pair(relation.source, relation.target, probas, classifier.classes_)
+            self.directed_pairs.append(pair)
+
+    def find_relation_by_variable(self, variable):
+        for relation in self.relations:
+            if relation.source == variable.pair.source and relation.target == variable.pair.target and relation.relation_type == variable.relation_type:
+                return relation
+        else:
+            return None
+
+    def find_relation_by_source_and_target(self, source, target):
+        for relation in self.relations:
+            if relation.source == source and relation.target == target:
+                return relation
+        else:
+            return None
 
     def find_relation_by_lid(self, lid):
         for relation in self.relations:
