@@ -83,6 +83,12 @@ class System:
 
         return (result_event_event, result_event_timex)
 
+    def create_confidence_scores(self):
+        self.data.test.create_confidence_scores(self.classifier_event_event, self.classifier_event_timex)
+
+    def apply_global_model(self):
+        self.data.test.apply_global_model()
+
     def _train_random_forest(self, training_data):
         print "Train a random forest classifier"
 

@@ -34,10 +34,14 @@ class Text(object):
         self.text_structure = parser.get_text_structure()
         self.entities_order = parser.get_entities_order()
 
-    def create_confidence_scores(self, classifier):
+    def create_confidence_scores(self, classifier_event_event, classifier_event_timex):
         # Create a confidence score for every relation type for every existing relation
         for relation in self.relations:
-            probas = classifier.predict_proba(relation.feature)
+            if relation.is_event_event():
+                probas = classifier_event_event.predict_proba(relation.feature)
+            elif relation.is_event_timex():
+                probas = classifier_event_timex.predict_proba(relation.feature)
+
             pair = Directed_Pair(relation.source, relation.target, probas, classifier.classes_)
             self.directed_pairs.append(pair)
 

@@ -34,6 +34,8 @@ system.use_best_feature_set()
 
 system.create_features()
 system.train()
+system.create_confidence_scores()
+system.apply_global_model()
 
 event_event, event_timex = system.eval()
 print "Event-Event:"
