@@ -25,6 +25,9 @@ class System:
 
         self.classifier = None
 
+        self.y_predicted_event_event = None
+        self.y_predicted_event_timex = None
+
     def create_features(self):
         nlp_persistence = None
         duration_cache = None
@@ -75,11 +78,11 @@ class System:
         X_test_event_timex = self.test_event_timex[0]
         y_test_event_timex = self.test_event_timex[1]
 
-        y_predicted_event_event = self.classifier_event_event.predict(X_test_event_event)
-        y_predicted_event_timex = self.classifier_event_timex.predict(X_test_event_timex)
+        self.y_predicted_event_event = self.classifier_event_event.predict(X_test_event_event)
+        self.y_predicted_event_timex = self.classifier_event_timex.predict(X_test_event_timex)
 
-        result_event_event = Result(y_test_event_event, y_predicted_event_event)
-        result_event_timex = Result(y_test_event_timex, y_predicted_event_timex)
+        result_event_event = Result(y_test_event_event, self.y_predicted_event_event)
+        result_event_timex = Result(y_test_event_timex, self.y_predicted_event_timex)
 
         return (result_event_event, result_event_timex)
 
@@ -90,6 +93,17 @@ class System:
 
         y_predicted_event_event_global_model = self.test_event_event_global_model_targets
         y_predicted_event_timex_global_model = self.test_event_timex_global_model_targets
+
+        if self.y_predicted_event_event and self.y_predicted_event_timex:
+            changed = 0
+
+            global_targets = y_predicted_event_event_global_model + y_predicted_event_timex_global_model
+
+            for i, target in enumerate(self.y_predicted_event_event + self.y_predicted_event_timex):
+                if global_targets[i] != target:
+                    changed += 1
+
+            print "Global model changed %s relations." % changed
 
         result_event_event = Result(y_test_event_event, y_predicted_event_event_global_model)
         result_event_timex = Result(y_test_event_timex, y_predicted_event_timex_global_model)
