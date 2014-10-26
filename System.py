@@ -97,10 +97,12 @@ class System:
         if self.y_predicted_event_event is not None and self.y_predicted_event_timex is not None:
             changed = 0
 
-            global_targets = y_predicted_event_event_global_model + y_predicted_event_timex_global_model
+            for i, target in enumerate(self.y_predicted_event_event):
+                if y_predicted_event_event_global_model[i] != target:
+                    changed += 1
 
-            for i, target in enumerate(self.y_predicted_event_event + self.y_predicted_event_timex):
-                if global_targets[i] != target:
+            for i, target in enumerate(self.y_predicted_event_timex):
+                if y_predicted_event_timex_global_model[i] != target:
                     changed += 1
 
             print "Global model changed %s relations." % changed
