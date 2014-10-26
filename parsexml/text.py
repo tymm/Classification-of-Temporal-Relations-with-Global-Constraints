@@ -34,6 +34,12 @@ class Text(object):
         self.text_structure = parser.get_text_structure()
         self.entities_order = parser.get_entities_order()
 
+    def __eq__(self, other):
+        return self.__hash__() == other.__hash__()
+
+    def __hash__(self):
+        return hash(self.filename)
+
     def create_confidence_scores(self, classifier_event_event, classifier_event_timex):
         # Create a confidence score for every relation type for every existing relation
         for relation in self.relations:
