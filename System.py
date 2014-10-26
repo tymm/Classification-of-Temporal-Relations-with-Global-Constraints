@@ -98,7 +98,7 @@ class System:
         y = self.training_event_timex[1]
         kfold = cross_validation.KFold(len(y), n_folds=5)
         accs = cross_validation.cross_val_score(self.classifier_event_timex, X, y, cv=kfold, n_jobs=-1)
-        print "event-event 5-fold cross validation accuracy: %s" % np.mean(accs)
+        print "event-timex 5-fold cross validation accuracy: %s" % np.mean(accs)
 
     def _train_random_forest(self, training_data):
         print "Train a random forest classifier"
