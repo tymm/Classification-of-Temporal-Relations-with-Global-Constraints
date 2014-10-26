@@ -109,8 +109,10 @@ class Parallel_features(object):
                 self.X.append(relation.feature)
                 self.y.append(relation.relation_type)
 
-                # Put relation.feature into relation reference for later use
-                for r in self.relations:
-                    if r == relation:
-                        r.feature = relation.feature
-                        break
+                # Put relation.feature into relation for later
+                for text_obj in self.text_objs:
+                    if text_obj == relation.parent:
+                        for rel in text_obj.relations:
+                            if rel == relation:
+                                rel.feature = relation.feature
+                                break
