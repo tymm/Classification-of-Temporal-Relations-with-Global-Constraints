@@ -94,7 +94,7 @@ class System:
         y_predicted_event_event_global_model = self.test_event_event_global_model_targets
         y_predicted_event_timex_global_model = self.test_event_timex_global_model_targets
 
-        if self.y_predicted_event_event and self.y_predicted_event_timex:
+        if self.y_predicted_event_event is not None and self.y_predicted_event_timex is not None:
             changed = 0
 
             global_targets = y_predicted_event_event_global_model + y_predicted_event_timex_global_model
