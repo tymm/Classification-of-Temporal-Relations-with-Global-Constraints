@@ -2,6 +2,7 @@ from Set import Set
 from Feature import Feature
 import numpy
 from feature.exception import FailedProcessingFeature
+from Constraints import Constraints
 
 class TestSet(Set):
     def __init__(self, *corpora):
