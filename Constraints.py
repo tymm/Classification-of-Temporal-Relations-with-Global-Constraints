@@ -9,6 +9,7 @@ class Constraints:
             self.directed_pairs = text_obj.directed_pairs
         self.variables = []
         self.model = Model("ILP")
+        self.model.setParam(GRB.Param.OutputFlag,0)
 
         # Run model for text_obj
         if not test:
