@@ -6,6 +6,8 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn import svm
 from Result import Result
 import cPickle as pickle
+from sklearn import cross_validation
+import numpy as np
 
 class System:
     def __init__(self, data, features=None):
@@ -82,6 +84,21 @@ class System:
         result_event_timex = Result(y_test_event_timex, y_predicted_event_timex)
 
         return (result_event_event, result_event_timex)
+
+    def cross_validation(self):
+        # event-event
+        X = self.training_event_event[0]
+        y = self.training_event_event[1]
+        kfold = cross_validation.KFold(len(y), n_folds=5)
+        accs = cross_validation.cross_val_score(self.classifier_event_event, X, y, cv=kfold, n_jobs=-1)
+        print "event-event 5-fold cross validation accuracy: %s" % np.mean(accs)
+
+        # event-timex
+        X = self.training_event_timex[0]
+        y = self.training_event_timex[1]
+        kfold = cross_validation.KFold(len(y), n_folds=5)
+        accs = cross_validation.cross_val_score(self.classifier_event_timex, X, y, cv=kfold, n_jobs=-1)
+        print "event-event 5-fold cross validation accuracy: %s" % np.mean(accs)
 
     def _train_random_forest(self, training_data):
         print "Train a random forest classifier"

@@ -40,3 +40,7 @@ print "Event-Event:"
 print event_event
 print "Event-Timex:"
 print event_timex
+
+print
+print "Cross validation:"
+system.cross_validation()
