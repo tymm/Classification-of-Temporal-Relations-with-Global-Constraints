@@ -10,11 +10,21 @@ class Parallel_features(object):
     def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=None, event_timex=None):
         self.features = features
         self.text_objs = text_objs
+
+        self.relations = []
+        for text_obj in self.text_objs:
+            for relation in text_obj.relations:
+                self.relations.append(relation)
+
         self.nlp_persistence_obj = nlp_persistence_obj
         self.strings_cache = strings_cache
         self.duration_cache = duration_cache
         self.event_event = event_event
         self.event_timex = event_timex
+
+        self.X = []
+        self.y = []
+        self.feature_data = (self.X, self.y)
 
         global nlp_persistence_obj_g
         # TODO: nlp_persistence_obj should not write stuff
@@ -48,10 +58,6 @@ class Parallel_features(object):
 
         _counter = Value(c_int)
         _counter_lock = Lock()
-
-        self.X = []
-        self.y = []
-        self.feature_data = (self.X, self.y)
 
         self._run()
 
@@ -102,3 +108,9 @@ class Parallel_features(object):
             for relation in relations:
                 self.X.append(relation.feature)
                 self.y.append(relation.relation_type)
+
+                # Put relation.feature into relation reference for later use
+                for r in self.relations:
+                    if r == relation:
+                        r.feature = relation.feature
+                        break
