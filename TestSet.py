@@ -24,3 +24,19 @@ class TestSet(Set):
             # Create all optimal relations fpr text object
             ilp = Constraints(text_obj)
             self.relations_optimized += ilp.get_best_set()
+
+    def get_event_event_targets(self):
+        targets = []
+        for relation in self.relations_optimized:
+            if relation.is_event_event():
+                targets.append(relation.relation_type)
+
+        return targets
+
+    def get_event_timex_targets(self):
+        targets = []
+        for relation in self.relations_optimized:
+            if relation.is_event_timex():
+                targets.append(relation.relation_type)
+
+        return targets

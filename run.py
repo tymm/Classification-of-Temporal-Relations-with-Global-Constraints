@@ -37,7 +37,7 @@ system.train()
 system.create_confidence_scores()
 system.apply_global_model()
 
-event_event, event_timex = system.eval()
+event_event, event_timex = system.eval_global_model()
 print "Event-Event:"
 print event_event
 print "Event-Timex:"

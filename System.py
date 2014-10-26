@@ -83,11 +83,26 @@ class System:
 
         return (result_event_event, result_event_timex)
 
+    def eval_global_model(self):
+        """Needs apply_global_model() to be run before."""
+        y_test_event_event = self.test_event_event[1]
+        y_test_event_timex = self.test_event_timex[1]
+
+        y_predicted_event_event_global_model = self.test_event_event_global_model_targets
+        y_predicted_event_timex_global_model = self.test_event_timex_global_model_targets
+
+        result_event_event = Result(y_test_event_event, y_predicted_event_event_global_model)
+        result_event_timex = Result(y_test_event_timex, y_predicted_event_timex_global_model)
+
+        return (result_event_event, result_event_timex)
+
     def create_confidence_scores(self):
         self.data.test.create_confidence_scores(self.classifier_event_event, self.classifier_event_timex)
 
     def apply_global_model(self):
         self.data.test.apply_global_model()
+        self.test_event_event_global_model_targets = self.data.test.get_event_event_targets()
+        self.test_event_timex_global_model_targets = self.data.test.get_event_timex_targets()
 
     def _train_random_forest(self, training_data):
         print "Train a random forest classifier"
