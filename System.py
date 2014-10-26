@@ -7,6 +7,7 @@ from sklearn import svm
 from Result import Result
 import cPickle as pickle
 from sklearn import cross_validation
+from sklearn.dummy import DummyClassifier
 import numpy as np
 
 class System:
@@ -86,9 +87,25 @@ class System:
         return (result_event_event, result_event_timex)
 
     def cross_validation(self):
+        # Doing cross validation on majority class
+        # event-event (majority class = 0 (BEFORE))
+        clf = DummyClassifier(strategy="constant", constant=0)
+        X = self.training_event_event[0]
+        y = self.training_event_event[1]
+        kfold = cross_validation.KFold(len(y), n_folds=5)
+        accs = cross_validation.cross_val_score(clf, X, y, cv=kfold, n_jobs=-1)
+        print "event-event 5-fold cross validation accuracy majority class: %s" % np.mean(accs)
+
+        # event-timex (majority class = 1 (IS_INCLUDED))
+        clf = DummyClassifier(strategy="constant", constant=1)
+        X = self.training_event_timex[0]
+        y = self.training_event_timex[1]
+        kfold = cross_validation.KFold(len(y), n_folds=5)
+        accs = cross_validation.cross_val_score(clf, X, y, cv=kfold, n_jobs=-1)
+        print "event-timex 5-fold cross validation accuracy majority class: %s" % np.mean(accs)
+
         # Doing cross validation on SVM
         clf = svm.SVC(kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
-
         # event-event
         X = self.training_event_event[0]
         y = self.training_event_event[1]
@@ -96,6 +113,7 @@ class System:
         accs = cross_validation.cross_val_score(clf, X, y, cv=kfold, n_jobs=-1)
         print "event-event 5-fold cross validation accuracy: %s" % np.mean(accs)
 
+        clf = svm.SVC(kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
         # event-timex
         X = self.training_event_timex[0]
         y = self.training_event_timex[1]

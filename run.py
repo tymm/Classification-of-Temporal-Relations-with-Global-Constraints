@@ -33,6 +33,8 @@ system.use_temporal_signal()
 system.use_best_feature_set()
 
 system.create_features()
+
+"""
 system.train()
 
 event_event, event_timex = system.eval()
@@ -40,6 +42,7 @@ print "Event-Event:"
 print event_event
 print "Event-Timex:"
 print event_timex
+"""
 
 print
 print "Cross validation:"
