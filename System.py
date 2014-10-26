@@ -120,7 +120,7 @@ class System:
 
     def _train_SVM(self, training_data):
         print "Train SVM"
-        clf = svm.SVC(kernel="poly", degree=4)
+        clf = svm.SVC(kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
 
         clf.fit(training_data[0], training_data[1])
 
