@@ -8,6 +8,6 @@ class Directed_Pair(object):
         """Map confidence score to class label."""
         m = {}
         for i, c in enumerate(classes):
-            m[c] = probabilities[i]
+            m[c] = probabilities[0][i]
 
         return m
