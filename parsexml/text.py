@@ -48,7 +48,11 @@ class Text(object):
             elif relation.is_event_timex():
                 probas = classifier_event_timex.predict_proba(relation.feature)
 
-            pair = Directed_Pair(relation.source, relation.target, probas, classifier.classes_)
+            if relation.is_event_event():
+                pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_event.classes_)
+            elif relation.is_event_timex():
+                pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_timex.classes_)
+
             self.directed_pairs.append(pair)
 
     def find_relation_by_variable(self, variable):
