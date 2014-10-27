@@ -5,9 +5,9 @@ from feature.exception import FailedProcessingFeature
 from Constraints import Constraints
 
 class TestSet(Set):
-    def __init__(self, *corpora):
+    def __init__(self, inverse=True, closure=True, *corpora):
         # No inverses and closures in the test set
-        Set.__init__(self, False, False, *corpora)
+        Set.__init__(self, inverse, closure, *corpora)
         self.relations_optimized = []
 
     def create_evaluation_files(self):
