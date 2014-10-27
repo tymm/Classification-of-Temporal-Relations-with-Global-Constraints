@@ -71,6 +71,16 @@ class System:
         self.classifier_event_event = self._train_SVM(self.training_event_event)
         self.classifier_event_timex = self._train_SVM(self.training_event_timex)
 
+    def save_classifiers(self):
+        print "Saving classifiers to disk"
+        with open("classifier_event_event.p", "wb") as f:
+            pickle.dump(self.classifier_event_event, f, protocol=-1)
+
+        with open("classifier_event_timex.p", "wb") as f:
+            pickle.dump(self.classifier_event_timex, f, protocol=-1)
+
+        print "Done"
+
     def eval(self):
         X_test_event_event = self.test_event_event[0]
         y_test_event_event = self.test_event_event[1]
