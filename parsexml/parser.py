@@ -320,7 +320,10 @@ class Parser(object):
                     target_obj = self.find_timex_by_tid(target_tid)
 
             relation_obj = Relation(lid, self.text_obj, source_obj, target_obj, relation_type_id)
-            relations.append(relation_obj)
+
+            # There are sometimes duplicates which we do not want to have
+            if relation_obj not in relations:
+                relations.append(relation_obj)
 
         return relations
 
