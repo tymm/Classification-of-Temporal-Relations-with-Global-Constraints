@@ -276,3 +276,5 @@ class Constraints:
                     if rel.relation_type != rel_optimized.relation_type:
                         changed += 1
                         break
+
+        return changed
