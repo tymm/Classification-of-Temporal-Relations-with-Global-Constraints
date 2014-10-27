@@ -266,7 +266,7 @@ class Constraints:
         return best_subset
 
     def get_number_of_relations_changed(self):
-        relations = text_obj.relations
+        relations = self.text_obj.relations
         relations_optimized = self.relations_optimized
         changed = 0
 
