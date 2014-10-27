@@ -45,15 +45,14 @@ class Text(object):
         for relation in self.relations:
             if relation.is_event_event():
                 probas = classifier_event_event.predict_proba(relation.feature)
+                pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_event.classes_)
+
+                self.directed_pairs.append(pair)
             elif relation.is_event_timex():
                 probas = classifier_event_timex.predict_proba(relation.feature)
-
-            if relation.is_event_event():
-                pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_event.classes_)
-            elif relation.is_event_timex():
                 pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_timex.classes_)
 
-            self.directed_pairs.append(pair)
+                self.directed_pairs.append(pair)
 
     def find_relation_by_variable(self, variable):
         for relation in self.relations:
