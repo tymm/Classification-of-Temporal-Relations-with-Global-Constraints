@@ -10,6 +10,7 @@ class Constraints:
         self.variables = []
         self.model = Model("ILP")
         self.model.setParam(GRB.Param.OutputFlag,0)
+        self.relations_optimized = None
 
         # Run model for text_obj
         if not test:
@@ -260,4 +261,18 @@ class Constraints:
 
                     best_subset.append(relation)
 
+        self.relations_optimized = best_subset
+
         return best_subset
+
+    def get_number_of_relations_changed(self):
+        relations = text_obj.relations
+        relations_optimized = self.relations_optimized
+        changed = 0
+
+        for rel in relations:
+            for rel_optimized in relations_optimized:
+                if rel.source == rel_optimized.source and rel.target == rel_optimized.target:
+                    if rel.relation_type != rel_optimized.relation_type:
+                        changed += 1
+                        break

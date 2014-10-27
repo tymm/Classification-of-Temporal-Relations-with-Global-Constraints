@@ -21,10 +21,15 @@ class TestSet(Set):
             text_obj.create_confidence_scores(classifier_event_event, classifier_event_timex)
 
     def apply_global_model(self):
+        changed = 0
         for text_obj in self.text_objects:
-            # Create all optimal relations fpr text object
+            # Create all optimal relations for text object
             ilp = Constraints(text_obj)
             self.relations_optimized += ilp.get_best_set()
+
+            changed += ilp.get_number_of_relations_changed()
+
+        print "Global model changed %s relations" % changed
 
     def get_event_event_targets(self):
         targets = []
