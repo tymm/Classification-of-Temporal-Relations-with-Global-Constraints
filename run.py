@@ -34,6 +34,7 @@ system.use_best_feature_set()
 
 system.create_features()
 system.train()
+system.save_classifiers()
 
 event_event, event_timex = system.eval()
 print "Event-Event:"
