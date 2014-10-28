@@ -17,15 +17,15 @@ class Closure:
             return self._generate_closure_relations(self.relations)
 
     def _generate_all_closures(self, relations):
-        # TODO: Not working yet. But also not being used at the moment.
         all_closures = []
 
-        closures = self._generate_closure_relations(relations)
-        all_closures += closures
+        new_closures = self._generate_closure_relations(relations)
+        all_closures += new_closures
 
-        while len(closures) != 0:
-            closures = self._generate_closure_relations(relations + all_closures)
-            all_closures += closures
+        while len(new_closures) != 0:
+            closures = set(self._generate_closure_relations(relations + all_closures))
+            new_closures = closures.difference(set(relations+all_closures))
+            all_closures += new_closures
 
         return all_closures
 
@@ -52,7 +52,7 @@ class Closure:
 
         for source in range(n):
             for target in range(n):
-                if matrix[source][target] == 1:
+                if matrix[source][target] >= 1:
                     source_enitity = entities[source]
                     target_entity = entities[target]
                     closured.append(self._create_closured_relation(source_enitity, target_entity))

@@ -12,7 +12,7 @@ from helper.closure import Closure
 import re
 
 class Parser(object):
-    def __init__(self, filename, text_obj):
+    def __init__(self, filename, text_obj, full_closure=False):
         self.filename = filename
         self.text_obj = text_obj
         self.text = None
@@ -22,6 +22,7 @@ class Parser(object):
         self.inversed_relations = None
         self.closure_relations = None
         self.text_structure = None
+        self.full_closure = full_closure
 
         self._parse()
 
@@ -43,27 +44,35 @@ class Parser(object):
     def get_entities_order(self):
         return self.text_structure.get_entities_ordered()
 
+    def _get_closure_obj(self, relation_type):
+        if self.full_closure:
+            closure = Closure(self.text_obj, relation_type, transitives_of_transitives=True)
+        else:
+            closure = Closure(self.text_obj, relation_type)
+
+        return closure
+
     def get_closured_relations(self):
         closure_relations = []
 
         # Create temporal closures for BEFORE
-        closure = Closure(self.text_obj, RelationType.BEFORE)
+        closure = self._get_closure_obj(RelationType.BEFORE)
         closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for AFTER
-        closure = Closure(self.text_obj, RelationType.AFTER)
+        closure = self._get_closure_obj(RelationType.AFTER)
         closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for INCLUDES
-        closure = Closure(self.text_obj, RelationType.INCLUDES)
+        closure = self._get_closure_obj(RelationType.INCLUDES)
         closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for IS_INCLUDED
-        closure = Closure(self.text_obj, RelationType.IS_INCLUDED)
+        closure = self._get_closure_obj(RelationType.IS_INCLUDED)
         closure_relations += closure.get_closure_relations()
 
         # Create temporal closures for DURING
-        closure = Closure(self.text_obj, RelationType.DURING)
+        closure = self._get_closure_obj(RelationType.DURING)
         closure_relations += closure.get_closure_relations()
 
         # Remove timex-timex closures
