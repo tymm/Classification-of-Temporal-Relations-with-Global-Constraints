@@ -9,11 +9,11 @@ from parsexml.event import Event
 from ilp.directed_pair import Directed_Pair
 
 class Text(object):
-    def __init__(self, filename, inverse=True, closure=True):
+    def __init__(self, filename, inverse=True, closure=True, full_closure=False):
         self.filename = filename
 
         # Parse text
-        parser = Parser(filename, self)
+        parser = Parser(filename, self, full_closure)
 
         self.text = parser.get_text()
         self.events = parser.get_events()
