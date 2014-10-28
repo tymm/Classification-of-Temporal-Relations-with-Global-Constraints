@@ -1,6 +1,7 @@
 from gurobipy import *
 from ilp.variable import Variable
 from parsexml.relationtype import RelationType
+from parsexml.relation import Relation
 
 class Constraints:
     def __init__(self, text_obj, test=False):
@@ -256,10 +257,9 @@ class Constraints:
 
                     # Find relation with source and target
                     relation = self.text_obj.find_relation_by_source_and_target(v.source, v.target)
-                    # Change relation type
-                    relation.relation_type = rel_type
+                    new_relation = Relation(relation.lid, relation.parent, relation.source, relation.target, rel_type)
 
-                    best_subset.append(relation)
+                    best_subset.append(new_relation)
 
         self.relations_optimized = best_subset
 
