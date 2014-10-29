@@ -8,7 +8,6 @@ from helper.parallel_features import Parallel_features
 from feature.exception import FailedProcessingFeature
 from Feature import Feature
 from helper.sparse import build_sparse_matrix
-from TestSet import TestSet
 
 # Needs to be done in order to use multiprocessing
 activate()
@@ -117,18 +116,20 @@ class Set(object):
             return files
 
     def _get_feature_data(self, nlp_persistence_obj, strings_cache, features, duration_cache, event_event=None, event_timex=None):
+        from TestSet import TestSet
+
         # Get either event-event relations or event-timex relations
         if event_event and event_timex:
             raise WrongArguments
         elif event_event is None and event_timex is None:
             raise WrongArguments
         elif event_event:
-            if type(self) == TestSet:
+            if issubclass(self.__class__, TestSet):
                 parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=True, test=True)
             else:
                 parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=True)
         elif event_timex:
-            if type(self) == TestSet:
+            if issubclass(self.__class__, TestSet):
                 parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True, test=True)
             else:
                 parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True)
