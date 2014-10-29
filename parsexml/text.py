@@ -48,11 +48,18 @@ class Text(object):
                 pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_event.classes_)
 
                 self.directed_pairs.append(pair)
+
+                # Save predicted class for evaluation
+                relation.predicted_class = classifier_event_event.predict(relation.feature)
+
             elif relation.is_event_timex():
                 probas = classifier_event_timex.predict_proba(relation.feature)
                 pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_timex.classes_)
 
                 self.directed_pairs.append(pair)
+
+                # Save predicted class for evaluation
+                relation.predicted_class = classifier_event_timex.predict(relation.feature)
 
     def find_relation_by_variable(self, variable):
         for relation in self.relations:
