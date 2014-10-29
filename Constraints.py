@@ -298,7 +298,7 @@ class Constraints:
         for rel in relations:
             for rel_optimized in relations_optimized:
                 if rel.source == rel_optimized.source and rel.target == rel_optimized.target:
-                    if rel.relation_type != rel_optimized.relation_type:
+                    if rel.predicted_class != rel_optimized.relation_type:
                         changed += 1
                         break
 
