@@ -37,7 +37,7 @@ class Output:
                 tlink.attrib["lid"] = relation.lid
 
                 # If there is a prediction for this relation, append it to xml file
-                if relation.predicted_class:
+                if relation.predicted_class is not None:
                     tlink.attrib["relType"] = RelationType.get_string_by_id(relation.predicted_class)
                     root.append(tlink)
                 else:
