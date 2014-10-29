@@ -7,7 +7,7 @@ import sys
 import traceback
 
 class Parallel_features(object):
-    def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=None, event_timex=None):
+    def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=None, event_timex=None, test=False):
         self.features = features
         self.text_objs = text_objs
 
@@ -25,6 +25,12 @@ class Parallel_features(object):
         self.X = []
         self.y = []
         self.feature_data = (self.X, self.y)
+
+        global test_g
+        if test:
+            test_g = True
+        else:
+            test_g = False
 
         global nlp_persistence_obj_g
         # TODO: nlp_persistence_obj should not write stuff
@@ -71,18 +77,33 @@ class Parallel_features(object):
     def _get_feature(self, text_obj):
         try:
             relations = []
-            for relation in text_obj.relations:
-                if event_event_g and relation.is_event_event():
-                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
-                    feature = f.get_feature()
-                    relation.set_feature(feature)
-                    relations.append(relation)
+            if test_g:
+                # We do not want closures and inverses in the test set
+                for relation in text_obj.relations_plain:
+                    if event_event_g and relation.is_event_event():
+                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                        feature = f.get_feature()
+                        relation.set_feature(feature)
+                        relations.append(relation)
 
-                elif not event_event_g and relation.is_event_timex():
-                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
-                    feature = f.get_feature()
-                    relation.set_feature(feature)
-                    relations.append(relation)
+                    elif not event_event_g and relation.is_event_timex():
+                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                        feature = f.get_feature()
+                        relation.set_feature(feature)
+                        relations.append(relation)
+            else:
+                for relation in text_obj.relations:
+                    if event_event_g and relation.is_event_event():
+                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                        feature = f.get_feature()
+                        relation.set_feature(feature)
+                        relations.append(relation)
+
+                    elif not event_event_g and relation.is_event_timex():
+                        f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                        feature = f.get_feature()
+                        relation.set_feature(feature)
+                        relations.append(relation)
 
             # Print progress
             with _counter_lock:

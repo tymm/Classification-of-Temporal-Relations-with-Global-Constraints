@@ -8,6 +8,7 @@ from helper.parallel_features import Parallel_features
 from feature.exception import FailedProcessingFeature
 from Feature import Feature
 from helper.sparse import build_sparse_matrix
+from TestSet import TestSet
 
 # Needs to be done in order to use multiprocessing
 activate()
@@ -122,9 +123,15 @@ class Set(object):
         elif event_event is None and event_timex is None:
             raise WrongArguments
         elif event_event:
-            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=True)
+            if type(self) == TestSet:
+                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=True, test=True)
+            else:
+                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=True)
         elif event_timex:
-            parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True)
+            if type(self) == TestSet:
+                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True, test=True)
+            else:
+                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True)
 
         sparse_X_matrix = build_sparse_matrix(parallel_feature_extraction.feature_data[0])
         y = parallel_feature_extraction.feature_data[1]

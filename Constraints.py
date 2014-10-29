@@ -241,7 +241,7 @@ class Constraints:
         else:
             return None
 
-    def get_best_set(self):
+    def get_best_set(self, plain_relations=True):
         best_subset = []
 
         for v in self.variables:
@@ -260,6 +260,18 @@ class Constraints:
                     new_relation = Relation(relation.lid, relation.parent, relation.source, relation.target, rel_type)
 
                     best_subset.append(new_relation)
+
+        if plain_relations:
+            rels_without_constraints_and_inverses = []
+
+            # Get the relations from the global model which are not closures or inverses
+            for relation in self.text_obj.relations_plain:
+                for rel in best_subset:
+                    if relation.source == rel.source and relation.target == rel.target:
+                        rels_without_constraints_and_inverses.append(rel)
+                        break
+
+            best_subset = rels_without_constraints_and_inverses
 
         self.relations_optimized = best_subset
 

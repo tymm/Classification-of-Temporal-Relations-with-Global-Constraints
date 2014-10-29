@@ -18,7 +18,8 @@ class Text(object):
         self.text = parser.get_text()
         self.events = parser.get_events()
         self.timex = parser.get_timex()
-        self.relations = parser.get_relations()
+        # self.relations_plain are relations without constraints and inverses
+        self.relations = self.relations_plain = parser.get_relations()
         # Entity pairs which contain confidence scores for target values
         self.directed_pairs = []
 
