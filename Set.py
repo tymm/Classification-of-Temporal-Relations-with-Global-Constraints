@@ -52,6 +52,8 @@ class Set(object):
         self.duration_cache = duration_cache
 
     def get_event_event_feature_vectors_and_targets(self):
+        from TestSet import TestSet
+
         if not self._processed:
             self._get_feature_data()
             self._processed = True
@@ -61,15 +63,24 @@ class Set(object):
 
         # self.text_objects include feature data now
         for text_obj in self.text_objects:
-            for relation in text_obj.relations:
-                if relation.is_event_event():
-                    X.append(relation.feature)
-                    y.append(relation.relation_type)
+            if issubclass(self.__class__, TestSet):
+                # Do not use constraints and inverses for test set
+                for relation in text_obj.relations_plain:
+                    if relation.is_event_event():
+                        X.append(relation.feature)
+                        y.append(relation.relation_type)
+            else:
+                for relation in text_obj.relations:
+                    if relation.is_event_event():
+                        X.append(relation.feature)
+                        y.append(relation.relation_type)
 
         sparse_X_matrix = build_sparse_matrix(X)
         return (sparse_X_matrix, y)
 
     def get_event_timex_feature_vectors_and_targets(self):
+        from TestSet import TestSet
+
         if not self._processed:
             self._get_feature_data()
             self._processed = True
@@ -79,10 +90,16 @@ class Set(object):
 
         # self.text_objects include feature data now
         for text_obj in self.text_objects:
-            for relation in text_obj.relations:
-                if relation.is_event_timex():
-                    X.append(relation.feature)
-                    y.append(relation.relation_type)
+            if issubclass(self.__class__, TestSet):
+                for relation in text_obj.relations_plain:
+                    if relation.is_event_timex():
+                        X.append(relation.feature)
+                        y.append(relation.relation_type)
+            else:
+                for relation in text_obj.relations:
+                    if relation.is_event_timex():
+                        X.append(relation.feature)
+                        y.append(relation.relation_type)
 
         sparse_X_matrix = build_sparse_matrix(X)
         return (sparse_X_matrix, y)

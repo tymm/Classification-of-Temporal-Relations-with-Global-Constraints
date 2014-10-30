@@ -11,12 +11,6 @@ class Parallel_features(object):
         self.text_objs = text_objs
         self.processed_text_objs = []
 
-        global test_g
-        if test:
-            test_g = True
-        else:
-            test_g = False
-
         global nlp_persistence_obj_g
         # TODO: nlp_persistence_obj should not write stuff
         nlp_persistence_obj_g = nlp_persistence_obj
