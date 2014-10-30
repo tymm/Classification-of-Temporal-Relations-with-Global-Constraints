@@ -7,48 +7,25 @@ import sys
 import traceback
 
 class Parallel_features(object):
-    def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=None, event_timex=None):
-        self.features = features
+    def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, features_event_event, features_event_timex):
         self.text_objs = text_objs
-
-        self.relations = []
-        for text_obj in self.text_objs:
-            for relation in text_obj.relations:
-                self.relations.append(relation)
-
-        self.nlp_persistence_obj = nlp_persistence_obj
-        self.strings_cache = strings_cache
-        self.duration_cache = duration_cache
-        self.event_event = event_event
-        self.event_timex = event_timex
-
-        self.X = []
-        self.y = []
-        self.feature_data = (self.X, self.y)
+        self.processed_text_objs = []
 
         global nlp_persistence_obj_g
         # TODO: nlp_persistence_obj should not write stuff
-        nlp_persistence_obj_g = self.nlp_persistence_obj
+        nlp_persistence_obj_g = nlp_persistence_obj
 
-        global features_g
-        features_g = self.features
+        global features_event_event_g
+        features_event_event_g = features_event_event
+
+        global features_event_timex_g
+        features_event_timex_g = features_event_timex
 
         global duration_cache_g
-        duration_cache_g = self.duration_cache
+        duration_cache_g = duration_cache
 
         global strings_cache_g
-        strings_cache_g = self.strings_cache
-
-        global event_event_g
-        if event_event:
-            event_event_g = True
-        else:
-            event_event_g = False
-
-        if event_timex:
-            event_event_g = False
-        else:
-            event_event_g = True
+        strings_cache_g = strings_cache
 
         global _length
         _length = len(self.text_objs)
@@ -63,26 +40,32 @@ class Parallel_features(object):
 
     def _run(self):
         pool = multiprocessing.Pool()
-        pool.map_async(self._get_feature, self.text_objs, callback=self._get_feature_data)
+        pool.map_async(self._get_feature, self.text_objs, callback=self._get_processed_text_objs)
 
         pool.close()
         pool.join()
 
     def _get_feature(self, text_obj):
+        """Get feature data for a whole text object."""
         try:
-            relations = []
             for relation in text_obj.relations:
-                if event_event_g and relation.is_event_event():
-                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                if relation.is_event_event():
+                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_event_event_g)
                     feature = f.get_feature()
                     relation.set_feature(feature)
-                    relations.append(relation)
 
-                elif not event_event_g and relation.is_event_timex():
-                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_g)
+                elif relation.is_event_timex():
+                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_event_timex_g)
                     feature = f.get_feature()
                     relation.set_feature(feature)
-                    relations.append(relation)
+
+                # Append feature to relation in text_obj.relations_plain if existant
+                if relation in text_obj.relations_plain:
+                    # Search for relation
+                    for rel in text_obj.relations_plain:
+                        if rel == relation:
+                            rel.set_feature(feature)
+                            break
 
             # Print progress
             with _counter_lock:
@@ -91,7 +74,8 @@ class Parallel_features(object):
                 sys.stdout.write("\r%d%%" % int(_counter.value*100/(_length - 1)))
                 sys.stdout.flush()
 
-            return relations
+            return text_obj
+
         except Exception as e:
             # Print progress
             with _counter_lock:
@@ -103,16 +87,6 @@ class Parallel_features(object):
             print e
             print traceback.format_exc()
 
-    def _get_feature_data(self, set_of_relations):
-        for relations in set_of_relations:
-            for relation in relations:
-                self.X.append(relation.feature)
-                self.y.append(relation.relation_type)
-
-                # Put relation.feature into relation for later
-                for text_obj in self.text_objs:
-                    if text_obj == relation.parent:
-                        for rel in text_obj.relations:
-                            if rel == relation:
-                                rel.feature = relation.feature
-                                break
+    def _get_processed_text_objs(self, text_objs):
+        for text_obj in text_objs:
+            self.processed_text_objs.append(text_obj)

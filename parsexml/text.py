@@ -19,6 +19,7 @@ class Text(object):
         self.events = parser.get_events()
         self.timex = parser.get_timex()
         self.relations = parser.get_relations()
+        self.relations_plain = list(self.relations)
         # Entity pairs which contain confidence scores for target values
         self.directed_pairs = []
 
