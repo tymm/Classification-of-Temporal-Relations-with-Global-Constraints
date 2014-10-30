@@ -47,15 +47,22 @@ class System:
 
         # Create training features and target values
         print "Creating features for the training data"
-        X_train_event_event, y_train_event_event = self.data.training.get_classification_data_event_event(self.features, strings_cache, nlp_persistence, duration_cache)
-        X_train_event_timex, y_train_event_timex = self.data.training.get_classification_data_event_timex(self.features, strings_cache, nlp_persistence, duration_cache)
+
+        # Set features
+        self.data.training.pass_objects(self.features, strings_cache, nlp_persistence, duration_cache)
+
+        X_train_event_event, y_train_event_event = self.data.training.get_event_event_feature_vectors_and_targets()
+        X_train_event_timex, y_train_event_timex = self.data.training.get_event_timex_feature_vectors_and_targets()
 
         self.training_event_event = (X_train_event_event, y_train_event_event)
         self.training_event_timex = (X_train_event_timex, y_train_event_timex)
 
         print "Creating features for the test data"
-        X_test_event_event, y_test_event_event = self.data.test.get_classification_data_event_event(self.features, strings_cache, nlp_persistence, duration_cache)
-        X_test_event_timex, y_test_event_timex = self.data.test.get_classification_data_event_timex(self.features, strings_cache, nlp_persistence, duration_cache)
+
+        self.data.test.pass_objects(self.features, strings_cache, nlp_persistence, duration_cache)
+
+        X_test_event_event, y_test_event_event = self.data.test.get_event_event_feature_vectors_and_targets()
+        X_test_event_timex, y_test_event_timex = self.data.test.get_event_timex_feature_vectors_and_targets()
 
         self.test_event_event = (X_test_event_event, y_test_event_event)
         self.test_event_timex = (X_test_event_timex, y_test_event_timex)

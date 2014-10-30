@@ -18,6 +18,9 @@ class Set(object):
         self.inverse = inverse
         self.closure = closure
 
+        # There are no features yet
+        self._processed = False
+
         global inverse_g
         inverse_g = self.inverse
 
@@ -35,19 +38,54 @@ class Set(object):
 
         self.relations = self._event_event_rels + self._event_timex_rels
 
-    def get_classification_data_event_event(self, features, strings_cache=None, nlp_persistence_obj=None, duration_cache=None):
-        features = self._remove_only_event_timex_features(features)
+        # The following needs to be passed with self.pass_objects()
+        self.features = None
+        self.strings_cache = None
+        self.nlp_persistence_obj = None
+        self.duration_cache = None
 
-        X, y = self._get_feature_data(nlp_persistence_obj, strings_cache, features, duration_cache, event_event=True)
+    def pass_objects(self, features, strings_cache, nlp_persistence_obj, duration_cache):
+        """Needs to be called before self.get_event_{event,timex}_feature_vectors_and_target()."""
+        self.features = features
+        self.strings_cache = strings_cache
+        self.nlp_persistence_obj = nlp_persistence_obj
+        self.duration_cache = duration_cache
 
-        return (X, y)
+    def get_event_event_feature_vectors_and_targets(self):
+        if not self._processed:
+            self._get_feature_data()
+            self._processed = True
 
-    def get_classification_data_event_timex(self, features, strings_cache=None, nlp_persistence_obj=None, duration_cache=None):
-        features = self._remove_only_event_event_features(features)
+        X = []
+        y = []
 
-        X, y = self._get_feature_data(nlp_persistence_obj, strings_cache, features, duration_cache, event_timex=True)
+        # self.text_objects include feature data now
+        for text_obj in self.text_objects:
+            for relation in text_obj.relations:
+                if relation.is_event_event():
+                    X.append(relation.feature)
+                    y.append(relation.relation_type)
 
-        return (X, y)
+        sparse_X_matrix = build_sparse_matrix(X)
+        return (sparse_X_matrix, y)
+
+    def get_event_timex_feature_vectors_and_targets(self):
+        if not self._processed:
+            self._get_feature_data()
+            self._processed = True
+
+        X = []
+        y = []
+
+        # self.text_objects include feature data now
+        for text_obj in self.text_objects:
+            for relation in text_obj.relations:
+                if relation.is_event_timex():
+                    X.append(relation.feature)
+                    y.append(relation.relation_type)
+
+        sparse_X_matrix = build_sparse_matrix(X)
+        return (sparse_X_matrix, y)
 
     def _extract_relations(self):
         for text_obj in self.text_objects:
@@ -115,29 +153,14 @@ class Set(object):
 
             return files
 
-    def _get_feature_data(self, nlp_persistence_obj, strings_cache, features, duration_cache, event_event=None, event_timex=None):
-        from TestSet import TestSet
+    def _get_feature_data(self):
+        features_event_event = self._remove_only_event_timex_features(self.features)
+        features_event_timex = self._remove_only_event_event_features(self.features)
 
-        # Get either event-event relations or event-timex relations
-        if event_event and event_timex:
-            raise WrongArguments
-        elif event_event is None and event_timex is None:
-            raise WrongArguments
-        elif event_event:
-            if issubclass(self.__class__, TestSet):
-                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=True, test=True)
-            else:
-                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_event=True)
-        elif event_timex:
-            if issubclass(self.__class__, TestSet):
-                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True, test=True)
-            else:
-                parallel_feature_extraction = Parallel_features(self.text_objects, nlp_persistence_obj, strings_cache, duration_cache, features, event_timex=True)
+        parallel_processing = Parallel_features(self.text_objects, self.nlp_persistence_obj, self.strings_cache, self.duration_cache, features_event_event, features_event_timex)
+        text_objs_with_feature_data = parallel_processing.processed_text_objs
 
-        sparse_X_matrix = build_sparse_matrix(parallel_feature_extraction.feature_data[0])
-        y = parallel_feature_extraction.feature_data[1]
-
-        return (sparse_X_matrix, y)
+        self.text_objects = text_objs_with_feature_data
 
     def _remove_only_event_event_features(self, features):
         features_event_timex = list(features)
