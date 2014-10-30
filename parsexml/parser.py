@@ -312,7 +312,7 @@ class Parser(object):
                 target_obj = self.find_event_by_eiid(self.events, target_eiid)
 
             else:
-                # This must be event-timex or timex-event
+                # This must be event-timex or timex-event or timex-timex
                 target_tid = relation.get("relatedToTime")
                 target_eiid = relation.get("relatedToEventInstance")
 
@@ -326,6 +326,10 @@ class Parser(object):
                 elif source_eiid and target_tid:
                     # event-timex
                     source_obj = self.find_event_by_eiid(self.events, source_eiid)
+                    target_obj = self.find_timex_by_tid(target_tid)
+                elif source_tid and target_tid:
+                    # timex-timex
+                    source_obj = self.find_timex_by_tid(source_tid)
                     target_obj = self.find_timex_by_tid(target_tid)
 
             relation_obj = Relation(lid, self.text_obj, source_obj, target_obj, relation_type_id)
