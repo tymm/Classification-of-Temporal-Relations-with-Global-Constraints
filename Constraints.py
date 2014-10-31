@@ -57,10 +57,27 @@ class Constraints:
 
                 self.model.addConstr(i+j-k, GRB.LESS_EQUAL, 1, "ii")
 
+            # Add constraint which forbids certain triples of connected entities
+            for triple in self._get_forbidden_transitive_triples():
+                i = triple[0].variable
+                j = triple[1].variable
+                forbidden = triple[2].variable
+
+                self.model.addConstr(3-(i+j+forbidden), GRB.GREATER_EQUAL , 1, "iii")
+
             self.model.optimize()
 
         except GurobiError:
             print "Gurobi Error reported"
+
+    def _get_forbidden_transitive_triples(self):
+        triples = []
+
+        # A includes B && B is_included C /=> A before C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        return triples
 
     def _get_all_transitive_variable_triples(self):
         triples = []
