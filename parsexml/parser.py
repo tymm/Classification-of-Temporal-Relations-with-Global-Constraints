@@ -128,6 +128,8 @@ class Parser(object):
             elif relation.relation_type == RelationType.BEGUN_BY:
                 # Switching BEGUN_BY to BEGINS
                 inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.BEGINS)
+            elif relation.relation_type == RelationType.SIMULTANEOUS:
+                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.SIMULTANEOUS)
             else:
                 continue
 
@@ -289,10 +291,6 @@ class Parser(object):
         relations = []
 
         for relation in root_node.iterdescendants("TLINK"):
-            # Only consider event-event and event-timex relations; Ignoring timex-timex
-            if not relation.get("eventInstanceID") and not relation.get("relatedToEventInstance"):
-                continue
-
             lid = relation.get("lid")
 
             # Get relation type as a string
@@ -318,6 +316,7 @@ class Parser(object):
 
                 source_tid = relation.get("timeID")
                 source_eiid = relation.get("eventInstanceID")
+
 
                 if source_tid and target_eiid:
                     # timex-event

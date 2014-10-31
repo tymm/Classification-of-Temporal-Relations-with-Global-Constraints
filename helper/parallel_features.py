@@ -60,12 +60,13 @@ class Parallel_features(object):
                     relation.set_feature(feature)
 
                 # Append feature to relation in text_obj.relations_plain if existant
-                if relation in text_obj.relations_plain:
-                    # Search for relation
-                    for rel in text_obj.relations_plain:
-                        if rel == relation:
-                            rel.set_feature(feature)
-                            break
+                if relation.is_event_event() or relation.is_event_timex():
+                    if relation in text_obj.relations_plain:
+                        # Search for relation
+                        for rel in text_obj.relations_plain:
+                            if rel == relation:
+                                rel.set_feature(feature)
+                                break
 
             # Print progress
             with _counter_lock:
