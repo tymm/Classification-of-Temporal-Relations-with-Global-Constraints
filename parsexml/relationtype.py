@@ -16,6 +16,37 @@ class RelationType:
     NONE = 14
 
     @classmethod
+    def get_inverse(cls, ID):
+        if ID == cls.BEFORE:
+            return cls.AFTER
+        elif ID == cls.AFTER:
+            return cls.BEFORE
+        elif ID == cls.BEGINS:
+            return cls.BEGUN_BY
+        elif ID == cls.BEGUN_BY:
+            return cls.BEGINS
+        elif ID == cls.INCLUDES:
+            return cls.IS_INCLUDED
+        elif ID == cls.IS_INCLUDED:
+            return cls.INCLUDES
+        elif ID == cls.IBEFORE:
+            return cls.IAFTER
+        elif ID == cls.IAFTER:
+            return cls.IBEFORE
+        elif ID == cls.DURING:
+            return cls.DURING_INV
+        elif ID == cls.DURING_INV:
+            return cls.DURING
+        elif ID == cls.ENDS:
+            return cls.ENDED_BY
+        elif ID == cls.ENDED_BY:
+            return cls.ENDS
+        elif ID == cls.SIMULTANEOUS:
+            return cls.SIMULTANEOUS
+        else:
+            return None
+
+    @classmethod
     def get_string_by_id(cls, ID):
         if ID == cls.BEFORE:
             return "BEFORE"

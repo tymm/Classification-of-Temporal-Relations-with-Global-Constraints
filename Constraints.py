@@ -48,14 +48,26 @@ class Constraints:
                 self.model.addConstr(constraint_i[pair], GRB.EQUAL, 1, "i")
 
             # Add constraint ii) which says that all triples of variables which make up a transitive graph should be activated
-            constraint_ii = {}
-
             for triple in self._get_all_transitive_variable_triples():
                 i = triple[0].variable
                 j = triple[1].variable
                 k = triple[2].variable
 
                 self.model.addConstr(i+j-k, GRB.LESS_EQUAL, 1, "ii")
+
+            # Add inverse consistency with the assumption that inverses are activated in Data class
+            for pair in self.directed_pairs:
+                # Find inverse
+                for p in self.directed_pairs:
+                    if pair.source == p.target and pair.target == p.source:
+                        # Found inverse for pair
+                        for rel_type in pair.confidence_scores:
+                            # Check if there is actually an inverse
+                            if RelationType.get_inverse(rel_type) is not None:
+                                AB = self._get_variable_by_pair_and_rel_type(pair, rel_type)
+                                BA = self._get_variable_by_pair_and_rel_type(p, RelationType.get_inverse(rel_type))
+
+                                self.model.addConstr(AB - BA, GRB.EQUAL, 0, "iii")
 
             self.model.optimize()
 
