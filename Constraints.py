@@ -118,6 +118,31 @@ class Constraints:
         rule = ["A", RelationType.SIMULTANEOUS, "B", "A", RelationType.INCLUDES, "C", "B", RelationType.INCLUDES, "C"]
         triples += self._get_triples_by_rule(rule)
 
+        # New (inverses)
+        # A after B && B after C => A after C
+        rule = ["A", RelationType.AFTER, "B", "B", RelationType.AFTER, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A after B && B includes C => A after C
+        rule = ["A", RelationType.AFTER, "B", "B", RelationType.INCLUDES, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A after B && B simultaneous C => A after C
+        rule = ["A", RelationType.AFTER, "B", "B", RelationType.SIMULTANEOUS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B is_included C => A is_included C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.IS_INCLUDED, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B simultaneous C => A is_included C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.SIMULTANEOUS, "C", "A", RelationType.IS_INCLUDED, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B after C => A after C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.AFTER, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
         return triples
 
     def _get_triples_by_rule(self, rule):

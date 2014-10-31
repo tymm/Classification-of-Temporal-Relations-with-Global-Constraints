@@ -13,10 +13,11 @@ from helper.sparse import build_sparse_matrix
 activate()
 
 class Set(object):
-    def __init__(self, inverse=False, closure=False, *corpora):
+    def __init__(self, inverse=False, closure=False, full_closure=False, *corpora):
         self.corpora = corpora
         self.inverse = inverse
         self.closure = closure
+        self.full_closure = full_closure
 
         # There are no features yet
         self._processed = False
@@ -26,6 +27,9 @@ class Set(object):
 
         global closure_g
         closure_g = self.closure
+
+        global full_closure_g
+        full_closure_g = self.full_closure
 
         # Hols all textfile objects
         self.text_objects = []
@@ -146,7 +150,7 @@ class Set(object):
     def _parse_from_file(self, file):
         try:
             # Mapping xml data to python objects
-            text = Text(file, inverse=inverse_g, closure=closure_g)
+            text = Text(file, inverse=inverse_g, closure=closure_g, full_closure=full_closure_g)
 
             return text
         except Exception as e:
