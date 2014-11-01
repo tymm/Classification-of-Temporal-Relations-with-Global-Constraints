@@ -341,6 +341,9 @@ class Parser(object):
 
             relation_obj = Relation(lid, self.text_obj, source_obj, target_obj, relation_type_id)
 
+            # So we don't run into problems with helper.output
+            if relation_obj.is_timex_timex(): relation_obj.predicted_class = relation_type_id
+
             # There are sometimes duplicates which we do not want to have
             if relation_obj not in relations:
                 relations.append(relation_obj)
