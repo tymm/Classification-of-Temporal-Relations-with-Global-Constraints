@@ -119,7 +119,7 @@ class Set(object):
 
         # Parse from files on all cores
         pool = multiprocessing.Pool()
-        if isinstance(self.__class__, TestSet):
+        if issubclass(self.__class__, TestSet):
             pool.map_async(self._parse_from_file_test, tmls, callback=self._append_text_objs)
         else:
             pool.map_async(self._parse_from_file_training, tmls, callback=self._append_text_objs)
