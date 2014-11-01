@@ -1,5 +1,6 @@
 from helper.nlp_persistence import Nlp_persistence
 from TrainingSet import TrainingSet
+from TestSet import TestSet
 import logging
 
 # Setting up logging
