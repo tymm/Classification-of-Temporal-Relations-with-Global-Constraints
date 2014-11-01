@@ -117,6 +117,7 @@ class Set(object):
         sys.stdout.flush()
 
     def _parse(self):
+        from TestSet import TestSet
         # Holds all corpora files
         files = []
 
@@ -135,7 +136,10 @@ class Set(object):
 
         # Parse from files on all cores
         pool = multiprocessing.Pool()
-        pool.map_async(self._parse_from_file, tmls, callback=self._append_text_objs)
+        if issubclass(self.__class__, TestSet):
+            pool.map_async(self._parse_from_file_test, tmls, callback=self._append_text_objs)
+        else:
+            pool.map_async(self._parse_from_file_training, tmls, callback=self._append_text_objs)
 
         pool.close()
         pool.join()
@@ -143,11 +147,16 @@ class Set(object):
     def _append_text_objs(self, text_objs):
         self.text_objects += text_objs
 
-    def _parse_from_file(self, file):
+    def _parse_from_file_test(self, file):
         try:
-            # Mapping xml data to python objects
-            text = Text(file, inverse=inverse_g, closure=closure_g)
+            text = Text(file, inverse=inverse_g, closure=closure_g, only_basic=False)
+            return text
+        except Exception as e:
+            print e
 
+    def _parse_from_file_training(self, file):
+        try:
+            text = Text(file, inverse=inverse_g, closure=closure_g, only_basic=True)
             return text
         except Exception as e:
             print e

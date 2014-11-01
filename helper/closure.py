@@ -12,9 +12,12 @@ class Closure:
 
     def get_closure_relations(self):
         if self.transitives_of_transitives:
-            return self._generate_all_closures(self.relations)
+            closures = self._generate_all_closures(self.relations)
+            return closures
+
         else:
-            return self._generate_closure_relations(self.relations)
+            closures = self._generate_closure_relations(self.relations)
+            return closures
 
     def _generate_all_closures(self, relations):
         all_closures = []
