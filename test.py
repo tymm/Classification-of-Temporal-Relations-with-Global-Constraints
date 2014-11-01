@@ -424,6 +424,7 @@ class Relations(unittest.TestCase):
     def setUpClass(cls):
         cls.filename = "data/training/TBAQ-cleaned/TimeBank/ABC19980304.1830.1636.tml"
         cls.closure_test = "data/closure-test.tml"
+        cls.closure_test_2 = "data/closure-test-2.tml"
 
     def test_AreThereMoreRelationsAfterProducingInversedRelations(self):
         text_obj = Text(self.filename, inverse=False, closure=False)
@@ -529,6 +530,16 @@ class Relations(unittest.TestCase):
         closured_rel = parser_obj.get_closured_relations()
 
         self.assertEqual(len(closured_rel), 2)
+
+    def test_AreNonBasicClosuresWorking(self):
+        text_obj = Text(self.closure_test_2, inverse=False, closure=False, only_basic=False)
+        parser_obj = Parser(self.closure_test_2, text_obj, only_basic=False)
+
+        closure_rel_truth = Relation("closure", text_obj, text_obj.events[0], text_obj.events[2], RelationType.BEFORE)
+
+        closure_rels = parser_obj.get_closured_relations()
+        self.assertIn(closure_rel_truth, closure_rels)
+        self.assertEqual(len(closure_rels), 1)
 
 class EntityExtraction(unittest.TestCase):
     @classmethod

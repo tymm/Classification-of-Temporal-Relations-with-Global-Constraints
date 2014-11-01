@@ -9,10 +9,11 @@ from parsexml.timex import Timex
 from parsexml.relationtype import RelationType
 from parsexml.text_structure import Text_structure
 from helper.closure import Closure
+from helper.complex_closure import Complex_closure
 import re
 
 class Parser(object):
-    def __init__(self, filename, text_obj, full_closure=False):
+    def __init__(self, filename, text_obj, full_closure=False, only_basic=True):
         self.filename = filename
         self.text_obj = text_obj
         self.text = None
@@ -23,6 +24,7 @@ class Parser(object):
         self.closure_relations = None
         self.text_structure = None
         self.full_closure = full_closure
+        self.only_basic = only_basic
 
         self._parse()
 
@@ -75,8 +77,14 @@ class Parser(object):
         closure = self._get_closure_obj(RelationType.DURING)
         closure_relations += closure.get_closure_relations()
 
-        # Remove timex-timex closures
-        closure_relations = [closure for closure in closure_relations if type(closure.source) is not Timex and type(closure.target) is not Timex]
+        # Create temporal closures for SIMULTANEOUS
+        closure = self._get_closure_obj(RelationType.SIMULTANEOUS)
+        closure_relations += closure.get_closure_relations()
+
+        if not self.only_basic:
+            # Get complex closures like before && includes => before
+            closure = Complex_closure(self.text_obj)
+            closure_relations += closure.get_complex_closure()
 
         # Remove closure relations which already exist
         closure_relations = [closure for closure in closure_relations if closure not in self.relations]

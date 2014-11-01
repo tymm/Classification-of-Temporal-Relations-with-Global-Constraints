@@ -127,9 +127,13 @@ class Set(object):
         self.text_objects += text_objs
 
     def _parse_from_file(self, file):
+        from TestSet import TestSet
         try:
             # Mapping xml data to python objects
-            text = Text(file, inverse=inverse_g, closure=closure_g)
+            if isinstance(self.__class__, TestSet):
+                text = Text(file, inverse=inverse_g, closure=closure_g, only_basic=False)
+            else:
+                text = Text(file, inverse=inverse_g, closure=closure_g)
 
             return text
         except Exception as e:
