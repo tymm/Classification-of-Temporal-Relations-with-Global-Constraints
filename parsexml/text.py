@@ -13,7 +13,7 @@ class Text(object):
         self.filename = filename
 
         # Parse text
-        parser = Parser(filename, self, only_basic)
+        parser = Parser(filename, self, only_basic=only_basic)
 
         self.text = parser.get_text()
         self.events = parser.get_events()
