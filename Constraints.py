@@ -274,6 +274,7 @@ class Constraints:
             for rel_optimized in relations_optimized:
                 if rel.source == rel_optimized.source and rel.target == rel_optimized.target:
                     if rel.predicted_class != rel_optimized.relation_type:
+                        print "Changed Relation %s --%s--> %s to %s --%s--> %s" % (rel.source.id, RelationType.get_string_by_id(rel.predicted_class), rel.target.id, rel_optimized.source.id, RelationType.get_string_by_id(rel_optimized.relation_type), rel_optimized.target.id)
                         changed += 1
                         break
 
