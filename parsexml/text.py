@@ -45,7 +45,7 @@ class Text(object):
         # Create a confidence score for every relation type for every existing relation
         for relation in self.relations:
             if relation.is_event_event():
-                probas = classifier_event_event.predict_proba(relation.feature)
+                probas = classifier_event_event.predict_proba(relation.feature)[0]
                 pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_event.classes_)
 
                 self.directed_pairs.append(pair)
@@ -54,7 +54,7 @@ class Text(object):
                 relation.predicted_class = classifier_event_event.predict(relation.feature)
 
             elif relation.is_event_timex():
-                probas = classifier_event_timex.predict_proba(relation.feature)
+                probas = classifier_event_timex.predict_proba(relation.feature)[0]
                 pair = Directed_Pair(relation.source, relation.target, probas, classifier_event_timex.classes_)
 
                 self.directed_pairs.append(pair)
