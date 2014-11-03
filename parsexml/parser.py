@@ -75,9 +75,6 @@ class Parser(object):
         closure = self._get_closure_obj(RelationType.DURING)
         closure_relations += closure.get_closure_relations()
 
-        # Remove timex-timex closures
-        closure_relations = [closure for closure in closure_relations if type(closure.source) is not Timex and type(closure.target) is not Timex]
-
         # Remove closure relations which already exist
         closure_relations = [closure for closure in closure_relations if closure not in self.relations]
 
