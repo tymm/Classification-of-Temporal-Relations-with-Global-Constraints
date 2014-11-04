@@ -4,8 +4,6 @@ import cPickle as pickle
 
 class Contribution:
     def __init__(self):
-        self.data = Data()
-
         self.features_event_event = [["lemma", "token"], ["pos", "same_pos"], ["textual_order", "sentence_distance", "entity_distance"], "tense", "aspect", "class", "polarity", "same_tense", "same_aspect", "same_class", "same_polarity", "dependency_type", "dependency_order", "dependency_is_root", "temporal_signal", "temporal_discourse", "duration"]
         self.features_event_timex = [["lemma", "token"], "pos", ["textual_order", "sentence_distance", "entity_distance"], "tense", "aspect", "class", "polarity", "dct", "type", "value", "dependency_type", "dependency_order", "dependency_is_root", "temporal_signal", "duration"]
 
@@ -27,7 +25,8 @@ class Contribution:
             # features will contain entries twice which is no problem for System()
             features = self._feature_series(k, self.features_event_event) + self._feature_series(k, self.features_event_timex)
 
-            system = System(self.data, features)
+            data = Data()
+            system = System(data, features)
             system.create_features()
             system.train()
             system.eval(quiet=True)
