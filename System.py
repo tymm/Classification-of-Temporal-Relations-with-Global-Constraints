@@ -7,6 +7,7 @@ from sklearn import svm
 from Result import Result
 import cPickle as pickle
 import numpy as np
+from sklearn import cross_validation
 
 class System:
     def __init__(self, data, features=None):
