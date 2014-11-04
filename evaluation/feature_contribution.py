@@ -22,8 +22,8 @@ class Contribution:
 
     def _run_systems(self):
         for k in range(1, self.max_len+1):
-            # features will contain entries twice which is no problem for System()
-            features = self._feature_series(k, self.features_event_event) + self._feature_series(k, self.features_event_timex)
+            features = list(set(self._feature_series(k, self.features_event_event) + self._feature_series(k, self.features_event_timex)))
+            print features
 
             data = Data()
             system = System(data, features)
@@ -33,6 +33,9 @@ class Contribution:
 
             self.accuracies_event_event.append(system.evaluation_accuracy_event_event)
             self.accuracies_event_timex.append(system.evaluation_accuracy_event_timex)
+            print system.evaluation_accuracy_event_event
+            print system.evaluation_accuracy_event_timex
+            print
 
     def _feature_series(self, k, features_list):
         features = []
