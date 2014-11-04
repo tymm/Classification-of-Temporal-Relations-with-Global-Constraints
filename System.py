@@ -28,6 +28,9 @@ class System:
         self.y_predicted_event_event = None
         self.y_predicted_event_timex = None
 
+        self.evaluation_accuracy_event_event = None
+        self.evaluation_accuracy_event_timex = None
+
     def create_features(self):
         nlp_persistence = None
         duration_cache = None
@@ -88,7 +91,7 @@ class System:
 
         print "Done"
 
-    def eval(self):
+    def eval(self, quiet=False):
         X_test_event_event = self.test_event_event[0]
         y_test_event_event = self.test_event_event[1]
 
@@ -101,7 +104,11 @@ class System:
         result_event_event = Result(y_test_event_event, self.y_predicted_event_event)
         result_event_timex = Result(y_test_event_timex, self.y_predicted_event_timex)
 
-        return (result_event_event, result_event_timex)
+        if quiet:
+            self.evaluation_accuracy_event_event = result_event_event._get_accuracy_paper()
+            self.evaluation_accuracy_event_timex = result_event_timex._get_accuracy_paper()
+        else:
+            return (result_event_event, result_event_timex)
 
     def eval_global_model(self):
         """Needs apply_global_model() to be run before."""
