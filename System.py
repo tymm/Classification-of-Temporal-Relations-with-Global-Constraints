@@ -6,6 +6,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn import svm
 from Result import Result
 import cPickle as pickle
+import numpy as np
 
 class System:
     def __init__(self, data, features=None):
@@ -30,6 +31,9 @@ class System:
 
         self.evaluation_accuracy_event_event = None
         self.evaluation_accuracy_event_timex = None
+
+        self.crossval_accuracy_event_event = None
+        self.crossval_accuracy_event_timex = None
 
     def create_features(self):
         nlp_persistence = None
@@ -109,6 +113,22 @@ class System:
             self.evaluation_accuracy_event_timex = result_event_timex._get_accuracy_paper()
         else:
             return (result_event_event, result_event_timex)
+
+    def cross_validation(self):
+        X_event_event, y_event_event = self.training_event_event
+        X_event_timex, y_event_timex = self.training_event_timex
+
+        # Do this with the SVM classifier we found best via grid search
+        clf_ee = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
+        clf_et = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
+
+        kfold = cross_validation.KFold(len(y_event_event), n_folds=5)
+        accs = cross_validation.cross_val_score(clf_ee, X_event_event, y_event_event, cv=kfold, n_jobs=-1)
+        self.crossval_accuracy_event_event = np.mean(accs)
+
+        kfold = cross_validation.KFold(len(y_event_timex), n_folds=5)
+        accs = cross_validation.cross_val_score(clf_et, X_event_timex, y_event_timex, cv=kfold, n_jobs=-1)
+        self.crossval_accuracy_event_timex = np.mean(accs)
 
     def eval_global_model(self):
         """Needs apply_global_model() to be run before."""

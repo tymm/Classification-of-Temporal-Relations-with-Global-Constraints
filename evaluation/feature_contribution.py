@@ -28,13 +28,12 @@ class Contribution:
             data = Data()
             system = System(data, features)
             system.create_features()
-            system.train()
-            system.eval(quiet=True)
+            system.cross_validation()
 
-            self.accuracies_event_event.append(system.evaluation_accuracy_event_event)
-            self.accuracies_event_timex.append(system.evaluation_accuracy_event_timex)
-            print system.evaluation_accuracy_event_event
-            print system.evaluation_accuracy_event_timex
+            self.accuracies_event_event.append(system.crossval_accuracy_event_event)
+            self.accuracies_event_timex.append(system.crossval_accuracy_event_timex)
+            print system.crossval_accuracy_event_event
+            print system.crossval_accuracy_event_timex
             print
 
     def _feature_series(self, k, features_list):
