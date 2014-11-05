@@ -34,7 +34,7 @@ def get_discourse_parsetree(parsetree):
 
 if __name__ == "__main__":
     data = Data()
-    nlp_persistence_obj = Nlp_persistence()
+    nlp_persistence_obj = Nlp_persistence(fallback=True)
     nlp_persistence_obj.load()
 
     d = {}
