@@ -1,6 +1,7 @@
 from helper.nlp_persistence import Nlp_persistence
 from helper.duration_cache import Duration_cache
 from helper.strings_cache import Strings_cache
+from helper.discourse_cache import Discourse_cache
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import svm
@@ -40,12 +41,16 @@ class System:
         nlp_persistence = None
         duration_cache = None
         strings_cache = None
+        discourse_cache = None
 
         if "lemma" in self.features or "token" in self.features or "best" in self.features:
             strings_cache = Strings_cache()
 
         if "duration" in self.features or "duration_difference" in self.features or "best" in self.features:
             duration_cache = Duration_cache()
+
+        if "temporal_discourse" in self.features:
+            discourse_cache = Discourse_cache()
 
         if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features or "lemma" in self.features or "best" in self.features:
             nlp_persistence = Nlp_persistence()
@@ -57,7 +62,7 @@ class System:
         print "Creating features for the training data"
 
         # Set features
-        self.data.training.pass_objects(self.features, strings_cache, nlp_persistence, duration_cache)
+        self.data.training.pass_objects(self.features, strings_cache, nlp_persistence, duration_cache, discourse_cache)
 
         X_train_event_event, y_train_event_event = self.data.training.get_event_event_feature_vectors_and_targets()
         X_train_event_timex, y_train_event_timex = self.data.training.get_event_timex_feature_vectors_and_targets()
@@ -67,7 +72,7 @@ class System:
 
         print "Creating features for the test data"
 
-        self.data.test.pass_objects(self.features, strings_cache, nlp_persistence, duration_cache)
+        self.data.test.pass_objects(self.features, strings_cache, nlp_persistence, duration_cache, discourse_cache)
 
         X_test_event_event, y_test_event_event = self.data.test.get_event_event_feature_vectors_and_targets()
         X_test_event_timex, y_test_event_timex = self.data.test.get_event_timex_feature_vectors_and_targets()

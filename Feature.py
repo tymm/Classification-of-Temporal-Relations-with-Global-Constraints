@@ -17,6 +17,8 @@ from feature.dependency_order import Dependency_order
 from feature.dependency import EntitiesNotInSameSentence
 from feature.duration import Duration
 from feature.temporal_signal import Temporal_signal
+from feature.temporal_discourse import Temporal_discourse
+from feature.temporal_discourse import NoConnectiveTagFound
 from feature.event_class import Event_class
 from feature.dct import Dct
 from feature.type import Type
@@ -27,10 +29,11 @@ import scipy
 from scipy import sparse
 
 class Feature(object):
-    def __init__(self, relation, strings_cache, nlp_persistence_obj, duration_cache, features):
+    def __init__(self, relation, strings_cache, nlp_persistence_obj, duration_cache, discourse_cache, features):
         self.relation = relation
         self.features = features
         self.duration_cache = duration_cache
+        self.discourse_cache = discourse_cache
         self.nlp_persistence_obj = nlp_persistence_obj
         self.strings_cache = strings_cache
 
@@ -49,14 +52,14 @@ class Feature(object):
 
         if "all" in self.features:
             if self.relation.is_event_event():
-                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_order", "dependency_is_root", "class", "polarity", "same_polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration", "duration_difference", "temporal_signal"]
+                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_order", "dependency_is_root", "class", "polarity", "same_polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration", "duration_difference", "temporal_signal", "temporal_discourse"]
 
             elif self.relation.is_event_timex():
                 self.features = ["lemma", "token", "strings", "tense", "aspect", "dependency_type", "dependency_order", "type", "dependency_is_root", "dct", "polarity", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration", "duration_difference", "value", "temporal_signal"]
 
         if "best" in self.features:
             if self.relation.is_event_event():
-                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_is_root", "polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration_difference", "temporal_signal"]
+                self.features = ["lemma", "token", "tense", "same_tense", "aspect", "same_aspect", "dependency_type", "dependency_is_root", "polarity", "entity_distance", "sentence_distance", "textual_order", "pos", "same_pos", "duration_difference", "temporal_signal", "temporal_discourse"]
 
             elif self.relation.is_event_timex():
                 self.features = ["lemma", "token", "strings", "tense", "aspect", "dependency_type", "dct", "class", "entity_distance", "sentence_distance", "textual_order", "pos", "duration_difference", "temporal_signal"]
@@ -129,6 +132,9 @@ class Feature(object):
 
         if "temporal_signal" in self.features:
             feature, flag_first = self._put_feature_into_sparse_matrix(self.get_temporal_signal, flag_first, feature)
+
+        if "temporal_discourse" in self.features:
+            feature, flag_first = self._put_feature_into_sparse_matrix(self.get_temporal_discourse, flag_first, feature)
 
         return feature
 
@@ -211,6 +217,48 @@ class Feature(object):
             feature_order = [1, 0, 0, 0, 0]
 
         return feature_signal + feature_beginning + feature_order
+
+    def get_temporal_discourse(self):
+        tag = None
+        try:
+            temporal_discourse = Temporal_discourse(self.relation, self.discourse_cache, self.nlp_persistence_obj)
+            tag = True
+        except NoConnectiveTagFound:
+            tag = False
+
+        if tag:
+            if temporal_discourse.is_temporal:
+                feature_temporal = [0,0,1]
+            else:
+                feature_temporal = [0,1,0]
+        else:
+            feature_temporal = [1,0,0]
+
+        if tag:
+            if temporal_discourse.is_connective_tag_at_beginning():
+                feature_beginning = [0,0,1]
+            else:
+                feature_beginning = [0,1,0]
+        else:
+            feature_beginning = [1,0,0]
+
+
+        if tag:
+            before_e1 = temporal_discourse.entity_before_connective_tag(self.relation.source)
+            before_e2 = temporal_discourse.entity_before_connective_tag(self.relation.target)
+
+            if before_e1 and before_e2:
+                feature_pos = [0,0,0,1,0]
+            elif before_e1 and not before_e2:
+                feature_pos = [0,0,1,0,0]
+            elif not before_e1 and before_e2:
+                feature_pos = [0,1,0,0,0]
+            elif not before_e1 and not before_e2:
+                feature_pos = [1,0,0,0,0]
+        else:
+            feature_pos = [0,0,0,0,1]
+
+        return feature_temporal + feature_beginning + feature_pos
 
     def get_type(self):
         type = Type(self.relation)

@@ -43,13 +43,15 @@ class Set(object):
         self.strings_cache = None
         self.nlp_persistence_obj = None
         self.duration_cache = None
+        self.discourse_cache = None
 
-    def pass_objects(self, features, strings_cache, nlp_persistence_obj, duration_cache):
+    def pass_objects(self, features, strings_cache, nlp_persistence_obj, duration_cache, discourse_cache):
         """Needs to be called before self.get_event_{event,timex}_feature_vectors_and_target()."""
         self.features = features
         self.strings_cache = strings_cache
         self.nlp_persistence_obj = nlp_persistence_obj
         self.duration_cache = duration_cache
+        self.discourse_cache = discourse_cache
 
     def get_event_event_feature_vectors_and_targets(self):
         if not self._processed:
@@ -157,7 +159,7 @@ class Set(object):
         features_event_event = self._remove_only_event_timex_features(self.features)
         features_event_timex = self._remove_only_event_event_features(self.features)
 
-        parallel_processing = Parallel_features(self.text_objects, self.nlp_persistence_obj, self.strings_cache, self.duration_cache, features_event_event, features_event_timex)
+        parallel_processing = Parallel_features(self.text_objects, self.nlp_persistence_obj, self.strings_cache, self.duration_cache, self.discourse_cache, features_event_event, features_event_timex)
         text_objs_with_feature_data = parallel_processing.processed_text_objs
 
         self.text_objects = text_objs_with_feature_data

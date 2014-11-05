@@ -7,7 +7,7 @@ import sys
 import traceback
 
 class Parallel_features(object):
-    def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, features_event_event, features_event_timex):
+    def __init__(self, text_objs, nlp_persistence_obj, strings_cache, duration_cache, discourse_cache, features_event_event, features_event_timex):
         self.text_objs = text_objs
         self.processed_text_objs = []
 
@@ -23,6 +23,9 @@ class Parallel_features(object):
 
         global duration_cache_g
         duration_cache_g = duration_cache
+
+        global discourse_cache_g
+        discourse_cache_g = discourse_cache
 
         global strings_cache_g
         strings_cache_g = strings_cache
@@ -50,12 +53,12 @@ class Parallel_features(object):
         try:
             for relation in text_obj.relations:
                 if relation.is_event_event():
-                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_event_event_g)
+                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, discourse_cache_g, features_event_event_g)
                     feature = f.get_feature()
                     relation.set_feature(feature)
 
                 elif relation.is_event_timex():
-                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, features_event_timex_g)
+                    f = Feature(relation, strings_cache_g, nlp_persistence_obj_g, duration_cache_g, discourse_cache_g, features_event_timex_g)
                     feature = f.get_feature()
                     relation.set_feature(feature)
 
