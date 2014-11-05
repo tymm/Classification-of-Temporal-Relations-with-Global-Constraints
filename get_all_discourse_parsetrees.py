@@ -39,11 +39,11 @@ if __name__ == "__main__":
 
     d = {}
     for text_obj in data.training.text_objects + data.test.text_objects:
-        for sentence in text_obj.text_structure.structure:
-            parsetree = nlp_persistence_obj.get_parse_tree(sentence)
+        for event in text_obj.events:
+            parsetree = nlp_persistence_obj.get_parse_tree(event.sentence)
             discourse_parsetree = get_discourse_parsetree(parsetree)
             print discourse_parsetree
 
-            d[sentence] = discourse_parsetree
+            d[event.sentence] = discourse_parsetree
 
     pickle.dump(d, open("discourse_cache.p", "wb"))
