@@ -49,7 +49,7 @@ class System:
         if "duration" in self.features or "duration_difference" in self.features or "best" in self.features:
             duration_cache = Duration_cache()
 
-        if "temporal_discourse" in self.features:
+        if "temporal_discourse" in self.features or "best" in self.features or "all" in self.features:
             discourse_cache = Discourse_cache()
 
         if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features or "lemma" in self.features or "best" in self.features:
