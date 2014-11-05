@@ -19,6 +19,7 @@ from feature.duration import Duration
 from feature.temporal_signal import Temporal_signal
 from feature.temporal_discourse import Temporal_discourse
 from feature.temporal_discourse import NoConnectiveTagFound
+from feature.temporal_discourse import EntitiesNotInSameSentence
 from feature.event_class import Event_class
 from feature.dct import Dct
 from feature.type import Type
@@ -224,6 +225,8 @@ class Feature(object):
             temporal_discourse = Temporal_discourse(self.relation, self.discourse_cache, self.nlp_persistence_obj)
             tag = True
         except NoConnectiveTagFound:
+            tag = False
+        except EntitiesNotInSameSentence:
             tag = False
 
         if tag:
