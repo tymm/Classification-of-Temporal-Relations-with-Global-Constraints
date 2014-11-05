@@ -113,6 +113,11 @@ class Nlp_persistence(object):
 
         return info['sentences'][0]['dependencies']
 
+    def get_parse_tree(self, sentence):
+        info = self.get_info_for_sentence(sentence)
+
+        return info['sentences'][0]['parsetree']
+
     def _write(self):
         # Save data to a file
         pickle.dump(self.data, open(self.FILE, "wb"))
