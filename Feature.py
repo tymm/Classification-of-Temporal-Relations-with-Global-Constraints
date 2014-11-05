@@ -19,7 +19,7 @@ from feature.duration import Duration
 from feature.temporal_signal import Temporal_signal
 from feature.temporal_discourse import Temporal_discourse
 from feature.temporal_discourse import NoConnectiveTagFound
-from feature.temporal_discourse import EntitiesNotInSameSentence
+from feature.temporal_discourse import EntitiesNotInSameSentence as EntitiesNotInSameSentenceDiscourse
 from feature.event_class import Event_class
 from feature.dct import Dct
 from feature.type import Type
@@ -226,7 +226,7 @@ class Feature(object):
             tag = True
         except NoConnectiveTagFound:
             tag = False
-        except EntitiesNotInSameSentence:
+        except EntitiesNotInSameSentenceDiscourse:
             tag = False
 
         if tag:
