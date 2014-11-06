@@ -11,6 +11,7 @@ class Distance:
         self.system.use_best_feature_set()
         self.system.create_features()
         self.system.train()
+        self.system.save_predictions_to_relations()
 
         self.relations = self._get_relations()
 

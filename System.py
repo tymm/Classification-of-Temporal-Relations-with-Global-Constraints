@@ -157,6 +157,15 @@ class System:
         self.test_event_event_global_model_targets = self.data.test.get_event_event_targets()
         self.test_event_timex_global_model_targets = self.data.test.get_event_timex_targets()
 
+    def save_predictions_to_relations(self):
+        """self.train() must be called before."""
+        for text_obj in self.data.test.text_objects:
+            for relation in text_obj.relations:
+                if relation.is_event_event():
+                    relation.predicted_class = self.classifier_event_event.predict(relation.feature)
+                elif relation.is_event_timex():
+                    relation.predicted_class = self.classifier_event_timex.predict(relation.feature)
+
     def _train_random_forest(self, training_data):
         print "Train a random forest classifier"
 
