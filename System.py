@@ -43,16 +43,16 @@ class System:
         strings_cache = None
         discourse_cache = None
 
-        if "lemma" in self.features or "token" in self.features or "best" in self.features:
+        if "lemma" in self.features or "token" in self.features or "best" in self.features or "all" in self.features:
             strings_cache = Strings_cache()
 
-        if "duration" in self.features or "duration_difference" in self.features or "best" in self.features:
+        if "duration" in self.features or "duration_difference" in self.features or "best" in self.features or "all" in self.features:
             duration_cache = Duration_cache()
 
         if "temporal_discourse" in self.features or "best" in self.features or "all" in self.features:
             discourse_cache = Discourse_cache()
 
-        if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features or "lemma" in self.features or "best" in self.features:
+        if "dependency_types" in self.features or "dependency_is_root" in self.features or "duration" in self.features or "dependency_order" in self.features or "tense" in self.features or "aspect" in self.features or "lemma" in self.features or "best" in self.features or "all" in self.features:
             nlp_persistence = Nlp_persistence()
             print "Loading NLP data from file."
             nlp_persistence.load()
