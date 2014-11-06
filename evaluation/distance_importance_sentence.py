@@ -25,11 +25,11 @@ class Distance:
         print Result(truth, predicted)
 
         print "Not same sentence event-event:"
-        truth, predicted = self._get_truth_and_prediction(same_sentence)
+        truth, predicted = self._get_truth_and_prediction(not_same_sentence)
         print Result(truth, predicted)
 
         print "Not same sentence event-timex:"
-        truth, predicted = self._get_truth_and_prediction(same_sentence, event_event=False)
+        truth, predicted = self._get_truth_and_prediction(not_same_sentence, event_event=False)
         print Result(truth, predicted)
 
     def _get_truth_and_prediction(rels, event_event=True):
