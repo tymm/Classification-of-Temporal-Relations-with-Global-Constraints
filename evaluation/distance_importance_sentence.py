@@ -32,7 +32,7 @@ class Distance:
         truth, predicted = self._get_truth_and_prediction(not_same_sentence, event_event=False)
         print Result(truth, predicted)
 
-    def _get_truth_and_prediction(rels, event_event=True):
+    def _get_truth_and_prediction(self, rels, event_event=True):
         prediction = []
         truth = []
 
