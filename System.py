@@ -281,4 +281,4 @@ class System:
             self.features.append("all")
 
     def use_best_feature_set(self):
-        self.features = ["best"]
+        self.use_all_features()
