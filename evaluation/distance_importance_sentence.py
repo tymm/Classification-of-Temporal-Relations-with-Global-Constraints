@@ -49,7 +49,7 @@ class Distance:
     def _get_relations(self):
         rels = []
 
-        for text_obj in self.data.test:
+        for text_obj in self.data.test.text_objects:
             for relation in text_obj.relations:
                 if relation.is_event_event():
                     rels.append(relation)
