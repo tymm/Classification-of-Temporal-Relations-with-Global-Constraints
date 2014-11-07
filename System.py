@@ -289,5 +289,9 @@ class System:
         if not "all" in self.features:
             self.features.append("all")
 
+    def use_same_features_as_in_reference_paper(self):
+        if not "best" in self.features:
+            self.features.append("best")
+
     def use_best_feature_set(self):
         self.use_all_features()
