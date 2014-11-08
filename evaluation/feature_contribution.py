@@ -38,6 +38,9 @@ class Contribution:
                 if now != prev:
                     self.accuracies_event_event.append(system.crossval_accuracy_event_event)
                     print system.crossval_accuracy_event_event
+            else:
+                self.accuracies_event_event.append(system.crossval_accuracy_event_event)
+                print system.crossval_accuracy_event_event
 
 
             now = list(set(self._feature_series(k, self.features_event_timex)))
@@ -47,6 +50,10 @@ class Contribution:
                 if now != prev:
                     self.accuracies_event_timex.append(system.crossval_accuracy_event_timex)
                     print system.crossval_accuracy_event_timex
+            else:
+                self.accuracies_event_timex.append(system.crossval_accuracy_event_timex)
+                print system.crossval_accuracy_event_timex
+
             print
 
     def _feature_series(self, k, features_list):
