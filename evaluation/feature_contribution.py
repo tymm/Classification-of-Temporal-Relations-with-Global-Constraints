@@ -30,10 +30,23 @@ class Contribution:
             system.create_features()
             system.cross_validation()
 
-            self.accuracies_event_event.append(system.crossval_accuracy_event_event)
-            self.accuracies_event_timex.append(system.crossval_accuracy_event_timex)
-            print system.crossval_accuracy_event_event
-            print system.crossval_accuracy_event_timex
+            now = list(set(self._feature_series(k, self.features_event_event)))
+            if k > 1:
+                prev = list(set(self._feature_series(k-1, self.features_event_event)))
+
+            if k > 1:
+                if now != prev:
+                    self.accuracies_event_event.append(system.crossval_accuracy_event_event)
+
+
+            now = list(set(self._feature_series(k, self.features_event_timex)))
+            if k > 1:
+                prev = list(set(self._feature_series(k-1, self.features_event_timex)))
+                print system.crossval_accuracy_event_event
+            if k > 1:
+                if now != prev:
+                    self.accuracies_event_timex.append(system.crossval_accuracy_event_timex)
+                    print system.crossval_accuracy_event_timex
             print
 
     def _feature_series(self, k, features_list):
