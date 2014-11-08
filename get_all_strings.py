@@ -8,7 +8,7 @@ def get_lemma(entity):
 
 if __name__ == "__main__":
     data = Data()
-    nlp_persistence_obj = Nlp_persistence()
+    nlp_persistence_obj = Nlp_persistence(fallback=True)
     nlp_persistence_obj.load()
 
     tokens = set()
