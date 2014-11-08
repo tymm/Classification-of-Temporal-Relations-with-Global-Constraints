@@ -2,7 +2,7 @@ from helper.nlp_persistence import LemmaNotFound
 class Lemma:
     def __init__(self, relation, strings_cache, nlp_persistence_obj):
         self.relation = relation
-        self.cache = list(strings_cache.lemmas)
+        self.cache = strings_cache.lemmas
         self.nlp_persistence_obj = nlp_persistence_obj
 
         try:
