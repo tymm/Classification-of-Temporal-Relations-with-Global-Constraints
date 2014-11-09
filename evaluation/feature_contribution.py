@@ -1,6 +1,7 @@
 from Data import Data
 from System import System
 import cPickle as pickle
+from TrainingSet import TrainingSet
 
 class Contribution:
     def __init__(self):
@@ -26,6 +27,8 @@ class Contribution:
             print features
 
             data = Data()
+            data.training = TrainingSet(False, False, "data/training/TBAQ-cleaned/TimeBank/")
+
             system = System(data, features)
             system.create_features()
             system.cross_validation()
