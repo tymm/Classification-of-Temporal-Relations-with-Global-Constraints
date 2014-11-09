@@ -12,7 +12,7 @@ class Token:
                 # String is not known from training set
                 self.source = len(self.cache)
         else:
-            self.source = len(self.cache) + 2
+            self.source = len(self.cache) + 1
 
         if type(self.relation.target) == Event:
             try:
@@ -21,7 +21,7 @@ class Token:
                 # String is not known from training set
                 self.target = len(self.cache)
         else:
-            self.target = len(self.cache) + 2
+            self.target = len(self.cache) + 1
 
     def get_length(self):
         return len(self.cache) + 2
