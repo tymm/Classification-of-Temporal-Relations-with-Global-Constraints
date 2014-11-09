@@ -23,3 +23,4 @@ if __name__ == "__main__":
             lemmas.add(get_lemma(relation.target))
 
     pickle.dump((tokens, lemmas), open("strings.p", "wb"))
+    nlp_persistence_obj.close()
