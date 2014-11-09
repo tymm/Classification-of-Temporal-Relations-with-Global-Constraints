@@ -6,14 +6,14 @@ class Lemma:
         self.nlp_persistence_obj = nlp_persistence_obj
 
         try:
-            self.source = self.cache.index(self._get_lemma(self.relation.source))
+            self.source = self.cache.index(self._get_lemma(self.relation.source).lower())
         except (ValueError, LemmaNotFound):
             # TODO: When LemmaNotFound, get lemma manually
             # String is not known from training set
             self.source = len(self.cache)
 
         try:
-            self.target = self.cache.index(self._get_lemma(self.relation.target))
+            self.target = self.cache.index(self._get_lemma(self.relation.target).lower())
         except (ValueError, LemmaNotFound):
             # TODO: When LemmaNotFound, get lemma manually
             # String is not known from training set

@@ -4,7 +4,7 @@ from helper.nlp_persistence import Nlp_persistence
 
 def get_lemma(entity):
     lemma = nlp_persistence_obj.get_lemma_for_word(entity.sentence, entity.text)
-    return lemma
+    return lemma.lower()
 
 if __name__ == "__main__":
     data = Data()
