@@ -97,7 +97,7 @@ if __name__ == "__main__":
     TBAQ = Distribution("TBAQ", False, False, "data/training/TBAQ-cleaned/TimeBank/", "data/training/TBAQ-cleaned/AQUAINT/")
     TBAQ_Inverse = Distribution("TBAQ-I", True, False, "data/training/TBAQ-cleaned/TimeBank/", "data/training/TBAQ-cleaned/AQUAINT/")
     TBAQ_Inverse_Closure = Distribution("TBAQ-IC", True, True, "data/training/TBAQ-cleaned/TimeBank/", "data/training/TBAQ-cleaned/AQUAINT/")
-    Test = Distribution("Test", False, False, "data/training/TBAQ-cleaned/TimeBank/")
+    Test = Distribution("Test", False, False, "data/test/te3-platinum/")
 
     latex = LatexTable(TB, TBAQ, TBAQ_Inverse, TBAQ_Inverse_Closure, Test)
     latex.print_table()
