@@ -6,6 +6,7 @@ from TrainingSet import TrainingSet
 from sklearn.metrics import accuracy_score
 import itertools
 import numpy as np
+from scipy import sparse
 
 def div(data, pieces):
     chunk = int(round(len(data)/float(pieces)))
@@ -24,6 +25,14 @@ def leave_out(data_chunks, i):
 def transform_to_list(sparse_matrix):
     return sparse_matrix.toarray()
 
+def transform_to_sparse_matrix(array):
+    matrix = sparse.csr_matrix(array[0])
+
+    for row in array[1:]:
+        matrix = sparse.vstack((matrix, row))
+
+    return matrix
+
 def kfold(X, y, k):
     accs = []
 
@@ -37,6 +46,10 @@ def kfold(X, y, k):
         # Leave out i for testing
         train_X, test_X = leave_out(pieces_X, i)
         train_y, test_y = leave_out(pieces_y, i)
+
+        # Transform back to sparse
+        train_X = transform_to_sparse_matrix(train_X)
+        test_X = transform_to_sparse_matrix(test_X)
 
         clf.fit(train_X, train_y)
         predicted = clf.predict(test_X)
