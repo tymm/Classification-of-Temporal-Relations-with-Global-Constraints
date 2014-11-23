@@ -41,6 +41,7 @@ def kfold(X, y, k):
         clf.fit(train_X, train_y)
         predicted = clf.predict(test_X)
 
+        print accuracy_score(test_y, predicted)
         accs.append(accuracy_score(test_y, predicted))
 
     return np.mean(accs)
