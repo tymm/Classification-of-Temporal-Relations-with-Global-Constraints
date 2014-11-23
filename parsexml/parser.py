@@ -75,6 +75,10 @@ class Parser(object):
         closure = self._get_closure_obj(RelationType.DURING)
         closure_relations += closure.get_closure_relations()
 
+        # Create temporal closures for DURING_INV
+        closure = self._get_closure_obj(RelationType.DURING_INV)
+        closure_relations += closure.get_closure_relations()
+
         # Remove closure relations which already exist
         closure_relations = [closure for closure in closure_relations if closure not in self.relations]
 
