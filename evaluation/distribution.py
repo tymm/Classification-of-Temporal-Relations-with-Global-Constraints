@@ -23,7 +23,7 @@ class LatexTable:
         print "\t\\tiny"
         print "\t\\begin{tabular}{| l | l | l | l | l | l || l | l | l | l | l |}"
         print "\t\t\hline"
-        print "\t\t\\multirow{3}{*}{Relations} & \\multicolumn{5}{|c||}{event-event} & \\multicolumn{5}{|c|}{event-timex} \\\\"
+        print "\t\t\\multirow{3}{*}{\\textbf{Relations}} & \\multicolumn{5}{|c||}{\\textbf{event-event}} & \\multicolumn{5}{|c|}{\\textbf{event-timex}} \\\\"
         print "\t\t\\cline{2-11}"
         print "\t\t& \\multicolumn{4}{|c|}{training} & \\multicolumn{1}{c||}{test} & \\multicolumn{4}{|c|}{training} & \\multicolumn{1}{|c|}{test} \\\\"
         print "\t\t\\cline{2-11}"
