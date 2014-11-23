@@ -54,7 +54,6 @@ def kfold(X, y, k):
         clf.fit(train_X, train_y)
         predicted = clf.predict(test_X)
 
-        print accuracy_score(test_y, predicted)
         accs.append(accuracy_score(test_y, predicted))
 
     return np.mean(accs)
@@ -70,7 +69,6 @@ X_event_timex, y_event_timex = system.training_event_timex
 
 X_event_event = transform_to_list(X_event_event)
 X_event_timex = transform_to_list(X_event_timex)
-print "Transformed sparse matrices."
 
 print kfold(X_event_event, y_event_event, 5)
 print kfold(X_event_timex, y_event_timex, 5)
