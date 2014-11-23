@@ -125,8 +125,6 @@ class Parser(object):
             elif relation.relation_type == RelationType.BEGUN_BY:
                 # Switching BEGUN_BY to BEGINS
                 inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.BEGINS)
-            elif relation.relation_type == RelationType.SIMULTANEOUS:
-                inverse_rel = Relation(relation.lid, self.text_obj, relation.target, relation.source, RelationType.SIMULTANEOUS)
             else:
                 continue
 
