@@ -2,6 +2,7 @@ from sklearn.feature_selection import RFECV
 from sklearn import linear_model
 from Data import Data
 from System import System
+from TrainingSet import TrainingSet
 
 if __name__ == "__main__":
     data = Data()
