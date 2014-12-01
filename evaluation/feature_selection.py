@@ -3,6 +3,7 @@ from sklearn import linear_model
 from Data import Data
 from System import System
 from TrainingSet import TrainingSet
+import pickle
 
 if __name__ == "__main__":
     data = Data()
@@ -20,9 +21,11 @@ if __name__ == "__main__":
     selector = selector.fit(X_event, y_event)
 
     print selector.ranking_
+    pickle.dump(selector.ranking_, open("selector_ee.p", "wb"))
 
     estimator = linear_model.LinearRegression()
     selector = RFECV(estimator, step=1, cv=5)
     selector = selector.fit(X_timex, y_timex)
+    pickle.dump(selector.ranking_, open("selector_et.p", "wb"))
 
     print selector.ranking_
