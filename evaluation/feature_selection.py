@@ -21,11 +21,17 @@ if __name__ == "__main__":
     selector = selector.fit(X_event, y_event)
 
     print selector.ranking_
+    print selector.n_features_
     pickle.dump(selector.ranking_, open("selector_ee.p", "wb"))
+    pickle.dump(selector.n_features_, open("selector_n_features_ee.p", "wb"))
+    pickle.dump(selector, open("selector_object_ee.p", "wb"))
 
     estimator = linear_model.LinearRegression()
     selector = RFECV(estimator, step=1, cv=5)
     selector = selector.fit(X_timex, y_timex)
     pickle.dump(selector.ranking_, open("selector_et.p", "wb"))
+    pickle.dump(selector.n_features_, open("selector_n_features_et.p", "wb"))
+    pickle.dump(selector, open("selector_object_et.p", "wb"))
 
     print selector.ranking_
+    print selector.n_features_
