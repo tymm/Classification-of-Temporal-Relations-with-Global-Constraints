@@ -16,22 +16,18 @@ if __name__ == "__main__":
     X_event, y_event = system.training_event_event
     X_timex, y_timex = system.training_event_timex
 
-    estimator = linear_model.LinearRegression()
-    selector = RFECV(estimator, step=1, cv=5)
+    estimator = linear_model.LogisticRegression()
+    selector = RFECV(estimator, step=1, cv=5, scoring="accuracy")
     selector = selector.fit(X_event, y_event)
 
     print selector.ranking_
     print selector.n_features_
-    pickle.dump(selector.ranking_, open("selector_ee.p", "wb"))
-    pickle.dump(selector.n_features_, open("selector_n_features_ee.p", "wb"))
-    pickle.dump(selector, open("selector_object_ee.p", "wb"))
+    pickle.dump(selector, open("selector_acc_object_ee.p", "wb"))
 
-    estimator = linear_model.LinearRegression()
-    selector = RFECV(estimator, step=1, cv=5)
+    estimator = linear_model.LogisticRegression()
+    selector = RFECV(estimator, step=1, cv=5, scoring="accuracy")
     selector = selector.fit(X_timex, y_timex)
-    pickle.dump(selector.ranking_, open("selector_et.p", "wb"))
-    pickle.dump(selector.n_features_, open("selector_n_features_et.p", "wb"))
-    pickle.dump(selector, open("selector_object_et.p", "wb"))
+    pickle.dump(selector, open("selector_acc_object_et.p", "wb"))
 
     print selector.ranking_
     print selector.n_features_
