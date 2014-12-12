@@ -30,7 +30,8 @@ system.use_pos()
 system.use_duration()
 system.use_temporal_signal()
 """
-system.use_best_feature_set()
+system.use_all_features()
+system.use_feature_selection()
 
 system.create_features()
 system.train()

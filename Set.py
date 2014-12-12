@@ -45,6 +45,10 @@ class Set(object):
         self.duration_cache = None
         self.discourse_cache = None
 
+        # Masks for feature selection
+        self.feature_selection_mask_event_event = pickle.load(open("selector_acc_object_ee.p", "rb")).support_
+        self.feature_selection_mask_event_timex = pickle.load(open("selector_acc_object_et.p", "rb")).support_
+
     def pass_objects(self, features, strings_cache, nlp_persistence_obj, duration_cache, discourse_cache):
         """Needs to be called before self.get_event_{event,timex}_feature_vectors_and_target()."""
         self.features = features
@@ -65,7 +69,12 @@ class Set(object):
         for text_obj in self.text_objects:
             for relation in text_obj.relations:
                 if relation.is_event_event():
-                    X.append(relation.feature)
+                    if "all" in self.features and "feature_selection" in self.features:
+                        feature = self._apply_feature_selection(relation.feature, relation.is_event_event())
+                        X.append(feature)
+                    else:
+                        X.append(relation.feature)
+
                     y.append(relation.relation_type)
 
         sparse_X_matrix = build_sparse_matrix(X)
@@ -83,11 +92,22 @@ class Set(object):
         for text_obj in self.text_objects:
             for relation in text_obj.relations:
                 if relation.is_event_timex():
-                    X.append(relation.feature)
+                    if "all" in self.features and "feature_selection" in self.features:
+                        feature = self._apply_feature_selection(relation.feature, relation.is_event_event())
+                        X.append(feature)
+                    else:
+                        X.append(relation.feature)
+
                     y.append(relation.relation_type)
 
         sparse_X_matrix = build_sparse_matrix(X)
         return (sparse_X_matrix, y)
+
+    def _apply_feature_selection(self, feature_vector, is_event_event):
+        if is_event_event:
+            return feature_vector[:, self.feature_selection_mask_event_event]
+        else:
+            return feature_vector[:, self.feature_selection_mask_event_timex]
 
     def _extract_relations(self):
         for text_obj in self.text_objects:
