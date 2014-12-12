@@ -9,6 +9,7 @@ from feature.exception import FailedProcessingFeature
 from Feature import Feature
 from helper.sparse import build_sparse_matrix
 import pickle
+from scipy.sparse import coo_matrix
 
 # Needs to be done in order to use multiprocessing
 activate()
@@ -105,10 +106,14 @@ class Set(object):
         return (sparse_X_matrix, y)
 
     def _apply_feature_selection(self, feature_vector, is_event_event):
+        feature_vector = feature_vector.toarray()
+
         if is_event_event:
-            return feature_vector[:, self.feature_selection_mask_event_event]
+            feature_vector_masked = feature_vector[:, self.feature_selection_mask_event_event]
         else:
-            return feature_vector[:, self.feature_selection_mask_event_timex]
+            feature_vector_masked = feature_vector[:, self.feature_selection_mask_event_timex]
+
+        return coo_matrix(feature_vector_masked, dtype="int32")
 
     def _extract_relations(self):
         for text_obj in self.text_objects:
