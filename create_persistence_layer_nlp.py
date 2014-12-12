@@ -10,3 +10,5 @@ training = TrainingSet(False, "data/training/TBAQ-cleaned/AQUAINT/", "data/train
 
 persistence = Nlp_persistence(fallback=True)
 persistence.create_persistence(training.relations)
+# Save new data to cache
+persistence.close()
