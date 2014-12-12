@@ -8,6 +8,7 @@ from helper.parallel_features import Parallel_features
 from feature.exception import FailedProcessingFeature
 from Feature import Feature
 from helper.sparse import build_sparse_matrix
+import pickle
 
 # Needs to be done in order to use multiprocessing
 activate()
