@@ -21,7 +21,8 @@ def report(grid_scores, n_top=3):
 data = Data()
 system = System(data)
 
-system.use_best_feature_set()
+system.use_all_features()
+system.use_feature_selection()
 system.create_features()
 
 training = system.training_event_event
