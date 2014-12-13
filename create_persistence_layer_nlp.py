@@ -8,8 +8,6 @@ logging.basicConfig(filename='creating_nlp_file.log',level=logging.DEBUG)
 # Preprocessing nlp information for all relations
 training = TrainingSet(True, True, "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/", "data/test/te3-platinum/")
 
-persistence = Nlp_persistence(fallback=True)
-persistence.load()
-persistence.create_persistence(training.relations)
-# Save new data to cache
-persistence.close()
+with Nlp_persistence(fallback=True) as persistence:
+    persistence.load()
+    persistence.create_persistence(training.relations)
