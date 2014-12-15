@@ -88,8 +88,8 @@ class System:
             nlp_persistence.close()
 
     def train(self):
-        self.classifier_event_event = self._train_SVM(self.training_event_event)
-        self.classifier_event_timex = self._train_SVM(self.training_event_timex)
+        self.classifier_event_event = self._train_SVM_event(self.training_event_event)
+        self.classifier_event_timex = self._train_SVM_timex(self.training_event_timex)
 
     def save_classifiers(self):
         print "Saving classifiers to disk"
@@ -125,8 +125,8 @@ class System:
         X_event_timex, y_event_timex = self.training_event_timex
 
         # Do this with the SVM classifier we found best via grid search
-        clf_ee = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
-        clf_et = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
+        clf_ee = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.0, class_weight=None)
+        clf_et = svm.SVC(probability=True, kernel="poly", degree=3, C=100, gamma=0.0, class_weight=None)
 
         kfold = cross_validation.KFold(len(y_event_event), n_folds=5)
         accs = cross_validation.cross_val_score(clf_ee, X_event_event, y_event_event, cv=kfold, n_jobs=-1)
@@ -184,9 +184,18 @@ class System:
         print "Done training the classifier"
         return clf
 
-    def _train_SVM(self, training_data):
+    def _train_SVM_event(self, training_data):
         print "Train SVM"
-        clf = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.001, class_weight=None)
+        clf = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.0, class_weight=None)
+
+        clf.fit(training_data[0], training_data[1])
+
+        print "Done training the classifier."
+        return clf
+
+    def _train_SVM_timex(self, training_data):
+        print "Train SVM"
+        clf = svm.SVC(probability=True, kernel="poly", degree=3, C=100, gamma=0.0, class_weight=None)
 
         clf.fit(training_data[0], training_data[1])
 
