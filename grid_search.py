@@ -19,14 +19,19 @@ def report(grid_scores, n_top=3):
 
 
 data = Data()
+data.training = TrainingSet(False, False, "data/training/TBAQ-cleaned/TimeBank/")
+
 system = System(data)
 
 system.use_all_features()
 system.use_feature_selection()
 system.create_features()
 
-training = system.training_event_event
-test = system.test_event_event
+training_ee = system.training_event_event
+test_ee = system.test_event_event
+
+training_et = system.training_event_timex
+test_et = system.test_event_timex
 
 clf = SVC()
 
@@ -39,7 +44,14 @@ param_grid = {"C": [1, 10, 100, 1000],
 # run grid search
 start = time()
 grid_search = GridSearchCV(clf, param_grid=param_grid, n_jobs=-1)
-grid_search.fit(training[0], training[1])
+grid_search.fit(training_ee[0], training_ee[1])
+
+print("GridSearchCV took %.2f seconds for %d candidate parameter settings." % (time() - start, len(grid_search.grid_scores_)))
+report(grid_search.grid_scores_)
+
+start = time()
+grid_search = GridSearchCV(clf, param_grid=param_grid, n_jobs=-1)
+grid_search.fit(training_et[0], training_et[1])
 
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings." % (time() - start, len(grid_search.grid_scores_)))
 report(grid_search.grid_scores_)
