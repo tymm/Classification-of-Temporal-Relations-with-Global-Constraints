@@ -5,6 +5,7 @@ from sklearn.svm import SVC
 from time import time
 from operator import itemgetter
 import numpy as np
+from TrainingSet import TrainingSet
 
 # Utility function to report best scores
 def report(grid_scores, n_top=3):
