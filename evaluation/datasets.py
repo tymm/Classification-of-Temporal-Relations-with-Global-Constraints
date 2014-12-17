@@ -25,11 +25,11 @@ def get_different_training_data():
     tbaq = Data(inverse=False, closure=False)
     sets["TBAQ"] = tbaq
 
-    tbaq-i = Data(inverse=True, closure=False)
-    sets["TBAQ-I"] = tbaq-i
+    tbaq_i = Data(inverse=True, closure=False)
+    sets["TBAQ-I"] = tbaq_i
 
-    tbaq-ic = Data(inverse=True, closure=True)
-    sets["TBAQ-IC"] = tbaq-ic
+    tbaq_ic = Data(inverse=True, closure=True)
+    sets["TBAQ-IC"] = tbaq_ic
 
     return sets
 
