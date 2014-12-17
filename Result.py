@@ -3,6 +3,9 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from collections import namedtuple
 from tabulate import tabulate
+from sklearn.metrics import recall_score
+from sklearn.metrics import precision_score
+
 
 class Result:
     def __init__(self, y_test_truth, y_test_predicted):
@@ -12,9 +15,10 @@ class Result:
 
     def __str__(self):
         output = ""
+        output += "Precision: %s\n" % precision(self.truth, self.predicted)
+        output += "Recall: %s\n" % recall(self.truth, self.predicted)
         output += "Averaged f1-score: %s\n" % f1_score(self.truth, self.predicted)
         output += "Averaged accuracy: %s\n" % accuracy_score(self.truth, self.predicted)
-        output += "Accuracy, as defined in paper: %s\n" % self._get_accuracy_paper()
         self._print_detailed_results()
         self._print_dristibution()
 
