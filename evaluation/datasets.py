@@ -2,6 +2,7 @@ from Data import Data
 from System import System
 from TrainingSet import TrainingSet
 import pickle
+import gc
 
 def run(data):
     system = System(data)
@@ -15,30 +16,35 @@ def run(data):
 
     return system.evaluation_accuracy_event_event, system.evaluation_accuracy_event_timex
 
-def get_different_training_data():
-    sets = {}
+def get_accs():
+    accs = {}
 
     timebank = Data()
     timebank.training = TrainingSet(False, False, "data/training/TBAQ-cleaned/TimeBank/")
-    sets["TimeBank"] = timebank
+    accs["TimeBank"] = run(timebank)
+    del timebank
+    gc.collect()
 
     tbaq = Data(inverse=False, closure=False)
-    sets["TBAQ"] = tbaq
+    accs["TBAQ"] = run(tbaq)
+    del tbaq
+    gc.collect()
 
     tbaq_i = Data(inverse=True, closure=False)
-    sets["TBAQ-I"] = tbaq_i
+    accs["TBAQ-I"] = run(tbaq_i)
+    del tbaq_i
+    gc.collect()
 
     tbaq_ic = Data(inverse=True, closure=True)
-    sets["TBAQ-IC"] = tbaq_ic
+    accs["TBAQ-IC"] = run(tbaq_ic)
+    del tbaq_ic
+    gc.collect()
 
-    return sets
+    return accs
 
 if __name__ == "__main__":
-    accs = {}
-    datas = get_different_training_data()
 
-    for data in datas.items():
-        accs[data[0]] = run(data[1])
+    accs = get_accs()
 
     pickle.dump(accs, open("datasets_eval.p", "wb"))
     print accs
