@@ -15,8 +15,8 @@ class Result:
 
     def __str__(self):
         output = ""
-        output += "Precision: %s\n" % precision(self.truth, self.predicted)
-        output += "Recall: %s\n" % recall(self.truth, self.predicted)
+        output += "Precision: %s\n" % precision_score(self.truth, self.predicted)
+        output += "Recall: %s\n" % recall_score(self.truth, self.predicted)
         output += "Averaged f1-score: %s\n" % f1_score(self.truth, self.predicted)
         output += "Averaged accuracy: %s\n" % accuracy_score(self.truth, self.predicted)
         self._print_detailed_results()
