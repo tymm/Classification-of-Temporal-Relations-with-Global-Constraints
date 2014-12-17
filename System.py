@@ -186,7 +186,7 @@ class System:
 
     def _train_SVM_event(self, training_data):
         print "Train SVM"
-        clf = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.0, class_weight=None)
+        clf = svm.SVC(probability=True, kernel="poly", degree=1, C=100, gamma=0.0, class_weight=None)
 
         clf.fit(training_data[0], training_data[1])
 
@@ -195,7 +195,7 @@ class System:
 
     def _train_SVM_timex(self, training_data):
         print "Train SVM"
-        clf = svm.SVC(probability=True, kernel="poly", degree=3, C=100, gamma=0.0, class_weight=None)
+        clf = svm.SVC(probability=True, kernel="poly", degree=2, C=100, gamma=0.0, class_weight=None)
 
         clf.fit(training_data[0], training_data[1])
 
