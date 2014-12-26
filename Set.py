@@ -74,6 +74,7 @@ class Set(object):
                     if "all" in self.features and "feature_selection" in self.features:
                         feature = self._apply_feature_selection(relation.feature, relation.is_event_event())
                         X.append(feature)
+                        relation.feature = feature
                     else:
                         X.append(relation.feature)
 
@@ -97,6 +98,7 @@ class Set(object):
                     if "all" in self.features and "feature_selection" in self.features:
                         feature = self._apply_feature_selection(relation.feature, relation.is_event_event())
                         X.append(feature)
+                        relation.feature = feature
                     else:
                         X.append(relation.feature)
 
