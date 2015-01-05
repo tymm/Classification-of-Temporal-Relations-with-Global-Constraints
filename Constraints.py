@@ -131,6 +131,10 @@ class Constraints:
         rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.AFTER, "C", "A", RelationType.AFTER, "C"]
         triples += self._get_triples_by_rule(rule)
 
+        # A is_included B && B before C => A before C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.BEFORE, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
         return triples
 
     def _get_triples_by_rule(self, rule):
