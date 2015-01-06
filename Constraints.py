@@ -57,10 +57,231 @@ class Constraints:
 
                 self.model.addConstr(i+j-k, GRB.LESS_EQUAL, 1, "ii")
 
+            # Add constraint which forbids certain triples of connected entities
+            for triple in self._get_forbidden_transitive_triples():
+                i = triple[0].variable
+                j = triple[1].variable
+                forbidden = triple[2].variable
+
+                self.model.addConstr(3-(i+j+forbidden), GRB.GREATER_EQUAL , 1, "iii")
+
             self.model.optimize()
 
         except GurobiError:
             print "Gurobi Error reported"
+
+    def _get_forbidden_transitive_triples(self):
+        triples = []
+
+        # A includes B && B is_included C /=> A before C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begins C /=> A before C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGINS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begins C /=> A after C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGINS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begins C /=> A ibefore C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begins C /=> A iafter C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begun_by C /=> A before C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGUN_BY, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begun_by C /=> A after C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGUN_BY, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begun_by C /=> A ibefore C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGUN_BY, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B begun_by C /=> A iafter C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.BEGUN_BY, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ends C /=> A before C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ends C /=> A after C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ends C /=> A ibefore C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ends C /=> A iafter C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ended_by C /=> A before C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ended_by C /=> A after C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ended_by C /=> A ibefore C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A includes B && B ended_by C /=> A iafter C
+        rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B begins C /=> A before C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.BEGINS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B begins C /=> A after C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.BEGINS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B begins C /=> A ibefore C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B begins C /=> A iafter C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B ends C /=> A before C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.ENDS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B ends C /=> A after C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.ENDS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B ends C /=> A ibefore C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.ENDS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A is_included B && B ends C /=> A iafter C
+        rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.ENDS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B is_included C /=> A before C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B is_included C /=> A after C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B is_included C /=> A ibefore C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B is_included C /=> A iafter C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B begins C /=> A before C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.BEGINS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B begins C /=> A after C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.BEGINS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B begins C /=> A ibefore C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B begins C /=> A iafter C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B begun_by C /=> A before C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.BEGUN_BY, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B begun_by C /=> A after C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.BEGUN_BY, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B begun_by C /=> A ibefore C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.BEGUN_BY, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ends C /=> A before C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ends C /=> A after C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ends C /=> A ibefore C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ends C /=> A iafter C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ended_by C /=> A before C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ended_by C /=> A after C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ended_by C /=> A ibefore C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during_inv B && B ended_by C /=> A iafter C
+        rule = ["A", RelationType.DURING_INV, "B", "B", RelationType.ENDED_BY, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B begins C /=> A before C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.BEGINS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B begins C /=> A after C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.BEGINS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B begins C /=> A ibefore C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B begins C /=> A iafter C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.BEGINS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B ends C /=> A before C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.ENDS, "C", "A", RelationType.BEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B ends C /=> A after C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.ENDS, "C", "A", RelationType.AFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B ends C /=> A ibefore C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.ENDS, "C", "A", RelationType.IBEFORE, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        # A during B && B ends C /=> A iafter C
+        rule = ["A", RelationType.DURING, "B", "B", RelationType.ENDS, "C", "A", RelationType.IAFTER, "C"]
+        triples += self._get_triples_by_rule(rule)
+
+        return triples
 
     def _get_all_transitive_variable_triples(self):
         triples = []
