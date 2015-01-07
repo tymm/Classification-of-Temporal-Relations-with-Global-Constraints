@@ -4,9 +4,9 @@ from TrainingSet import TrainingSet
 import time
 import pickle
 from os import listdir
-import pylab
+import matplotlib.pyplot as plt
 import sys
-from collection import OrderedDict
+from collections import OrderedDict
 
 STEPS_RELATIONS = 20
 
@@ -69,30 +69,31 @@ def get_number_of_training_relations(data):
     return len(data.training.relations)
 
 def save_time_relations_data():
-    rels_time = OrderedDict()
+    rels = []
+    times = []
 
     for data in create_data():
         num_relations = get_number_of_training_relations(data)
         time = measure_time(data)
         print time
 
-        rels_time[num_relations] = time
+        rels.append(num_relations)
+        times.append(times)
 
-    pickle.dump(rels_time, open("rels_time.p", "wb"))
-    return rels_time
+    pickle.dump((rels,times), open("rels_times.p", "wb"))
 
-def plot(rels_time):
-    pylab.plot(rels_time.keys(), rels_time.values())
+def plot(rels, times):
+    plt.plot(rels, times)
 
-    pylab.xlabel("Number of relations")
-    pylab.ylabel("Time in seconds")
-    pylab.grid(True)
+    plt.xlabel("Number of relations")
+    plt.ylabel("Time in seconds")
+    plt.grid(True)
 
-    pylab.savefig("performance.pdf")
+    plt.savefig("performance.pdf")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "plot":
-        rels_time = pickle.load(open("rels_time.p", "wb"))
-        plot(rels_time)
+        rels, times = pickle.load(open("rels_times.p"))
+        plot(rels, times)
     else:
         save_time_relations_data()
