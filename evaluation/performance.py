@@ -5,7 +5,7 @@ import time
 import pickle
 from os import listdir
 
-STEPS_RELATIONS = 10
+STEPS_RELATIONS = 20
 
 def measure_time(data):
     start = time.time()
