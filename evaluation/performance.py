@@ -30,14 +30,11 @@ def create_data():
     training_files = _get_training_files()
     series_training_files = _get_series_of_files(training_files)
 
-    data = []
     for series in series_training_files:
-        d = Data(False, False)
-        d.training = TrainingSet(False, False, *series)
-        data.append(d)
+        data = Data(False, False)
+        data.training = TrainingSet(False, False, *series)
 
-    print "Done creating data"
-    return data
+        yield data
 
 def _get_training_files():
     aquaint = listdir("data/training/TBAQ-cleaned/AQUAINT/")
