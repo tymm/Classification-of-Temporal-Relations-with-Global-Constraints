@@ -72,7 +72,7 @@ def save_time_relations_data():
     rels_time = {}
 
     for data in create_data():
-        num_relations = get_number_of_relations(data)
+        num_relations = get_number_of_training_relations(data)
         time = measure_time(data)
         print time
 
