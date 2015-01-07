@@ -1,5 +1,6 @@
 from Data import Data
 from System import System
+from TrainingSet import TrainingSet
 import time
 import pickle
 from os import listdir
@@ -31,8 +32,11 @@ def create_data():
 
     data = []
     for series in series_training_files:
-        data.append(Data(series))
+        data = Data(False, False)
+        data.training = TrainingSet(False, False, *series)
+        data.append(data)
 
+    print "Done creating data"
     return data
 
 def _get_training_files():
@@ -68,6 +72,7 @@ def save_time_relations_data():
     for data in create_data():
         num_relations = get_number_of_relations(data)
         time = measure_time(data)
+        print time
 
         rels_time[num_relations] = time
 
