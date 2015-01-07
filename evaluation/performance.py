@@ -32,9 +32,9 @@ def create_data():
 
     data = []
     for series in series_training_files:
-        data = Data(False, False)
-        data.training = TrainingSet(False, False, *series)
-        data.append(data)
+        d = Data(False, False)
+        d.training = TrainingSet(False, False, *series)
+        data.append(d)
 
     print "Done creating data"
     return data
