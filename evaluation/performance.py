@@ -5,7 +5,7 @@ import time
 import pickle
 from os import listdir
 
-STEPS_RELATIONS = 15
+STEPS_RELATIONS = 10
 
 def measure_time(data):
     start = time.time()
@@ -41,7 +41,9 @@ def create_data():
 
 def _get_training_files():
     aquaint = listdir("data/training/TBAQ-cleaned/AQUAINT/")
+    aquaint = ["data/training/TBAQ-cleaned/AQUAINT/"+f for f in aquaint]
     timebank = listdir("data/training/TBAQ-cleaned/TimeBank/")
+    timebank = ["data/training/TBAQ-cleaned/TimeBank/"+f for f in aquaint]
 
     return aquaint + timebank
 
