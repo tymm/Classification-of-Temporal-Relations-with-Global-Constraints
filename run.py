@@ -23,4 +23,5 @@ print "Event-Timex:"
 print event_timex
 
 # Create output tml files for evaluation script
+system.save_predictions_to_relations()
 data.test.create_evaluation_files()
