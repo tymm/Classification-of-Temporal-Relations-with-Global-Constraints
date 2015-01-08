@@ -125,8 +125,8 @@ class System:
         X_event_timex, y_event_timex = self.training_event_timex
 
         # Do this with the SVM classifier we found best via grid search
-        clf_ee = svm.SVC(probability=True, kernel="poly", degree=2, C=1000, gamma=0.0, class_weight=None)
-        clf_et = svm.SVC(probability=True, kernel="poly", degree=3, C=100, gamma=0.0, class_weight=None)
+        clf_ee = svm.SVC(probability=True, kernel="poly", degree=1, C=100, gamma=0.0, class_weight=None)
+        clf_et = svm.SVC(probability=True, kernel="poly", degree=2, C=100, gamma=0.0, class_weight=None)
 
         kfold = cross_validation.KFold(len(y_event_event), n_folds=5)
         accs = cross_validation.cross_val_score(clf_ee, X_event_event, y_event_event, cv=kfold, n_jobs=-1)
