@@ -9,7 +9,7 @@ from parsexml.event import Event
 from ilp.directed_pair import Directed_Pair
 
 class Text(object):
-    def __init__(self, filename, inverse=True, closure=True):
+    def __init__(self, filename, inverse=True, closure=True, best_settings=True):
         self.filename = filename
 
         # Parse text
@@ -23,14 +23,17 @@ class Text(object):
         # Entity pairs which contain confidence scores for target values
         self.directed_pairs = []
 
-        # Only generate inversed and closured relations for training
-        if inverse:
-            # Produce inversed relations
-            self.relations += parser.get_inversed_relations()
+        # best_settings=True inverses relations only for event-event relations and ignores "inverse" and "closure" arguments
+        if best_settings:
+            self.relations += parser.get_inversed_event_event_relations()
+        else:
+            if inverse:
+                # Produce inversed relations
+                self.relations += parser.get_inversed_relations()
 
-        if closure:
-            # Produce closure relations
-            self.relations += parser.get_closured_relations()
+            if closure:
+                # Produce closure relations
+                self.relations += parser.get_closured_relations()
 
         self.text_structure = parser.get_text_structure()
         self.entities_order = parser.get_entities_order()
