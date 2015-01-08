@@ -279,6 +279,8 @@ class Constraints:
                 relation = self.text_obj.find_relation_by_variable(v)
                 # Relation does not have to exist
                 if relation:
+                    # Set predicted_class to generate output files
+                    relation.predicted_class = relation.relation_type
                     best_subset.append(relation)
                 else:
                     # The relation exists but with a different relation type
@@ -287,6 +289,8 @@ class Constraints:
                     # Find relation with source and target
                     relation = self.text_obj.find_relation_by_source_and_target(v.source, v.target)
                     new_relation = Relation(relation.lid, relation.parent, relation.source, relation.target, rel_type)
+                    # Set predicted_class to generate output files
+                    new_relation.predicted_class = rel_type
 
                     best_subset.append(new_relation)
 
