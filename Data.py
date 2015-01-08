@@ -4,7 +4,6 @@ import cPickle as pickle
 import os.path
 
 class Data:
-    # TODO: reload=True since there is unsolved strange memory behaviour when loading from cache with pickle
     def __init__(self, inverse=True, closure=True):
         self.inverse = inverse
         self.closure = closure
