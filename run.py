@@ -10,12 +10,12 @@ system.use_all_features()
 system.use_feature_selection()
 system.create_features()
 
-# Create classifiers
+# Train classifiers and save them to pickle file
 system.train()
 # Save classifiers to pickle file
 system.save_classifiers()
 
-# Print out results
+# Run pairwise classification
 event_event, event_timex = system.eval()
 print "Event-Event:"
 print event_event

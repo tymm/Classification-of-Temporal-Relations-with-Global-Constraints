@@ -15,10 +15,11 @@ from scipy.sparse import coo_matrix
 activate()
 
 class Set(object):
-    def __init__(self, inverse=False, closure=False, *corpora):
+    def __init__(self, inverse=False, closure=False, best_settings=False, *corpora):
         self.corpora = corpora
         self.inverse = inverse
         self.closure = closure
+        self.best_settings = best_settings
 
         # There are no features yet
         self._processed = False
@@ -28,6 +29,9 @@ class Set(object):
 
         global closure_g
         closure_g = self.closure
+
+        global best_settings_g
+        best_settings_g = self.best_settings
 
         # Hols all textfile objects
         self.text_objects = []
@@ -159,7 +163,7 @@ class Set(object):
     def _parse_from_file(self, file):
         try:
             # Mapping xml data to python objects
-            text = Text(file, inverse=inverse_g, closure=closure_g)
+            text = Text(file, inverse=inverse_g, closure=closure_g, best_settings=best_settings_g)
 
             return text
         except Exception as e:
