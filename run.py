@@ -29,3 +29,6 @@ print "Event-Event:"
 print event_event
 print "Event-Timex:"
 print event_timex
+
+# Create output tml files for evaluation script
+data.test.create_evaluation_files()

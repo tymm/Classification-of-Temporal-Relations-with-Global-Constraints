@@ -25,7 +25,8 @@ class TestSet(Set):
         for text_obj in self.text_objects:
             # Create all optimal relations for text object
             ilp = Constraints(text_obj)
-            self.relations_optimized += ilp.get_best_set()
+            text_obj.relations_plain_optimized = ilp.get_best_set()
+            self.relations_optimized += text_obj.relations_plain_optimized
 
             changed += ilp.get_number_of_relations_changed()
 

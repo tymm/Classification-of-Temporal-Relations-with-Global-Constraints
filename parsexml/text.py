@@ -20,6 +20,8 @@ class Text(object):
         self.timex = parser.get_timex()
         self.relations = parser.get_relations()
         self.relations_plain = list(self.relations)
+        # Relations set by the global model
+        self.relations_plain_optimized = None
         # Entity pairs which contain confidence scores for target values
         self.directed_pairs = []
 
@@ -138,7 +140,7 @@ class Text(object):
 
     def generate_output_tml_file(self):
         output = Output(self.filename)
-        output.create_relations(self.relations_plain)
+        output.create_relations(self.relations_plain_optimized)
         output.write()
 
     def try_to_find_governing_verb_as_event(self, governing_verb, index, event_in_same_sentence):
