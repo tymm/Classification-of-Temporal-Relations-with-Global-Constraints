@@ -135,7 +135,7 @@ class Text(object):
 
     def generate_output_tml_file(self):
         output = Output(self.filename)
-        output.create_relations(self.relations)
+        output.create_relations(self.relations_plain)
         output.write()
 
     def try_to_find_governing_verb_as_event(self, governing_verb, index, event_in_same_sentence):
