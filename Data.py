@@ -13,5 +13,5 @@ class Data:
         self._load_new()
 
     def _load_new(self):
-        self.training = TrainingSet(self.inverse, self.closure, self.best_settings, "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
+        self.training = TrainingSet(True, self.closure, self.best_settings, "data/training/TBAQ-cleaned/AQUAINT/", "data/training/TBAQ-cleaned/TimeBank/")
         self.test = TestSet("data/test/te3-platinum/")
