@@ -22,15 +22,22 @@ class TestSet(Set):
 
     def apply_global_model(self):
         changed = 0
+        ee_changed = 0
+        et_changed = 0
         for text_obj in self.text_objects:
             # Create all optimal relations for text object
             ilp = Constraints(text_obj)
             text_obj.relations_plain_optimized = ilp.get_best_set()
             self.relations_optimized += text_obj.relations_plain_optimized
 
-            changed += ilp.get_number_of_relations_changed()
+            tmp_changed, tmp_ee_changed, tmp_et_changed = ilp.get_number_of_relations_changed()
+            changed += tmp_changed
+            ee_changed += tmp_ee_changed
+            et_changed += tmp_et_changed
 
         print "Global model changed %s relations" % changed
+        print "%s relations were event-event relations" % ee_changed
+        print "%s relations were event-timex relations" % et_changed
 
     def get_event_event_targets(self):
         targets = []

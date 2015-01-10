@@ -302,6 +302,8 @@ class Constraints:
         relations = self.text_obj.relations
         relations_optimized = self.relations_optimized
         changed = 0
+        ee_changed = 0
+        et_changed = 0
 
         for rel in relations:
             for rel_optimized in relations_optimized:
@@ -310,6 +312,12 @@ class Constraints:
                         print rel.parent.filename
                         print "Changed Relation %s --%s--> %s to %s --%s--> %s" % (rel.source.id, RelationType.get_string_by_id(rel.predicted_class), rel.target.id, rel_optimized.source.id, RelationType.get_string_by_id(rel_optimized.relation_type), rel_optimized.target.id)
                         changed += 1
+
+                        if rel.is_event_event():
+                            ee_changed += 1
+                        if rel.is_event_timex():
+                            et_changed += 1
+
                         break
 
-        return changed
+        return (changed, ee_changed, et_changed)
