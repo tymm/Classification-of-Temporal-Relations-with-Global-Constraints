@@ -7,73 +7,73 @@ def get_transitives(relations):
 
     # A before B && B before C => A before C
     rule = ["A", RelationType.BEFORE, "B", "B", RelationType.BEFORE, "C", "A", RelationType.BEFORE, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A before B && B includes C => A before C
     rule = ["A", RelationType.BEFORE, "B", "B", RelationType.INCLUDES, "C", "A", RelationType.BEFORE, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A before B && B simultaneous C => A before C
     rule = ["A", RelationType.BEFORE, "B", "B", RelationType.SIMULTANEOUS, "C", "A", RelationType.BEFORE, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A includes B && B includes C => A includes C
     rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.INCLUDES, "C", "A", RelationType.INCLUDES, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A includes B && B simultaneous C => A includes C
     rule = ["A", RelationType.INCLUDES, "B", "B", RelationType.SIMULTANEOUS, "C", "A", RelationType.INCLUDES, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A simultaneous B && B before C => A before C
     rule = ["A", RelationType.SIMULTANEOUS, "B", "B", RelationType.BEFORE, "C", "A", RelationType.BEFORE, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A simultaneous B && B includes C => A includes C
     rule = ["A", RelationType.SIMULTANEOUS, "B", "B", RelationType.INCLUDES, "C", "A", RelationType.INCLUDES, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A simultaneous B && B simultaneous C => A simultaneous C
     rule = ["A", RelationType.SIMULTANEOUS, "B", "B", RelationType.SIMULTANEOUS, "C", "A", RelationType.SIMULTANEOUS, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # Deduced
     # A simultaneous B && A before C => B before C
     rule = ["A", RelationType.SIMULTANEOUS, "B", "A", RelationType.BEFORE, "C", "B", RelationType.BEFORE, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A simultaneous B && A includes C => B includes C
     rule = ["A", RelationType.SIMULTANEOUS, "B", "A", RelationType.INCLUDES, "C", "B", RelationType.INCLUDES, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # New (inverses)
     # A after B && B after C => A after C
     rule = ["A", RelationType.AFTER, "B", "B", RelationType.AFTER, "C", "A", RelationType.AFTER, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A after B && B includes C => A after C
     rule = ["A", RelationType.AFTER, "B", "B", RelationType.INCLUDES, "C", "A", RelationType.AFTER, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A after B && B simultaneous C => A after C
     rule = ["A", RelationType.AFTER, "B", "B", RelationType.SIMULTANEOUS, "C", "A", RelationType.AFTER, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A is_included B && B is_included C => A is_included C
     rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.IS_INCLUDED, "C", "A", RelationType.IS_INCLUDED, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A is_included B && B simultaneous C => A is_included C
     rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.SIMULTANEOUS, "C", "A", RelationType.IS_INCLUDED, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A is_included B && B after C => A after C
     rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.AFTER, "C", "A", RelationType.AFTER, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     # A is_included B && B before C => A before C
     rule = ["A", RelationType.IS_INCLUDED, "B", "B", RelationType.BEFORE, "C", "A", RelationType.BEFORE, "C"]
-    triples += self._get_triples_by_rule(relations, rule)
+    triples += _get_triples_by_rule(relations, rule)
 
     return triples
 
@@ -91,13 +91,13 @@ def _get_triples_by_rule(relations, rule):
     r3_target = rule[8]
 
     if r1_source == r2_source:
-        return self._get_triples_source_equal(relations, rule)
+        return _get_triples_source_equal(relations, rule)
     elif r1_source == r2_target:
-        return self._get_triples_r1_source_r2_target_equal(relations, rule)
+        return _get_triples_r1_source_r2_target_equal(relations, rule)
     elif r1_target == r2_target:
-        return self._get_triples_target_equal(relations, rule)
+        return _get_triples_target_equal(relations, rule)
     elif r1_target == r2_source:
-        return self._get_triples_r1_target_r2_source_equal(relations, rule)
+        return _get_triples_r1_target_r2_source_equal(relations, rule)
 
 def _get_triples_r1_target_r2_source_equal(relations, rule):
     r1_source= rule[0]
@@ -141,7 +141,7 @@ def _get_triples_r1_source_r2_target_equal(relations, rule):
         for r2 in relations:
             if r1.source == r2.target:
                 if r1.relation_type == r1_rel_type and r2.relation_type == r2_rel_type:
-                    transitive = self._find_transitive(relations, r1.target, r2.source, rule)
+                    transitive = _find_transitive(relations, r1.target, r2.source, rule)
                     if transitive:
                         triples.append([r1, r2, transitive])
 
@@ -165,7 +165,7 @@ def _get_triples_target_equal(relations, rule):
         for r2 in relations:
             if r1.target == r2.target:
                 if r1.relation_type == r1_rel_type and r2.relation_type == r2_rel_type:
-                    transitive = self._find_transitive(relations, r1.source, r2.source, rule)
+                    transitive = _find_transitive(relations, r1.source, r2.source, rule)
                     if transitive:
                         triples.append([r1, r2, transitive])
 
