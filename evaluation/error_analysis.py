@@ -222,15 +222,10 @@ system.create_features()
 system.train()
 system.eval(quiet=True)
 
-ee_zero_misclassified = 0
-ee_one_misclassified = 0
-ee_two_misclassified = 0
-ee_three_misclassified = 0
-
-et_zero_misclassified = 0
-et_one_misclassified = 0
-et_two_misclassified = 0
-et_three_misclassified = 0
+zero_misclassified = 0
+one_misclassified = 0
+two_misclassified = 0
+three_misclassified = 0
 
 for text_obj in data.test.text_objects:
     # Get all unique triples of transitive relations in test data
@@ -240,33 +235,16 @@ for text_obj in data.test.text_objects:
     for triple in transitive_relations:
         misclassified = get_number_of_misclassified_rels(triple)
 
-        if triple[0].is_event_event() and triple[1].is_event_event():
-            if misclassified == 0:
-                ee_zero_misclassified += 1
-            elif misclassified == 1:
-                ee_one_misclassified += 1
-            elif misclassified == 2:
-                ee_two_misclassified += 1
-            elif misclassified == 3:
-                ee_three_misclassified += 1
+        if misclassified == 0:
+            zero_misclassified += 1
+        elif misclassified == 1:
+            one_misclassified += 1
+        elif misclassified == 2:
+            two_misclassified += 1
+        elif misclassified == 3:
+            three_misclassified += 1
 
-        elif triple[0].is_event_timex() or triple[1].is_event_timex():
-            if misclassified == 0:
-                et_zero_misclassified += 1
-            elif misclassified == 1:
-                et_one_misclassified += 1
-            elif misclassified == 2:
-                et_two_misclassified += 1
-            elif misclassified == 3:
-                et_three_misclassified += 1
-
-print ee_zero_misclassified
-print ee_one_misclassified
-print ee_two_misclassified
-print ee_three_misclassified
-print
-
-print et_zero_misclassified
-print et_one_misclassified
-print et_two_misclassified
-print et_three_misclassified
+print zero_misclassified
+print one_misclassified
+print two_misclassified
+print three_misclassified
