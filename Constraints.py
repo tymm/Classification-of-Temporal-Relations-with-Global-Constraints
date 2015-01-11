@@ -304,11 +304,19 @@ class Constraints:
         changed = 0
         ee_changed = 0
         et_changed = 0
+        improvement = 0
+        degradation = 0
 
         for rel in relations:
             for rel_optimized in relations_optimized:
                 if rel.source == rel_optimized.source and rel.target == rel_optimized.target:
                     if rel.predicted_class != rel_optimized.relation_type:
+                        # Count how many improvements and degradations are made by the global model
+                        if rel.relation_type == rel_optimized.relation_type:
+                            improvement += 1
+                        elif rel.relation_type != rel_optimized.relation_type:
+                            degradation += 1
+
                         print rel.parent.filename
                         print "Changed Relation %s --%s--> %s to %s --%s--> %s" % (rel.source.id, RelationType.get_string_by_id(rel.predicted_class), rel.target.id, rel_optimized.source.id, RelationType.get_string_by_id(rel_optimized.relation_type), rel_optimized.target.id)
                         changed += 1
@@ -320,4 +328,4 @@ class Constraints:
 
                         break
 
-        return (changed, ee_changed, et_changed)
+        return (changed, ee_changed, et_changed, improvement, degradation)
