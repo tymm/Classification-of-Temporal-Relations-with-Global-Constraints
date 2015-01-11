@@ -1,5 +1,6 @@
 from Data import Data
 from System import System
+from parsexml.relationtype import RelationType
 
 def get_transitives(relations):
     triples = []
@@ -137,7 +138,7 @@ def _get_triples_r1_source_r2_target_equal(relations, rule):
 
     # Search for variables where r1.target == r2.source
     for r1 in relations:
-        for r2 in self.variables:
+        for r2 in relations:
             if r1.source == r2.target:
                 if r1.relation_type == r1_rel_type and r2.relation_type == r2_rel_type:
                     transitive = self._find_transitive(relations, r1.target, r2.source, rule)
