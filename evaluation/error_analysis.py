@@ -212,6 +212,40 @@ def get_number_of_misclassified_rels(triple):
 
     return misclassified
 
+def get_number_of_miclassified_event_event_rels(triple):
+    misclassified = 0
+
+    for relation in triple:
+        if relation.is_event_event() and relation.predicted_class != relation.relation_type:
+            misclassified += 1
+
+    return misclassified
+
+def get_number_of_miclassified_event_timex_rels(triple):
+    misclassified = 0
+
+    for relation in triple:
+        if relation.is_event_timex() and relation.predicted_class != relation.relation_type:
+            misclassified += 1
+
+    return misclassified
+
+def get_number_of_event_event_rels(triple):
+    n = 0
+    for relation in triple:
+        if relation.is_event_event():
+            n += 1
+
+    return n
+
+def get_number_of_event_timex_rels(triple):
+    n = 0
+    for relation in triple:
+        if relation.is_event_timex():
+            n += 1
+
+    return n
+
 data = Data()
 system = System(data)
 
@@ -220,12 +254,19 @@ system.use_all_features()
 system.use_feature_selection()
 system.create_features()
 system.train()
+# Needs to be called to set relation.predicted_class
+system.save_predictions_to_relations()
 system.eval(quiet=True)
 
 zero_misclassified = 0
 one_misclassified = 0
 two_misclassified = 0
 three_misclassified = 0
+
+wrong_ee = 0
+wrong_et = 0
+total_ee = 0
+total_et = 0
 
 for text_obj in data.test.text_objects:
     # Get all unique triples of transitive relations in test data
@@ -234,6 +275,12 @@ for text_obj in data.test.text_objects:
     # Check how many misclassified relations there are for every transitive relation
     for triple in transitive_relations:
         misclassified = get_number_of_misclassified_rels(triple)
+
+        wrong_ee += get_number_of_miclassified_event_event_rels(triple)
+        total_ee += get_number_of_event_event_rels(triple)
+
+        wrong_et += get_number_of_miclassified_event_timex_rels(triple)
+        total_et += get_number_of_event_timex_rels(triple)
 
         if misclassified == 0:
             zero_misclassified += 1
@@ -244,7 +291,12 @@ for text_obj in data.test.text_objects:
         elif misclassified == 3:
             three_misclassified += 1
 
-print zero_misclassified
-print one_misclassified
-print two_misclassified
-print three_misclassified
+print "Total number of transitive subgraphs: " + str(zero_misclassified + one_misclassified + two_misclassified + three_misclassified)
+print "Number of zero misclassified relations in transitive subgraphs: " + str(zero_misclassified)
+print "Number of one misclassified relations in transitive subgraphs: " + str(one_misclassified)
+print "Number of two misclassified relations in transitive subgraphs: " + str(two_misclassified)
+print "Number of three misclassified relations in transitive subgraphs: " + str(three_misclassified)
+print
+
+print "% of misclassified event-event relations in transitive subgraphs: " + str(wrong_ee/float(total_ee))
+print "% of misclassified event-timex relations in transitive subgraphs: " + str(wrong_et/float(total_et))
