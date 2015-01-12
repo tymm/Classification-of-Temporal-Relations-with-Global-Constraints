@@ -8,7 +8,9 @@ class Distance:
         self.data = Data()
         self.system = System(self.data)
 
-        self.system.use_best_feature_set()
+        system.use_all_features()
+        system.use_feature_selection()
+
         self.system.create_features()
         self.system.train()
         self.system.save_predictions_to_relations()
