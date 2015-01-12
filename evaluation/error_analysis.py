@@ -257,6 +257,31 @@ def get_global_model_triple(pairwise_triple):
 
     return global_model_triple
 
+def get_number_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_potentially_improvements):
+    n = 0
+
+    for triple in subgraphs_with_potentially_improvements:
+        gm_tripel = get_global_model_triple(triple)
+
+        if triple[0].predicted_class != gm_tripel[0].relation_type or triple[1].predicted_class != gm_tripel[1].relation_type or triple[2].predicted_class != gm_tripel[2].relation_type:
+            # There was exactly _one_ change from pairwise classification to global model in the subgraph
+            if not (triple[0].relation_type == gm_tripel[0].relation_type and triple[1].relation_type == gm_tripel[1].relation_type and triple[2].relation_type == gm_tripel[2].relation_type):
+                # The global model did not solve all misclassification - it exchanged a misclassificaton with another misclassification
+                n += 1
+
+    return n
+
+def get_number_of_pairwise_classifier_mistakes_which_do_not_create_inconsistency(subgraphs_with_potentially_improvements):
+    n = 0
+
+    for triple in subgraphs_with_potentially_improvements:
+        gm_tripel = get_global_model_triple(triple)
+
+        if triple[0].predicted_class == gm_tripel[0].relation_type and triple[1].predicted_class == gm_tripel[1].relation_type and triple[2].predicted_class == gm_tripel[2].relation_type:
+            n += 1
+
+    return n
+
 data = Data()
 system = System(data)
 
@@ -284,6 +309,7 @@ wrong_et = 0
 total_ee = 0
 total_et = 0
 
+# Subgraphs where exactly one misclassification happened by the pairwise classifier
 subgraphs_with_potentially_improvements = []
 
 for text_obj in data.test.text_objects:
@@ -320,3 +346,7 @@ print
 
 print "% of misclassified event-event relations in transitive subgraphs: " + str(wrong_ee/float(total_ee))
 print "% of misclassified event-timex relations in transitive subgraphs: " + str(wrong_et/float(total_et))
+print
+
+print "Number of transitive subgraphs where the pairwise classifier introduced one mistake which did not introduce a inconsistency: %s" % get_number_of_pairwise_classifier_mistakes_which_do_not_create_inconsistency(subgraphs_with_potentially_improvements)
+print "Number of transitive subgraphs where the pairwise classifier changed one relation which did introduce a inconsistency and where the global model changed that inconsistency to another wrong relationtype: %s" % get_number_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_potentially_improvements)
