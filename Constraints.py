@@ -304,17 +304,23 @@ class Constraints:
         changed = 0
         ee_changed = 0
         et_changed = 0
+
         improvement = 0
+        no_change = 0
         degradation = 0
 
         for rel in relations:
             for rel_optimized in relations_optimized:
                 if rel.source == rel_optimized.source and rel.target == rel_optimized.target:
+                    if rel.predicted_class == rel_optimized.relation_type:
+                        no_change += 1
+
                     if rel.predicted_class != rel_optimized.relation_type:
                         # Count how many improvements and degradations are made by the global model
                         if rel.relation_type == rel_optimized.relation_type:
                             improvement += 1
-                        elif rel.relation_type != rel_optimized.relation_type:
+                        else:
+                            # No improvement was made and a change happens = degradation
                             degradation += 1
 
                         print rel.parent.filename
