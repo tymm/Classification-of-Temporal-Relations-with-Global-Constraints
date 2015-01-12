@@ -251,7 +251,7 @@ def get_global_model_triple(pairwise_triple):
     text_obj = pairwise_triple[0].parent
 
     for rel in pairwise_triple:
-        for rel_optimized in text_obj.relations_optimized:
+        for rel_optimized in text_obj.relations_plain_optimized:
             if rel.target == rel_optimized.target and rel.source == rel_optimized.source:
                 global_model_triple.append(rel_optimized)
 
