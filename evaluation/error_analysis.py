@@ -246,6 +246,17 @@ def get_number_of_event_timex_rels(triple):
 
     return n
 
+def get_global_model_triple(pairwise_triple):
+    global_model_triple = []
+    text_obj = pairwise_triple[0].parent
+
+    for rel in pairwise_triple:
+        for rel_optimized in text_obj.relations_optimized:
+            if rel.target == rel_optimized.target and rel.source == rel_optimized.source:
+                global_model_triple.append(rel_optimized)
+
+    return global_model_triple
+
 data = Data()
 system = System(data)
 
@@ -254,9 +265,14 @@ system.use_all_features()
 system.use_feature_selection()
 system.create_features()
 system.train()
+
 # Needs to be called to set relation.predicted_class
 system.save_predictions_to_relations()
 system.eval(quiet=True)
+
+# Run global model
+system.create_confidence_scores()
+system.apply_global_model()
 
 zero_misclassified = 0
 one_misclassified = 0
@@ -267,6 +283,8 @@ wrong_ee = 0
 wrong_et = 0
 total_ee = 0
 total_et = 0
+
+subgraphs_with_potentially_improvements = []
 
 for text_obj in data.test.text_objects:
     # Get all unique triples of transitive relations in test data
@@ -286,6 +304,8 @@ for text_obj in data.test.text_objects:
             zero_misclassified += 1
         elif misclassified == 1:
             one_misclassified += 1
+            # This is the only case where the global model can make improvements
+            subgraphs_with_potentially_improvements.append(triple)
         elif misclassified == 2:
             two_misclassified += 1
         elif misclassified == 3:
