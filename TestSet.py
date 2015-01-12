@@ -22,6 +22,7 @@ class TestSet(Set):
 
     def apply_global_model(self):
         changed = 0
+        no_changes = 0
         ee_changed = 0
         et_changed = 0
         improvement = 0
