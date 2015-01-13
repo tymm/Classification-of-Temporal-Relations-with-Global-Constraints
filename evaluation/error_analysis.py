@@ -376,3 +376,6 @@ print
 
 print "Number of transitive subgraphs where the pairwise classifier introduced one mistake which did not introduce a inconsistency: %s" % get_number_of_pairwise_classifier_mistakes_which_do_not_create_inconsistency(subgraphs_with_potentially_improvements)
 print "Number of transitive subgraphs where the pairwise classifier changed one relation which did introduce a inconsistency and where the global model changed that inconsistency to another wrong relationtype: %s" % get_number_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_potentially_improvements)
+
+triples_ii_2 = get_triple_of_pairwise_classifier_mistakes_which_do_not_create_inconsistency(subgraphs_with_potentially_improvements)
+triples_ii_3 = get_triples_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_potentially_improvements)
