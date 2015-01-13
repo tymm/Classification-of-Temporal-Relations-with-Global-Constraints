@@ -271,6 +271,21 @@ def get_number_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_
 
     return n
 
+def get_number_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_potentially_improvements):
+    rels = []
+
+    for triple in subgraphs_with_potentially_improvements:
+        gm_tripel = get_global_model_triple(triple)
+
+        if triple[0].predicted_class != gm_tripel[0].relation_type or triple[1].predicted_class != gm_tripel[1].relation_type or triple[2].predicted_class != gm_tripel[2].relation_type:
+            # There was exactly _one_ change from pairwise classification to global model in the subgraph
+            if not (triple[0].relation_type == gm_tripel[0].relation_type and triple[1].relation_type == gm_tripel[1].relation_type and triple[2].relation_type == gm_tripel[2].relation_type):
+                # The global model did not solve all misclassification - it exchanged a misclassificaton with another misclassification
+                rels.append((triple, gm_tripel))
+
+    return rels
+
+
 def get_number_of_pairwise_classifier_mistakes_which_do_not_create_inconsistency(subgraphs_with_potentially_improvements):
     n = 0
 
@@ -281,6 +296,17 @@ def get_number_of_pairwise_classifier_mistakes_which_do_not_create_inconsistency
             n += 1
 
     return n
+
+def get_triple_of_pairwise_classifier_mistakes_which_do_not_create_inconsistency(subgraphs_with_potentially_improvements):
+    rels = []
+
+    for triple in subgraphs_with_potentially_improvements:
+        gm_tripel = get_global_model_triple(triple)
+
+        if triple[0].predicted_class == gm_tripel[0].relation_type and triple[1].predicted_class == gm_tripel[1].relation_type and triple[2].predicted_class == gm_tripel[2].relation_type:
+            rels.append(triple)
+
+    return rels
 
 data = Data()
 system = System(data)
