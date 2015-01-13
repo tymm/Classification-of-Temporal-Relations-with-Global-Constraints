@@ -271,7 +271,7 @@ def get_number_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_
 
     return n
 
-def get_number_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_potentially_improvements):
+def get_triples_of_inconsistencies_solved_wrongly_by_global_model(subgraphs_with_potentially_improvements):
     rels = []
 
     for triple in subgraphs_with_potentially_improvements:
