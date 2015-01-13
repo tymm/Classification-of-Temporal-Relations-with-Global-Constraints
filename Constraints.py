@@ -307,17 +307,14 @@ class Constraints:
 
         improvement = 0
         degradation = 0
+        change_with_no_improvemt_and_no_degradation = 0
 
         for rel in relations:
             for rel_optimized in relations_optimized:
                 if rel.source == rel_optimized.source and rel.target == rel_optimized.target:
-                    if rel.predicted_class != rel_optimized.relation_type:
-                        # Count how many improvements and degradations are made by the global model
-                        if rel.relation_type == rel_optimized.relation_type:
-                            improvement += 1
-                        else:
-                            # No improvement was made and a change happens = degradation
-                            degradation += 1
+                    if rel.predicted_class == rel.relation_type and rel.predicted_class != rel_optimized.relation_type:
+                        # Global model introduced an new error
+                        degradation += 1
 
                         print rel.parent.filename
                         print "Changed Relation %s --%s--> %s to %s --%s--> %s" % (rel.source.id, RelationType.get_string_by_id(rel.predicted_class), rel.target.id, rel_optimized.source.id, RelationType.get_string_by_id(rel_optimized.relation_type), rel_optimized.target.id)
@@ -330,4 +327,23 @@ class Constraints:
 
                         break
 
-        return (changed, ee_changed, et_changed, improvement, degradation)
+                    if rel.predicted_class != rel.relation_type and rel.predicted_class != rel_optimized.relation_type:
+                        # Count how many improvements and changes which do not matter the global model makes
+                        if rel.relation_type == rel_optimized.relation_type:
+                            improvement += 1
+                        else:
+                            # The global model changed a wrong label to another wrong label
+                            change_with_no_improvemt_and_no_degradation += 1
+
+                        print rel.parent.filename
+                        print "Changed Relation %s --%s--> %s to %s --%s--> %s" % (rel.source.id, RelationType.get_string_by_id(rel.predicted_class), rel.target.id, rel_optimized.source.id, RelationType.get_string_by_id(rel_optimized.relation_type), rel_optimized.target.id)
+                        changed += 1
+
+                        if rel.is_event_event():
+                            ee_changed += 1
+                        if rel.is_event_timex():
+                            et_changed += 1
+
+                        break
+
+        return (changed, ee_changed, et_changed, improvement, degradation, change_with_no_improvemt_and_no_degradation)

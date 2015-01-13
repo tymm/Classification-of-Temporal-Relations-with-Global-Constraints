@@ -27,24 +27,28 @@ class TestSet(Set):
         et_changed = 0
         improvement = 0
         degradation = 0
+        changes_with_no_effect = 0
+
         for text_obj in self.text_objects:
             # Create all optimal relations for text object
             ilp = Constraints(text_obj)
             text_obj.relations_plain_optimized = ilp.get_best_set()
             self.relations_optimized += text_obj.relations_plain_optimized
 
-            tmp_changed, tmp_ee_changed, tmp_et_changed, tmp_improvement, tmp_degradation = ilp.get_number_of_relations_changed()
+            tmp_changed, tmp_ee_changed, tmp_et_changed, tmp_improvement, tmp_degradation, tmp_changes_with_no_effect = ilp.get_number_of_relations_changed()
             changed += tmp_changed
             ee_changed += tmp_ee_changed
             et_changed += tmp_et_changed
             improvement += tmp_improvement
             degradation += tmp_degradation
+            changes_with_no_effect += tmp_changes_with_no_effect
 
         print "Global model changed %s relations" % changed
         print "%s relations were event-event relations" % ee_changed
         print "%s relations were event-timex relations" % et_changed
         print "The global model lead to %s improvements" % improvement
-        print "The global model lead to %s misclassifications" % degradation
+        print "The global model introduced %s new misclassifications" % degradation
+        print "The global model changed %s relations wrongly which had no effect since they were already wrong" % changes_with_no_effect
 
     def get_event_event_targets(self):
         targets = []
